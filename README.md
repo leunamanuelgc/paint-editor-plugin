@@ -1,2 +1,2 @@
 # tfg-plugin
-Repository for the Unity graphic editor plugiun
+Repository for the Unity graphic editor plugin
