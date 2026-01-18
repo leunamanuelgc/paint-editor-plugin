@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\loloa\\Documents\\UNIVERSIDAD\\TFG\\Test\\Dll_Test2\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{061AA953-A782-4E37-B69C-34493A7894CA}|Dll_Test2\\Dll_Test2.vcxproj|C:\\Users\\loloa\\Documents\\UNIVERSIDAD\\TFG\\Test\\Dll_Test2\\Dll_Test2\\pch.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{061AA953-A782-4E37-B69C-34493A7894CA}|Dll_Test2\\Dll_Test2.vcxproj|solutionrelative:Dll_Test2\\pch.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{061AA953-A782-4E37-B69C-34493A7894CA}|Dll_Test2\\Dll_Test2.vcxproj|C:\\Users\\loloa\\Documents\\UNIVERSIDAD\\TFG\\Test\\Dll_Test2\\Dll_Test2\\dllmain.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{061AA953-A782-4E37-B69C-34493A7894CA}|Dll_Test2\\Dll_Test2.vcxproj|solutionrelative:Dll_Test2\\dllmain.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 220,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "pch.cpp",
+              "DocumentMoniker": "C:\\Users\\loloa\\Documents\\UNIVERSIDAD\\TFG\\Test\\Dll_Test2\\Dll_Test2\\pch.cpp",
+              "RelativeDocumentMoniker": "Dll_Test2\\pch.cpp",
+              "ToolTip": "C:\\Users\\loloa\\Documents\\UNIVERSIDAD\\TFG\\Test\\Dll_Test2\\Dll_Test2\\pch.cpp",
+              "RelativeToolTip": "Dll_Test2\\pch.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACgAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-16T20:51:14.897Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "dllmain.cpp",
+              "DocumentMoniker": "C:\\Users\\loloa\\Documents\\UNIVERSIDAD\\TFG\\Test\\Dll_Test2\\Dll_Test2\\dllmain.cpp",
+              "RelativeDocumentMoniker": "Dll_Test2\\dllmain.cpp",
+              "ToolTip": "C:\\Users\\loloa\\Documents\\UNIVERSIDAD\\TFG\\Test\\Dll_Test2\\Dll_Test2\\dllmain.cpp",
+              "RelativeToolTip": "Dll_Test2\\dllmain.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-16T20:46:09.578Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

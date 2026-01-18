@@ -1,0 +1,4 @@
+﻿  pch.cpp
+  dllmain.cpp
+pch.obj : error LNK2001: símbolo externo __imp_glClear sin resolver
+C:\Users\loloa\Documents\UNIVERSIDAD\TFG\Test\Dll_Test2\x64\Release\Dll_Test2.dll : fatal error LNK1120: 1 externos sin resolver
