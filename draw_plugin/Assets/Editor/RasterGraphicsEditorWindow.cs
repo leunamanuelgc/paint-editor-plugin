@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using Unity.VisualScripting;
+using static log4net.Appender.ColoredConsoleAppender;
 
 public class RasterGraphicsEditorWindow : EditorWindow
 {
@@ -264,11 +265,12 @@ public class RasterGraphicsEditorWindow : EditorWindow
 
         if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag)
         {
-            if (rect_canvas.Contains(Event.current.mousePosition) && current_tool == ToolType.brush)
+            //rect_canvas.Contains(Event.current.mousePosition) &&
+            if ( current_tool == ToolType.brush)
             {
                 PaintInCanvas(current_color);
             }
-            else if (rect_canvas.Contains(Event.current.mousePosition) && current_tool == ToolType.eraser)
+            else if (current_tool == ToolType.eraser)
             {
                 Color eraserColor = new Color(0, 0, 0, 0);
                 PaintInCanvas(eraserColor);
@@ -301,19 +303,38 @@ public class RasterGraphicsEditorWindow : EditorWindow
         float mY = deltaY / deltaX;
         float mX = deltaX / deltaY;
 
-        Color[] colors;
+        int limit = 0;
+
+        //Debug.Log("x0: " + x0 + ", y0: " + y0 + ", x: " + x + ", y: " + y + ", x1: " + x1 + ", y1: " + y1);
 
         while (x != x1 || y != y1)
         {
-            colors = new Color[brush_vector_size.x * brush_vector_size.y];
-            for (int j = 0; j < colors.Length; j++)
+            if (x0 < x1 && x > x1)
             {
-                colors[j] = color;
+                if (y0 < y1 && y > y1)
+                {
+                    break;
+                }
+                else if (y0 > y1 && y < y1)
+                {
+                    break;
+                }
+            } else if (x0 > x1 && x < x1)
+            {
+                if (y0 < y1 && y > y1)
+                {
+                    break;
+                }
+                else if (y0 > y1 && y < y1)
+                {
+                    break;
+                }
             }
-            texture.SetPixels((int)x, (int)y, brush_vector_size.x, brush_vector_size.y, colors);
 
+            PaintPixels(color, x, y, brush_vector_size.x, brush_vector_size.y);
             // I'm using Bresenham's line algorithm to fill gaps between painting frames
-            if (Mathf.Abs(deltaX) >= Mathf.Abs(deltaY)) {
+            if (Mathf.Abs(deltaX) >= Mathf.Abs(deltaY))
+            {
                 if (x0 != x1)
                     x += x0 < x1 ? 1 : -1;
                 y = mY * (x - x0) + y0;
@@ -323,18 +344,48 @@ public class RasterGraphicsEditorWindow : EditorWindow
                 if (y0 != y1)
                     y += y0 < y1 ? 1 : -1;
                 x = mX * (y - y0) + x0;
-            }   
+            }
         }
 
-        colors = new Color[brush_vector_size.x * brush_vector_size.y];
-        for (int j = 0; j < colors.Length; j++)
-        {
-            colors[j] = color;
-        }
-        texture.SetPixels((int)x, (int)y, brush_vector_size.x, brush_vector_size.y, colors);
-
+        PaintPixels(color, x, y, brush_vector_size.x, brush_vector_size.y);
         texture.Apply();
         Repaint();
+    }
+
+    void PaintPixels(Color color, float x, float y, int sizeX, int sizeY)
+    {
+        Rect point = new Rect(x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
+
+        if(pointTouchCanvas(point, rect_canvas))
+        {
+            point.xMin = Mathf.Max(point.xMin, 0);
+            point.yMin = Mathf.Max(point.yMin, 0);
+            point.xMax = Mathf.Min(point.xMax, canvas_width);
+            point.yMax = Mathf.Min(point.yMax, canvas_height);
+
+            Color[] colors;
+            colors = new Color[(int)point.width * (int)point.height];
+            for (int j = 0; j < colors.Length; j++)
+            {
+                colors[j] = color;
+            }
+            texture.SetPixels((int)point.x, (int)point.y, (int)point.width, (int)point.height, colors);
+        }
+    }
+
+    bool pointTouchCanvas(Rect point, Rect canvas)
+    {
+        float sizeX = point.size.x;
+        float sizeY = point.size.y;
+
+        //Debug.Log("x: " + point.x + ", x + size: " + (point.x + sizeX) + ", y:" + point.y + ", y + size: " + (point.y + sizeY) + ", canvas: " + canvas);
+
+        if (point.x + sizeX < 0 || point.y + sizeY < 0 || point.x > canvas.width || point.y > canvas.height)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     void displayFunctionsToolbar()
