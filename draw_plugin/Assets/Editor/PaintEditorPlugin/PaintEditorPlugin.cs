@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace UnityEditor.PaintEditor
 {
@@ -12,7 +13,10 @@ namespace UnityEditor.PaintEditor
         public Color currentColor { get; set; }
 
         public CanvasEditor canvas { get; set; }
+
         public MainMenuEditor mainMenu { get; set; }
+
+        public CommandHistory history { get; set; }
 
         [MenuItem("Tools/Raster Editor")]
         public static void CreateEditorWindow()
@@ -23,6 +27,9 @@ namespace UnityEditor.PaintEditor
 
         public void OnEnable()
         {
+            currentColor = Color.black;
+            currentTool = new Brush(1, 100, Vector2.one, 0);
+
             float width, height;
             width = height = 256;
             Rect rect = new Rect(this.position.width / 2 - width / 2, this.position.height / 2 - height / 2, width, height);
@@ -31,9 +38,7 @@ namespace UnityEditor.PaintEditor
 
             mainMenu = new MainMenuEditor(this);
 
-            currentColor = Color.black;
-            currentTool = new Brush(1, 100, Vector2.one, 0);
-
+            history = new CommandHistory();
             Repaint();
         }
 
@@ -69,9 +74,15 @@ namespace UnityEditor.PaintEditor
             {
                 if (currentTool is Brush)
                 {
-                    currentTool.SetCommand(new DrawCommand(this));
-                    currentTool.Use();
+                    ExecuteCommand(new DrawCommand(this));
+                    //currentTool.SetCommand(new DrawCommand(this));
+                    //currentTool.Use();
                 }
+            }
+
+            if (Event.current.control && Event.current.keyCode == KeyCode.Z)
+            {
+                ExecuteCommand(new UndoCommand(this));
             }
 
             displayFunctionsToolbar();
@@ -118,6 +129,23 @@ namespace UnityEditor.PaintEditor
             //canvas.Texture = (Texture2D)EditorGUILayout.ObjectField(new GUIContent("Load texture"), canvas.Texture, typeof(Texture2D), false);
 
             EditorGUILayout.EndVertical();
+        }
+
+        public void ExecuteCommand(ACommand command)
+        {
+            if (command.Execute())
+            {
+                history.Push(command);
+            }
+        }
+
+        public void Undo()
+        {
+            ACommand command = history.Pop();
+            if (command != null)
+            {
+                command.Undo();
+            }
         }
     }
 }

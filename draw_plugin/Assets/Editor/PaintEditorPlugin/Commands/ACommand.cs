@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UnityEditor.PaintEditor
@@ -10,19 +11,41 @@ namespace UnityEditor.PaintEditor
         public ACommand(PaintEditorPlugin app)
         {
             this.app = app;
+            backup = new Texture2D(app.canvas.texture.width, app.canvas.texture.height, app.canvas.texture.format, true);
         }
 
         public void SaveBackup()
         {
-            backup = app.canvas.texture;
+            Graphics.CopyTexture(app.canvas.texture, backup);
         }
 
         public void Undo()
         {
-            app.canvas.texture = backup;
+            Graphics.CopyTexture(backup, app.canvas.texture);
+            app.Repaint();
         }
 
-        public abstract void Execute();
+        public abstract bool Execute();
+    }
+
+    public class CommandHistory
+    {
+        private Stack<ACommand> history;
+
+        public CommandHistory() 
+        {
+            history = new Stack<ACommand>();
+        }
+
+        public void Push(ACommand command)
+        {
+            history.Push(command);
+        }
+
+        public ACommand Pop()
+        {
+            return history.Pop();
+        }
     }
 }
 
