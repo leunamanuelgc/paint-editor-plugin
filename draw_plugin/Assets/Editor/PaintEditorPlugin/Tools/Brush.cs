@@ -10,8 +10,6 @@ namespace UnityEditor.PaintEditor
             rect,
         }
 
-        private ACommand drawCommand;
-
         public int minSize { get; set; }
 
         public int maxSize { get; set; }
@@ -28,22 +26,9 @@ namespace UnityEditor.PaintEditor
             this.typeIndex = typeIndex;
         }
 
-        public void Use()
-        {
-            if(this.drawCommand is ACommand)
-            {
-                this.drawCommand.Execute();
-            }
-        }
-
         public virtual void Select()
         {
             DisplayOptionsGUI();
-        }
-
-        public void SetCommand(ACommand command)
-        {
-            this.drawCommand = command;
         }
 
         private void DisplayOptionsGUI()

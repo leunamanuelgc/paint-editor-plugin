@@ -156,8 +156,6 @@ namespace UnityEditor.PaintEditor
             float sizeX = point.size.x;
             float sizeY = point.size.y;
 
-            //Debug.Log("x: " + point.x + ", x + size: " + (point.x + sizeX) + ", y:" + point.y + ", y + size: " + (point.y + sizeY) + ", canvas: " + canvas);
-
             if (point.x + sizeX < 0 || point.y + sizeY < 0 || point.x > texture.width || point.y > texture.height)
             {
                 return false;

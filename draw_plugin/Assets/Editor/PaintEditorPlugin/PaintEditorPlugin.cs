@@ -18,6 +18,8 @@ namespace UnityEditor.PaintEditor
 
         public CommandHistory history { get; set; }
 
+        //private Texture2D customCursor;
+
         [MenuItem("Tools/Raster Editor")]
         public static void CreateEditorWindow()
         {
@@ -39,6 +41,8 @@ namespace UnityEditor.PaintEditor
             mainMenu = new MainMenuEditor(this);
 
             history = new CommandHistory();
+
+            //customCursor = Resources.Load<Texture2D>("cursor.png");
             Repaint();
         }
 
@@ -70,13 +74,23 @@ namespace UnityEditor.PaintEditor
                 mainMenu.LoadImage();
             }
 
+            //Repaint();
+            //if(Event.current.type == EventType.Repaint)
+            //{
+            //    Debug.Log("A");
+            //    UnityEngine.Cursor.SetCursor(customCursor, new Vector2(16, 16), CursorMode.Auto);
+            //    EditorGUIUtility.AddCursorRect(canvas.rect, MouseCursor.CustomCursor);
+            //}
+
             if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag)
             {
-                if (currentTool is Brush)
+                if (currentTool is Brush && currentTool is not Eraser)
                 {
                     ExecuteCommand(new DrawCommand(this));
-                    //currentTool.SetCommand(new DrawCommand(this));
-                    //currentTool.Use();
+                }
+                else if (currentTool is Eraser)
+                {
+                    ExecuteCommand(new EraseCommand(this));
                 }
             }
 
@@ -125,8 +139,6 @@ namespace UnityEditor.PaintEditor
             EditorGUILayout.BeginVertical();
 
             currentColor = EditorGUILayout.ColorField(new GUIContent("Color"), currentColor, true, true, true);
-
-            //canvas.Texture = (Texture2D)EditorGUILayout.ObjectField(new GUIContent("Load texture"), canvas.Texture, typeof(Texture2D), false);
 
             EditorGUILayout.EndVertical();
         }
