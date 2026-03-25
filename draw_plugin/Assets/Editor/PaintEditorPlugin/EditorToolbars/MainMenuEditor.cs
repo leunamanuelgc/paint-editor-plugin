@@ -49,7 +49,7 @@ namespace UnityEditor.PaintEditor
             Texture2D loadedTexture = new Texture2D(1, 1);
             ImageConversion.LoadImage(loadedTexture, rawImageData);
 
-            app.canvas.texture = new Texture2D(loadedTexture.width, loadedTexture.height, loadedTexture.format, true);
+            app.canvas.texture = new Texture2D(loadedTexture.width, loadedTexture.height, loadedTexture.format, true, false);
             Graphics.CopyTexture(loadedTexture, app.canvas.texture);
 
             app.canvas.aspectRatio = (float)app.canvas.texture.width / (float)app.canvas.texture.height;

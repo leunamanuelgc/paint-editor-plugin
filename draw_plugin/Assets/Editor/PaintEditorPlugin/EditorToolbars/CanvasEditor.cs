@@ -37,10 +37,7 @@ namespace UnityEditor.PaintEditor
             this.texture = texture;
             texture.alphaIsTransparency = true;
 
-            Color[] textureColors = new Color[texture.width * texture.height];
-            Array.Fill(textureColors, new Color(0, 0, 0, 0));
-            texture.SetPixels(textureColors);
-            texture.Apply();
+            EmptyCanvas();
         }
 
         private bool IsPosOutOfBounds(Vector2 pos, Vector2 pos0, Vector2 pos1)
@@ -85,9 +82,27 @@ namespace UnityEditor.PaintEditor
             return true;
         }
 
-        public void Resize(Vector2 size)
+        private void EmptyCanvas()
+        {
+            Color[] transparent = new Color[texture.width * texture.height];
+            Array.Fill(transparent, new Color(0, 0, 0, 0));
+            texture.SetPixels(transparent);
+            texture.Apply();
+        }
+
+        public void Move(Vector2 delta)
+        {
+            rect = new Rect(rect.position + delta, rect.size);
+        }
+
+        public void Reinitialize(Vector2 size)
         {
             rect = new Rect(rect.position, size);
+
+            texture = new Texture2D((int)size.x, (int)size.y, texture.format, true, false);
+            texture.alphaIsTransparency = true;
+
+            EmptyCanvas();
         }
 
         public Vector2 PosInCanvas(float x, float y)

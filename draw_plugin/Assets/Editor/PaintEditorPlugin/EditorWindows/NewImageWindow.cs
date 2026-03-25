@@ -30,7 +30,8 @@ namespace UnityEditor.PaintEditor
 
             if (GUILayout.Button(new GUIContent("Create")))
             {
-                PaintEditorPlugin.Instance.canvas.Resize(new Vector2(width, height));
+                PaintEditorPlugin.Instance.canvas.Reinitialize(new Vector2(width, height));
+
                 Close();
             }
 

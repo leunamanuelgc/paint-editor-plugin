@@ -78,6 +78,11 @@ namespace UnityEditor.PaintEditor
 
             Event e = Event.current;
 
+            if (e.control && e.keyCode == KeyCode.N && e.type == EventType.KeyDown)
+            {
+                mainMenu.CreateNewImageWindow();
+            }
+
             if (e.control && e.keyCode == KeyCode.S && e.type == EventType.KeyDown)
             {
                 mainMenu.SaveImage();
@@ -93,15 +98,27 @@ namespace UnityEditor.PaintEditor
                 ExecuteCommand(new UndoCommand(this));
             }
 
+            bool panMode = (!e.alt && e.button == 2 || e.alt && e.button <= 0);
+
+            if (panMode && GUIUtility.hotControl == 0)
+            {
+                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Pan);
+
+                if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
+                {
+                    canvas.Move(e.delta);
+                }
+            }
+
             if (canvas.rect.Contains(e.mousePosition))
             {
-                if (currentTool is Brush)
+                if (!panMode && currentTool is Brush)
                 {
                     cursor.Render();
                 }
             }
 
-            if (e.type == EventType.MouseDown || e.type == EventType.MouseDrag)
+            if (!panMode && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) )
             {
                 if (currentTool is Brush && currentTool is not Eraser)
                 {
@@ -112,6 +129,8 @@ namespace UnityEditor.PaintEditor
                     ExecuteCommand(new EraseCommand(this));
                 }
             }
+
+
 
             displayFunctionsToolbar();
 
