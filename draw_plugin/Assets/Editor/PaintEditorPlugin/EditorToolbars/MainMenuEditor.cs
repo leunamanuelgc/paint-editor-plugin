@@ -16,6 +16,8 @@ namespace UnityEditor.PaintEditor
             {
                 GenericMenu menu = new GenericMenu();
 
+                menu.AddItem(new GUIContent("New"), true, NewCanvas);
+
                 menu.AddItem(new GUIContent("Save"), true, SaveImage);
 
                 menu.AddItem(new GUIContent("Load"), true, LoadImage);
@@ -51,7 +53,8 @@ namespace UnityEditor.PaintEditor
             Graphics.CopyTexture(loadedTexture, app.canvas.texture);
 
             app.canvas.aspectRatio = (float)app.canvas.texture.width / (float)app.canvas.texture.height;
-            app.canvas.rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - app.canvas.rect.height / 2, app.canvas.rect.width, app.canvas.rect.height);
+            float newHeight = app.canvas.rect.width / app.canvas.aspectRatio;
+            app.canvas.rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - newHeight / 2, app.canvas.rect.width, newHeight);
         }
     }
 }

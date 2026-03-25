@@ -3,11 +3,17 @@ using UnityEditor;
 using System.IO;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using System;
+using UnityEngine.Rendering;
 
 namespace UnityEditor.PaintEditor
 {
     public class PaintEditorPlugin : EditorWindow
     {
+        private Brush brush;
+
+        private Eraser eraser;
+
         public ITool currentTool { get; private set; }
 
         public Color currentColor { get; set; }
@@ -18,7 +24,7 @@ namespace UnityEditor.PaintEditor
 
         public CommandHistory history { get; set; }
 
-        //private Texture2D customCursor;
+        public CustomCursor cursor { get; set; }
 
         [MenuItem("Tools/Raster Editor")]
         public static void CreateEditorWindow()
@@ -29,8 +35,9 @@ namespace UnityEditor.PaintEditor
 
         public void OnEnable()
         {
-            currentColor = Color.black;
-            currentTool = new Brush(1, 100, Vector2.one, 0);
+            mainMenu = new MainMenuEditor(this);
+
+            history = new CommandHistory();
 
             float width, height;
             width = height = 256;
@@ -38,11 +45,14 @@ namespace UnityEditor.PaintEditor
             Texture2D texture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
             canvas = new CanvasEditor(this, rect, texture);
 
-            mainMenu = new MainMenuEditor(this);
+            cursor = new CustomCursor(this, Vector2Int.one);
 
-            history = new CommandHistory();
+            currentColor = Color.black;
 
-            //customCursor = Resources.Load<Texture2D>("cursor.png");
+            brush = new Brush(1, 100, Vector2.one, 0);
+            eraser = new Eraser(1, 100, Vector2.one, 0);
+            currentTool = brush;
+
             Repaint();
         }
 
@@ -64,25 +74,32 @@ namespace UnityEditor.PaintEditor
 
             canvas.DisplayGUI();
 
-            if (Event.current.control && Event.current.keyCode == KeyCode.S)
+            Event e = Event.current;
+
+            if (e.control && e.keyCode == KeyCode.S && e.type == EventType.KeyDown)
             {
                 mainMenu.SaveImage();
             }
 
-            if (Event.current.control && Event.current.keyCode == KeyCode.L)
+            if (e.control && e.keyCode == KeyCode.L && e.type == EventType.KeyDown)
             {
                 mainMenu.LoadImage();
             }
 
-            //Repaint();
-            //if(Event.current.type == EventType.Repaint)
-            //{
-            //    Debug.Log("A");
-            //    UnityEngine.Cursor.SetCursor(customCursor, new Vector2(16, 16), CursorMode.Auto);
-            //    EditorGUIUtility.AddCursorRect(canvas.rect, MouseCursor.CustomCursor);
-            //}
+            if (e.control && e.keyCode == KeyCode.Z)
+            {
+                ExecuteCommand(new UndoCommand(this));
+            }
 
-            if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag)
+            if (canvas.rect.Contains(e.mousePosition))
+            {
+                if (currentTool is Brush)
+                {
+                    cursor.Render();
+                }
+            }
+
+            if (e.type == EventType.MouseDown || e.type == EventType.MouseDrag)
             {
                 if (currentTool is Brush && currentTool is not Eraser)
                 {
@@ -92,11 +109,6 @@ namespace UnityEditor.PaintEditor
                 {
                     ExecuteCommand(new EraseCommand(this));
                 }
-            }
-
-            if (Event.current.control && Event.current.keyCode == KeyCode.Z)
-            {
-                ExecuteCommand(new UndoCommand(this));
             }
 
             displayFunctionsToolbar();
@@ -121,13 +133,13 @@ namespace UnityEditor.PaintEditor
 
             if (EditorGUILayout.DropdownButton(new GUIContent("Brush"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
-                currentTool = new Brush(1, 100, Vector2.one, 0);
+                currentTool = brush;
                 currentTool.Select();
             }
 
             if (EditorGUILayout.DropdownButton(new GUIContent("Eraser"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
-                currentTool = new Eraser(1, 100, Vector2.one, 0);
+                currentTool = eraser;
                 currentTool.Select();
             }
 
