@@ -14,7 +14,10 @@ namespace UnityEditor.PaintEditor
 
         private Eraser eraser;
 
+        private Pan pan;
+
         public ITool currentTool { get; private set; }
+        public ITool lastTool { get; private set; }
 
         public Color currentColor { get; set; }
 
@@ -53,7 +56,10 @@ namespace UnityEditor.PaintEditor
 
             brush = new Brush(1, 100, Vector2.one, 0);
             eraser = new Eraser(1, 100, Vector2.one, 0);
+            pan = new Pan(1f);
+
             currentTool = brush;
+            lastTool = currentTool;
 
             Repaint();
         }
@@ -98,27 +104,35 @@ namespace UnityEditor.PaintEditor
                 ExecuteCommand(new UndoCommand(this));
             }
 
-            bool panMode = (!e.alt && e.button == 2 || e.alt && e.button <= 0);
+            if (e.alt && e.type == EventType.MouseDown)
+            {
+                currentTool = pan;
+            }
+            else if (e.type == EventType.MouseUp)
+            {
+                currentTool = lastTool;
+            }
 
-            if (panMode && GUIUtility.hotControl == 0)
+            if (currentTool is Pan && GUIUtility.hotControl == 0)
             {
                 EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Pan);
 
                 if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
                 {
-                    canvas.Move(e.delta);
+                    canvas.Move(e.delta * pan.speed);
+                    Repaint();
                 }
             }
 
             if (canvas.rect.Contains(e.mousePosition))
             {
-                if (!panMode && currentTool is Brush)
+                if (currentTool is Brush)
                 {
                     cursor.Render();
                 }
             }
 
-            if (!panMode && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) )
+            if ( (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) )
             {
                 if (currentTool is Brush && currentTool is not Eraser)
                 {
@@ -129,8 +143,6 @@ namespace UnityEditor.PaintEditor
                     ExecuteCommand(new EraseCommand(this));
                 }
             }
-
-
 
             displayFunctionsToolbar();
 
@@ -155,12 +167,21 @@ namespace UnityEditor.PaintEditor
             if (EditorGUILayout.DropdownButton(new GUIContent("Brush"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
                 currentTool = brush;
+                lastTool = currentTool;
                 currentTool.Select();
             }
 
             if (EditorGUILayout.DropdownButton(new GUIContent("Eraser"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
                 currentTool = eraser;
+                lastTool = currentTool;
+                currentTool.Select();
+            }
+
+            if (EditorGUILayout.DropdownButton(new GUIContent("Pan"), FocusType.Keyboard, EditorStyles.toolbarButton))
+            {
+                currentTool = pan;
+                lastTool = currentTool;
                 currentTool.Select();
             }
 
