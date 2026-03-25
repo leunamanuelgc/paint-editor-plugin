@@ -51,6 +51,7 @@ namespace UnityEditor.PaintEditor
 
             app.canvas.texture = new Texture2D(loadedTexture.width, loadedTexture.height, loadedTexture.format, true, false);
             Graphics.CopyTexture(loadedTexture, app.canvas.texture);
+            app.canvas.texture.filterMode = FilterMode.Point;
 
             app.canvas.aspectRatio = (float)app.canvas.texture.width / (float)app.canvas.texture.height;
             float newHeight = app.canvas.rect.width / app.canvas.aspectRatio;

@@ -1,10 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using System.IO;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using System;
-using UnityEngine.Rendering;
 
 namespace UnityEditor.PaintEditor
 {

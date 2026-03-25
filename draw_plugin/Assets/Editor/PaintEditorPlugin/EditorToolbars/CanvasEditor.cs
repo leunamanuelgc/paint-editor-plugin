@@ -35,7 +35,8 @@ namespace UnityEditor.PaintEditor
             aspectRatio = rect.width / rect.height;
 
             this.texture = texture;
-            texture.alphaIsTransparency = true;
+            this.texture.alphaIsTransparency = true;
+            this.texture.filterMode = FilterMode.Point;
 
             EmptyCanvas();
         }
@@ -101,6 +102,7 @@ namespace UnityEditor.PaintEditor
 
             texture = new Texture2D((int)size.x, (int)size.y, texture.format, true, false);
             texture.alphaIsTransparency = true;
+            texture.filterMode = FilterMode.Point;
 
             EmptyCanvas();
         }
@@ -186,7 +188,7 @@ namespace UnityEditor.PaintEditor
 
         public void DisplayGUI()
         {
-            EditorGUI.DrawTextureTransparent(rect, texture, ScaleMode.ScaleToFit, texture.width / texture.height);
+            EditorGUI.DrawTextureTransparent(rect, texture, ScaleMode.ScaleAndCrop);
         }
     }
 }

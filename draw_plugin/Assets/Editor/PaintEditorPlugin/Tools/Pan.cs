@@ -1,6 +1,3 @@
-
-
-using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace UnityEditor.PaintEditor
