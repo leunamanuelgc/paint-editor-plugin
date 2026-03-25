@@ -51,9 +51,13 @@ namespace UnityEditor.PaintEditor
 
             app.canvas.texture = new Texture2D(loadedTexture.width, loadedTexture.height, loadedTexture.format, true, false);
             Graphics.CopyTexture(loadedTexture, app.canvas.texture);
+            app.canvas.texture.alphaIsTransparency = true;
             app.canvas.texture.filterMode = FilterMode.Point;
 
+            app.canvas.size = new Vector2(app.canvas.texture.width, app.canvas.texture.height);
+            app.canvas.rect = new Rect(app.canvas.position, app.canvas.size);
             app.canvas.aspectRatio = (float)app.canvas.texture.width / (float)app.canvas.texture.height;
+
             float newHeight = app.canvas.rect.width / app.canvas.aspectRatio;
             app.canvas.rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - newHeight / 2, app.canvas.rect.width, newHeight);
         }

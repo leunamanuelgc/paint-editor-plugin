@@ -11,6 +11,8 @@ namespace UnityEditor.PaintEditor
 
         private Pan pan;
 
+        private Zoom zoom;
+
         public ITool currentTool { get; private set; }
         public ITool lastTool { get; private set; }
 
@@ -52,6 +54,7 @@ namespace UnityEditor.PaintEditor
             brush = new Brush(1, 100, Vector2.one, 0);
             eraser = new Eraser(1, 100, Vector2.one, 0);
             pan = new Pan(1f);
+            zoom = new Zoom(1f);
 
             currentTool = brush;
             lastTool = currentTool;
@@ -108,17 +111,6 @@ namespace UnityEditor.PaintEditor
                 currentTool = lastTool;
             }
 
-            if (currentTool is Pan && GUIUtility.hotControl == 0)
-            {
-                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Pan);
-
-                if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
-                {
-                    canvas.Move(e.delta * pan.speed);
-                    Repaint();
-                }
-            }
-
             if (canvas.rect.Contains(e.mousePosition))
             {
                 if (currentTool is Brush)
@@ -139,7 +131,19 @@ namespace UnityEditor.PaintEditor
                 }
             }
 
+            if (currentTool is Pan && GUIUtility.hotControl == 0)
+            {
+                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Pan);
+
+                if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
+                {
+                    canvas.Move(e.delta * pan.speed);
+                }
+            }
+
             displayFunctionsToolbar();
+
+            Repaint();
 
             EditorGUILayout.EndHorizontal();
 
@@ -176,6 +180,13 @@ namespace UnityEditor.PaintEditor
             if (EditorGUILayout.DropdownButton(new GUIContent("Pan"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
                 currentTool = pan;
+                lastTool = currentTool;
+                currentTool.Select();
+            }
+
+            if (EditorGUILayout.DropdownButton(new GUIContent("Zoom"), FocusType.Keyboard, EditorStyles.toolbarButton))
+            {
+                currentTool = zoom;
                 lastTool = currentTool;
                 currentTool.Select();
             }

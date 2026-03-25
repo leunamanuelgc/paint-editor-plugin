@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace UnityEditor.PaintEditor
@@ -8,6 +9,8 @@ namespace UnityEditor.PaintEditor
         private const float maxZoom = 5f;
 
         public float zoomLevel;
+
+        public static event Action<float> onZoomLevelChange;
 
         protected string prefixLabelText { get; set; }
 
@@ -24,7 +27,13 @@ namespace UnityEditor.PaintEditor
 
         private void DisplayOptionsGUI()
         {
-            zoomLevel = EditorGUILayout.Slider(new GUIContent(prefixLabelText), zoomLevel, minZoom, maxZoom);
+            var newZoomLevel = EditorGUILayout.Slider(new GUIContent(prefixLabelText), zoomLevel, minZoom, maxZoom);
+
+            if(newZoomLevel != zoomLevel)
+            {
+                zoomLevel = newZoomLevel;
+                onZoomLevelChange?.Invoke(zoomLevel);
+            }
         }
     }
 }

@@ -26,6 +26,8 @@ namespace UnityEditor.PaintEditor
 
         public Vector2 position { get; set; }
 
+        public Vector2 size { get; set; }
+
         public Texture2D texture { get; set; }
 
         public CanvasEditor(PaintEditorPlugin app, Rect rect, Texture2D texture) : base(app)
@@ -34,9 +36,13 @@ namespace UnityEditor.PaintEditor
             position = rect.position;
             aspectRatio = rect.width / rect.height;
 
+            this.size = rect.size;
+
             this.texture = texture;
             this.texture.alphaIsTransparency = true;
             this.texture.filterMode = FilterMode.Point;
+
+            Zoom.onZoomLevelChange += Resize;
 
             EmptyCanvas();
         }
@@ -100,11 +106,18 @@ namespace UnityEditor.PaintEditor
         {
             rect = new Rect(rect.position, size);
 
+            this.size = rect.size;
+
             texture = new Texture2D((int)size.x, (int)size.y, texture.format, true, false);
             texture.alphaIsTransparency = true;
             texture.filterMode = FilterMode.Point;
 
             EmptyCanvas();
+        }
+
+        public void Resize(float zoomLevel)
+        {
+            rect = new Rect(rect.position, size * zoomLevel);
         }
 
         public Vector2 PosInCanvas(float x, float y)
