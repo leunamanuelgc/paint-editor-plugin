@@ -43,6 +43,53 @@ namespace UnityEditor.PaintEditor
             texture.Apply();
         }
 
+        private bool IsPosOutOfBounds(Vector2 pos, Vector2 pos0, Vector2 pos1)
+        {
+            if (pos0.x < pos1.x && pos.x > pos1.x)
+            {
+                return true;
+            }
+            else if (pos0.x > pos1.x && pos.x < pos1.x)
+            {
+                return true;
+            }
+            else if (pos0.y < pos1.y && pos.y > pos1.y)
+            {
+                return true;
+            }
+            else if (pos0.y > pos1.y && pos.y < pos1.y)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void EvaluatePos(float a0, float b0, float a1, float mB, ref float a, out float b)
+        {
+            if (a0 != a1)
+                a += a0 < a1 ? 1 : -1;
+            b = mB * (a - a0) + b0;
+        }
+
+        private bool IsRectOverTexture(Rect point)
+        {
+            float sizeX = point.size.x;
+            float sizeY = point.size.y;
+
+            if (point.x + sizeX < 0 || point.y + sizeY < 0 || point.x > texture.width || point.y > texture.height)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public void Resize(Vector2 size)
+        {
+            rect = new Rect(rect.position, size);
+        }
+
         public Vector2 PosInCanvas(float x, float y)
         {
             float new_x = x - rect.x;
@@ -120,48 +167,6 @@ namespace UnityEditor.PaintEditor
                 }
                 texture.SetPixels((int)pixelsRect.x, (int)pixelsRect.y, (int)pixelsRect.width, (int)pixelsRect.height, colors);
             }
-        }
-
-        private bool IsPosOutOfBounds(Vector2 pos, Vector2 pos0, Vector2 pos1)
-        {
-            if (pos0.x < pos1.x && pos.x > pos1.x)
-            {
-                return true;
-            }
-            else if (pos0.x > pos1.x && pos.x < pos1.x)
-            {
-                return true;
-            }
-            else if (pos0.y < pos1.y && pos.y > pos1.y)
-            {
-                return true;
-            }
-            else if (pos0.y > pos1.y && pos.y < pos1.y)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void EvaluatePos(float a0, float b0, float a1, float mB, ref float a, out float b)
-        {
-            if (a0 != a1)
-                a += a0 < a1 ? 1 : -1;
-            b = mB * (a - a0) + b0;
-        }
-
-        private bool IsRectOverTexture(Rect point)
-        {
-            float sizeX = point.size.x;
-            float sizeY = point.size.y;
-
-            if (point.x + sizeX < 0 || point.y + sizeY < 0 || point.x > texture.width || point.y > texture.height)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         public void DisplayGUI()

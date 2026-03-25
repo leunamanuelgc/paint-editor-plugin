@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 
 namespace UnityEditor.PaintEditor
 {
-    public class PaintEditorPlugin : EditorWindow
+    public class PaintEditorPlugin : EditorSingleton<PaintEditorPlugin>
     {
         private Brush brush;
 
@@ -33,8 +33,10 @@ namespace UnityEditor.PaintEditor
             GetWindow(typeof(PaintEditorPlugin));
         }
 
-        public void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+
             mainMenu = new MainMenuEditor(this);
 
             history = new CommandHistory();
