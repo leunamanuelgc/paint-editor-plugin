@@ -5,8 +5,9 @@ namespace UnityEditor.PaintEditor
 {
     public class Zoom : ITool
     {
-        private const float minZoom = 0.001f;
-        private const float maxZoom = 5f;
+        private const float minZoom = 0.01f;
+        private const float maxZoom = 20f;
+        private const float speed = 0.01f;
 
         public float zoomLevel;
 
@@ -34,6 +35,12 @@ namespace UnityEditor.PaintEditor
                 zoomLevel = newZoomLevel;
                 onZoomLevelChange?.Invoke(zoomLevel);
             }
+        }
+
+        public void ChangeZoomLevel(float zoomChange)
+        {
+            zoomLevel = Mathf.Clamp(zoomLevel + zoomChange * speed, minZoom, maxZoom);
+            onZoomLevelChange?.Invoke(zoomLevel);
         }
     }
 }

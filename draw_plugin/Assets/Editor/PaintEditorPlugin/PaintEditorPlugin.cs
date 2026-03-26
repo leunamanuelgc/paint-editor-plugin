@@ -106,9 +106,38 @@ namespace UnityEditor.PaintEditor
             {
                 currentTool = pan;
             }
+            else if(e.control && e.type == EventType.MouseDown)
+            {
+                currentTool = zoom;
+            }
             else if (e.type == EventType.MouseUp)
             {
                 currentTool = lastTool;
+            }
+
+            if (currentTool is Pan)
+            {
+                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Pan);
+
+                if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
+                {
+                    canvas.Move(e.delta * pan.speed);
+                }
+            }
+
+            if (e.type == EventType.ScrollWheel)
+            {
+                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Zoom);
+                zoom.ChangeZoomLevel(-e.delta.y);
+            }
+            else if (currentTool is Zoom)
+            {
+                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Zoom);
+
+                if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
+                {
+                    zoom.ChangeZoomLevel(-e.delta.y);
+                }
             }
 
             if (canvas.rect.Contains(e.mousePosition))
@@ -128,16 +157,6 @@ namespace UnityEditor.PaintEditor
                 else if (currentTool is Eraser)
                 {
                     ExecuteCommand(new EraseCommand(this));
-                }
-            }
-
-            if (currentTool is Pan && GUIUtility.hotControl == 0)
-            {
-                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Pan);
-
-                if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
-                {
-                    canvas.Move(e.delta * pan.speed);
                 }
             }
 

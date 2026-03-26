@@ -108,7 +108,7 @@ namespace UnityEditor.PaintEditor
 
             this.size = rect.size;
 
-            texture = new Texture2D((int)size.x, (int)size.y, texture.format, true, false);
+            texture = new Texture2D((int)size.x, (int)size.y, TextureFormat.ARGB32, true, false);
             texture.alphaIsTransparency = true;
             texture.filterMode = FilterMode.Point;
 
