@@ -5,22 +5,13 @@ namespace UnityEditor.PaintEditor
 {
     public class PaintEditorPlugin : EditorSingleton<PaintEditorPlugin>
     {
-        private Brush brush;
-
-        private Eraser eraser;
-
-        private Pan pan;
-
-        private Zoom zoom;
-
-        public ITool currentTool { get; private set; }
-        public ITool lastTool { get; private set; }
-
         public Color currentColor { get; set; }
 
         public CanvasEditor canvas { get; set; }
 
-        public MainMenuEditor mainMenu { get; set; }
+        public MainMenu mainMenu { get; set; }
+
+        public Toolbox toolbox { get; set; }
 
         public CommandHistory history { get; set; }
 
@@ -37,7 +28,7 @@ namespace UnityEditor.PaintEditor
         {
             base.OnEnable();
 
-            mainMenu = new MainMenuEditor();
+            mainMenu = new MainMenu();
 
             history = new CommandHistory();
 
@@ -51,13 +42,7 @@ namespace UnityEditor.PaintEditor
 
             currentColor = Color.black;
 
-            brush = new Brush(1, 100, Vector2.one, 0);
-            eraser = new Eraser(1, 100, Vector2.one, 0);
-            pan = new Pan(1f);
-            zoom = new Zoom(1f);
-
-            currentTool = brush;
-            lastTool = currentTool;
+            toolbox = new Toolbox();
 
             Repaint();
         }
@@ -68,13 +53,13 @@ namespace UnityEditor.PaintEditor
 
             mainMenu.DisplayGUI();
 
-            displayOptionsToolbar(currentTool);
+            toolbox.currentTool.Select();
 
             EditorGUILayout.Space(15);
 
             EditorGUILayout.BeginHorizontal();
 
-            displayToolboxToolbar();
+            toolbox.DisplayGUI();
 
             EditorGUILayout.Space(400);
 
@@ -104,45 +89,45 @@ namespace UnityEditor.PaintEditor
 
             if (e.alt && e.type == EventType.MouseDown)
             {
-                currentTool = pan;
+                toolbox.currentTool = toolbox.pan;
             }
             else if(e.control && e.type == EventType.MouseDown)
             {
-                currentTool = zoom;
+                toolbox.currentTool = toolbox.zoom;
             }
             else if (e.type == EventType.MouseUp)
             {
-                currentTool = lastTool;
+                toolbox.currentTool = toolbox.lastTool;
             }
 
-            if (currentTool is Pan)
+            if (toolbox.currentTool is Pan)
             {
-                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Pan);
+                EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Pan);
 
                 if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
                 {
-                    canvas.Move(e.delta * pan.speed);
+                    canvas.Move(e.delta * toolbox.pan.speed);
                 }
             }
 
             if (e.type == EventType.ScrollWheel)
             {
-                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Zoom);
-                zoom.ChangeZoomLevel(-e.delta.y);
+                EditorGUIUtility.AddCursorRect(new Rect(0,0,this.position.width, this.position.height), MouseCursor.Zoom);
+                toolbox.zoom.ChangeZoomLevel(-e.delta.y);
             }
-            else if (currentTool is Zoom)
+            else if (toolbox.currentTool is Zoom)
             {
-                EditorGUIUtility.AddCursorRect(this.position, MouseCursor.Zoom);
+                EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
 
                 if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
                 {
-                    zoom.ChangeZoomLevel(-e.delta.y);
+                    toolbox.zoom.ChangeZoomLevel(-e.delta.y);
                 }
             }
 
             if (canvas.rect.Contains(e.mousePosition))
             {
-                if (currentTool is Brush)
+                if (toolbox.currentTool is Brush)
                 {
                     cursor.Render();
                 }
@@ -150,11 +135,11 @@ namespace UnityEditor.PaintEditor
 
             if ( (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) )
             {
-                if (currentTool is Brush && currentTool is not Eraser)
+                if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
                 {
                     ExecuteCommand(new DrawCommand());
                 }
-                else if (currentTool is Eraser)
+                else if (toolbox.currentTool is Eraser)
                 {
                     ExecuteCommand(new EraseCommand());
                 }
@@ -176,41 +161,6 @@ namespace UnityEditor.PaintEditor
             currentTool.Select();
 
             EditorGUILayout.EndHorizontal();
-        }
-
-        void displayToolboxToolbar()
-        {
-            EditorGUILayout.BeginVertical();
-
-            if (EditorGUILayout.DropdownButton(new GUIContent("Brush"), FocusType.Keyboard, EditorStyles.toolbarButton))
-            {
-                currentTool = brush;
-                lastTool = currentTool;
-                currentTool.Select();
-            }
-
-            if (EditorGUILayout.DropdownButton(new GUIContent("Eraser"), FocusType.Keyboard, EditorStyles.toolbarButton))
-            {
-                currentTool = eraser;
-                lastTool = currentTool;
-                currentTool.Select();
-            }
-
-            if (EditorGUILayout.DropdownButton(new GUIContent("Pan"), FocusType.Keyboard, EditorStyles.toolbarButton))
-            {
-                currentTool = pan;
-                lastTool = currentTool;
-                currentTool.Select();
-            }
-
-            if (EditorGUILayout.DropdownButton(new GUIContent("Zoom"), FocusType.Keyboard, EditorStyles.toolbarButton))
-            {
-                currentTool = zoom;
-                lastTool = currentTool;
-                currentTool.Select();
-            }
-
-            EditorGUILayout.EndVertical();
         }
 
         void displayFunctionsToolbar()

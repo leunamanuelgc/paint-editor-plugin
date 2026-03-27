@@ -24,12 +24,9 @@ namespace UnityEditor.PaintEditor
 
         private void DisplayOptionsGUI()
         {
+            EditorGUILayout.BeginHorizontal();
             speed = EditorGUILayout.Slider(new GUIContent(prefixLabelText), speed, minSpeed, maxSpeed);
-        }
-
-        public void MoveCanvas()
-        {
-
+            EditorGUILayout.EndHorizontal();
         }
     }
 }

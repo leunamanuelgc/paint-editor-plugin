@@ -11,7 +11,7 @@ namespace UnityEditor.PaintEditor
             SaveBackup();
 
             var app = PaintEditorPlugin.Instance;
-            Brush brush = (Brush)app.currentTool;
+            Brush brush = (Brush)app.toolbox.currentTool;
             app.canvas.Paint(app.currentColor, brush.size);
             return true;
         }

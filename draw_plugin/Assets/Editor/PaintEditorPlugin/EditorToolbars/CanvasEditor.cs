@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnityEditor.PaintEditor
 {
-    public class CanvasEditor
+    public class CanvasEditor : IToolbar
     {
         private float _aspectRatio;
         private Rect _rect;

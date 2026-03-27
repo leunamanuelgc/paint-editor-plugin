@@ -4,9 +4,9 @@ using System.IO;
 
 namespace UnityEditor.PaintEditor
 {
-    public class MainMenuEditor
+    public class MainMenu : IToolbar
     {
-        public MainMenuEditor() { }
+        public MainMenu() { }
 
         public void DisplayGUI()
         {

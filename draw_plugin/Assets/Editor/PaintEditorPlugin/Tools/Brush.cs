@@ -41,6 +41,8 @@ namespace UnityEditor.PaintEditor
 
         private void DisplayOptionsGUI()
         {
+            EditorGUILayout.BeginHorizontal();
+
             string[] brushTypeOptionsList = { ShapeType.box.ToString(), ShapeType.rect.ToString() };
             typeIndex = EditorGUILayout.Popup(typeIndex, brushTypeOptionsList);
             EditorGUILayout.PrefixLabel(prefixLabelText);
@@ -64,6 +66,8 @@ namespace UnityEditor.PaintEditor
                 size = newSize;
                 onSizeChange?.Invoke(newSize);
             }
+
+            EditorGUILayout.EndHorizontal();
         }
     }
 }
