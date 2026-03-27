@@ -4,9 +4,9 @@ using System.IO;
 
 namespace UnityEditor.PaintEditor
 {
-    public class MainMenuEditor : AEditorToolbar
+    public class MainMenuEditor
     {
-        public MainMenuEditor(PaintEditorPlugin app) : base(app) { }
+        public MainMenuEditor() { }
 
         public void DisplayGUI()
         {
@@ -34,7 +34,7 @@ namespace UnityEditor.PaintEditor
 
             if (path.Length != 0)
             {
-                byte[] bytes = app.canvas.texture.EncodeToPNG();
+                byte[] bytes = PaintEditorPlugin.Instance.canvas.texture.EncodeToPNG();
                 File.WriteAllBytes(path, bytes);
             }
         }
@@ -48,6 +48,8 @@ namespace UnityEditor.PaintEditor
 
             Texture2D loadedTexture = new Texture2D(1, 1);
             ImageConversion.LoadImage(loadedTexture, rawImageData);
+
+            var app = PaintEditorPlugin.Instance;
 
             app.canvas.texture = new Texture2D(loadedTexture.width, loadedTexture.height, loadedTexture.format, true, false);
             Graphics.CopyTexture(loadedTexture, app.canvas.texture);

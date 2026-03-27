@@ -4,12 +4,12 @@ namespace UnityEditor.PaintEditor
 {
     public class UndoCommand : ACommand
     {
-        public UndoCommand(PaintEditorPlugin app) : base(app) { }
+        public UndoCommand() { }
 
         public override bool Execute()
         {
             SaveBackup();
-            app.Undo();
+            PaintEditorPlugin.Instance.Undo();
             return false;
         }
     }

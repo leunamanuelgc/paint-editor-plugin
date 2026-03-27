@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnityEditor.PaintEditor
 {
-    public class CanvasEditor : AEditorToolbar
+    public class CanvasEditor
     {
         private float _aspectRatio;
         private Rect _rect;
@@ -30,7 +30,7 @@ namespace UnityEditor.PaintEditor
 
         public Texture2D texture { get; set; }
 
-        public CanvasEditor(PaintEditorPlugin app, Rect rect, Texture2D texture) : base(app)
+        public CanvasEditor(Rect rect, Texture2D texture)
         {
             this.rect = rect;
             position = rect.position;
@@ -175,7 +175,7 @@ namespace UnityEditor.PaintEditor
 
             PaintPixels(color, pos, size);
             texture.Apply();
-            app.Repaint();
+            PaintEditorPlugin.Instance.Repaint();
         }
 
         public void PaintPixels(Color color, Vector2 pos, Vector2 size)

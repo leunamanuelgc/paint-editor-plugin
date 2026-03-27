@@ -37,7 +37,7 @@ namespace UnityEditor.PaintEditor
         {
             base.OnEnable();
 
-            mainMenu = new MainMenuEditor(this);
+            mainMenu = new MainMenuEditor();
 
             history = new CommandHistory();
 
@@ -45,9 +45,9 @@ namespace UnityEditor.PaintEditor
             width = height = 256;
             Rect rect = new Rect(this.position.width / 2 - width / 2, this.position.height / 2 - height / 2, width, height);
             Texture2D texture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
-            canvas = new CanvasEditor(this, rect, texture);
+            canvas = new CanvasEditor(rect, texture);
 
-            cursor = new CustomCursor(this, Vector2Int.one);
+            cursor = new CustomCursor(Vector2Int.one);
 
             currentColor = Color.black;
 
@@ -99,7 +99,7 @@ namespace UnityEditor.PaintEditor
 
             if (e.control && e.keyCode == KeyCode.Z)
             {
-                ExecuteCommand(new UndoCommand(this));
+                ExecuteCommand(new UndoCommand());
             }
 
             if (e.alt && e.type == EventType.MouseDown)
@@ -152,11 +152,11 @@ namespace UnityEditor.PaintEditor
             {
                 if (currentTool is Brush && currentTool is not Eraser)
                 {
-                    ExecuteCommand(new DrawCommand(this));
+                    ExecuteCommand(new DrawCommand());
                 }
                 else if (currentTool is Eraser)
                 {
-                    ExecuteCommand(new EraseCommand(this));
+                    ExecuteCommand(new EraseCommand());
                 }
             }
 
