@@ -7,6 +7,9 @@ namespace UnityEditor.PaintEditor
     {
         private Rect rect;
 
+        private const string text = "Toolbox";
+        private const string tooltip = "Select one of the tools available";
+
         public ITool currentTool { get; set; }
         public ITool lastTool { get; set; }
 
@@ -20,7 +23,8 @@ namespace UnityEditor.PaintEditor
 
         public Toolbox()
         {
-            //rect = 
+            var app = PaintEditorPlugin.Instance;
+            rect = new Rect(10, 100, 50, 300);
 
             brush = new Brush(1, 100, Vector2.one, 0);
             eraser = new Eraser(1, 100, Vector2.one, 0);
@@ -33,32 +37,14 @@ namespace UnityEditor.PaintEditor
 
         public void DisplayGUI()
         {
-            EditorGUILayout.BeginVertical();
+            PaintEditorPlugin.Instance.BeginWindows();
 
-            //Create Window with rect size
-            //GUILayout.Window(1)
+            GUIContent content = new GUIContent(text, tooltip);
+            GUIStyle style = new GUIStyle(GUI.skin.window);
 
-            if (EditorGUILayout.DropdownButton(new GUIContent("Brush"), FocusType.Keyboard, EditorStyles.toolbarButton))
-            {
-                SelectTool(brush);
-            }
+            GUILayout.Window(2, rect, CreateWindow, content, style);
 
-            if (EditorGUILayout.DropdownButton(new GUIContent("Eraser"), FocusType.Keyboard, EditorStyles.toolbarButton))
-            {
-                SelectTool(eraser);
-            }
-
-            if (EditorGUILayout.DropdownButton(new GUIContent("Pan"), FocusType.Keyboard, EditorStyles.toolbarButton))
-            {
-                SelectTool(pan);
-            }
-
-            if (EditorGUILayout.DropdownButton(new GUIContent("Zoom"), FocusType.Keyboard, EditorStyles.toolbarButton))
-            {
-                SelectTool(zoom);
-            }
-
-            EditorGUILayout.EndVertical();
+            PaintEditorPlugin.Instance.EndWindows();
         }
 
         public void SelectTool(ITool tool)
@@ -66,6 +52,31 @@ namespace UnityEditor.PaintEditor
             currentTool = tool;
             lastTool = currentTool;
             currentTool.Select();
+        }
+
+        private void CreateWindow(int id)
+        {
+            if (GUILayout.Button(new GUIContent((Texture)EditorGUIUtility.Load(Brush.iconTextureName), Brush.tooltip)))
+            {
+                SelectTool(brush);
+            }
+
+            if (GUILayout.Button(new GUIContent((Texture)EditorGUIUtility.Load(Eraser.iconTextureName), Eraser.tooltip)))
+            {
+                SelectTool(eraser);
+            }
+
+            if (GUILayout.Button(new GUIContent((Texture) EditorGUIUtility.Load(Pan.iconTextureName), Pan.tooltip)))
+            {
+                SelectTool(pan);
+            }
+
+            if (GUILayout.Button(new GUIContent((Texture)EditorGUIUtility.Load(Zoom.iconTextureName), Zoom.tooltip)))
+            {
+                SelectTool(zoom);
+            }
+
+            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
     }
 }

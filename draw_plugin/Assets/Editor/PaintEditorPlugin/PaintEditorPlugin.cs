@@ -34,7 +34,7 @@ namespace UnityEditor.PaintEditor
 
             float width, height;
             width = height = 256;
-            Rect rect = new Rect(this.position.width / 2 - width / 2, this.position.height / 2 - height / 2, width, height);
+            Rect rect = new Rect(this.position.width / 2, this.position.height / 2, width, height);
             Texture2D texture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
             canvas = new CanvasEditor(rect, texture);
 
@@ -55,11 +55,11 @@ namespace UnityEditor.PaintEditor
 
             toolbox.currentTool.Select();
 
+            toolbox.DisplayGUI();
+
             EditorGUILayout.Space(15);
 
             EditorGUILayout.BeginHorizontal();
-
-            toolbox.DisplayGUI();
 
             EditorGUILayout.Space(400);
 

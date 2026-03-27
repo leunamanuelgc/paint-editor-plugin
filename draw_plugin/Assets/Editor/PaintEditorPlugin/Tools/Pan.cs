@@ -7,6 +7,10 @@ namespace UnityEditor.PaintEditor
         private const float minSpeed = .1f;
         private const float maxSpeed = 3f;
 
+        public static string name = "Pan";
+        public static string iconTextureName = "d_ViewToolMove";
+        public static string tooltip = "Drag to move the canvas";
+
         public float speed { get; set; }
 
         protected string prefixLabelText { get; set; }

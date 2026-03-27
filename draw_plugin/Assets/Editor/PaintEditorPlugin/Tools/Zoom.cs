@@ -9,6 +9,10 @@ namespace UnityEditor.PaintEditor
         private const float maxZoom = 20f;
         private const float speed = 0.01f;
 
+        public static string name = "Zoom";
+        public static string iconTextureName = "d_ViewToolZoom";
+        public static string tooltip = "Drag to add zoom to canvas";
+
         public float zoomLevel;
 
         public static event Action<float> onZoomLevelChange;
