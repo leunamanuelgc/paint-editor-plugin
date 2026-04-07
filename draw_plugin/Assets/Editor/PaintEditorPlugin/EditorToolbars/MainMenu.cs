@@ -25,6 +25,15 @@ namespace UnityEditor.PaintEditor
                 menu.ShowAsContext();
             }
 
+            if (EditorGUILayout.DropdownButton(new GUIContent("Edit"), FocusType.Keyboard, EditorStyles.toolbarButton))
+            {
+                GenericMenu menu = new GenericMenu();
+
+                menu.AddItem(new GUIContent("Undo"), true, PaintEditorPlugin.Instance.Undo);
+
+                menu.ShowAsContext();
+            }
+
             EditorGUILayout.EndHorizontal();
         }
 

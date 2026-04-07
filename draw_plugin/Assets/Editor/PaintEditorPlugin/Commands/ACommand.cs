@@ -29,21 +29,29 @@ namespace UnityEditor.PaintEditor
 
     public class CommandHistory
     {
-        private Stack<ACommand> history;
+        public LinkedList<ACommand> history { get; private set; }
+
+        private static int limit = 100;
 
         public CommandHistory() 
         {
-            history = new Stack<ACommand>();
+            history = new LinkedList<ACommand>();
         }
 
         public void Push(ACommand command)
         {
-            history.Push(command);
+            if(history.Count >= limit)
+            {
+                history.RemoveFirst();
+            }
+            history.AddLast(command);
         }
 
         public ACommand Pop()
         {
-            return history.Pop();
+            var item = history.Last.Value;
+            history.RemoveLast();
+            return item;
         }
     }
 }

@@ -133,15 +133,35 @@ namespace UnityEditor.PaintEditor
                 }
             }
 
-            if ( (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) )
+            if (e.type == EventType.MouseDown)
             {
                 if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
                 {
-                    ExecuteCommand(new DrawCommand());
+                    DrawCommand command = new DrawCommand();
+                    command.SaveBackup();
+                    history.Push(command);
+                    command.Execute();
                 }
                 else if (toolbox.currentTool is Eraser)
                 {
-                    ExecuteCommand(new EraseCommand());
+                    EraseCommand command = new EraseCommand();
+                    command.SaveBackup();
+                    history.Push(command);
+                    command.Execute();
+                }
+            }
+
+            if (e.type == EventType.MouseDrag)
+            {
+                if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+                {
+                    DrawCommand command = new DrawCommand();
+                    command.Execute();
+                }
+                else if (toolbox.currentTool is Eraser)
+                {
+                    EraseCommand command = new EraseCommand();
+                    command.Execute();
                 }
             }
 
@@ -152,15 +172,6 @@ namespace UnityEditor.PaintEditor
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndVertical();
-        }
-
-        void displayOptionsToolbar(ITool currentTool)
-        {
-            EditorGUILayout.BeginHorizontal();
-
-            currentTool.Select();
-
-            EditorGUILayout.EndHorizontal();
         }
 
         void displayFunctionsToolbar()
@@ -182,10 +193,14 @@ namespace UnityEditor.PaintEditor
 
         public void Undo()
         {
-            ACommand command = history.Pop();
-            if (command != null)
+            if (history.history.Count > 0)
             {
-                command.Undo();
+                ACommand command = history.Pop();
+
+                if (command != null)
+                {
+                    command.Undo();
+                }
             }
         }
     }

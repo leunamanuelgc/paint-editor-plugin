@@ -8,8 +8,6 @@ namespace UnityEditor.PaintEditor
 
         public override bool Execute()
         {
-            SaveBackup();
-
             var app = PaintEditorPlugin.Instance;
             Eraser eraser = (Eraser)app.toolbox.currentTool;
             app.canvas.Paint(new Color(0,0,0,0), eraser.size);
