@@ -82,7 +82,7 @@ namespace UnityEditor.PaintEditor
                 mainMenu.LoadImage();
             }
 
-            if (e.control && e.keyCode == KeyCode.Z)
+            if (e.control && e.keyCode == KeyCode.Z && e.type == EventType.KeyDown)
             {
                 ExecuteCommand(new UndoCommand());
             }
