@@ -203,5 +203,22 @@ namespace UnityEditor.PaintEditor
         {
             EditorGUI.DrawTextureTransparent(rect, texture, ScaleMode.ScaleAndCrop);
         }
+
+        public void Load(Texture2D newTexture)
+        {
+            texture = new Texture2D(newTexture.width, newTexture.height, newTexture.format, true, false);
+            Graphics.CopyTexture(newTexture, texture);
+            texture.alphaIsTransparency = true;
+            texture.filterMode = FilterMode.Point;
+
+            size = new Vector2(texture.width, texture.height);
+            rect = new Rect(position, size);
+            aspectRatio = (float)texture.width / (float)texture.height;
+
+            float newHeight = rect.width / aspectRatio;
+
+            var app = PaintEditorPlugin.Instance;
+            rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - newHeight / 2, app.canvas.rect.width, newHeight);
+        }
     }
 }
