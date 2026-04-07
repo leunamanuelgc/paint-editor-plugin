@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEngine.GridBrushBase;
 
 namespace UnityEditor.PaintEditor
 {
@@ -23,7 +22,6 @@ namespace UnityEditor.PaintEditor
 
         public Toolbox()
         {
-            var app = PaintEditorPlugin.Instance;
             rect = new Rect(10, 100, 50, 300);
 
             brush = new Brush(1, 100, Vector2.one, 0);
@@ -37,14 +35,10 @@ namespace UnityEditor.PaintEditor
 
         public void DisplayGUI()
         {
-            PaintEditorPlugin.Instance.BeginWindows();
-
             GUIContent content = new GUIContent(text, tooltip);
             GUIStyle style = new GUIStyle(GUI.skin.window);
 
-            GUILayout.Window(2, rect, CreateWindow, content, style);
-
-            PaintEditorPlugin.Instance.EndWindows();
+            GUILayout.Window(0, rect, CreateWindow, content, style);
         }
 
         public void SelectTool(ITool tool)
@@ -75,8 +69,6 @@ namespace UnityEditor.PaintEditor
             {
                 SelectTool(zoom);
             }
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
     }
 }

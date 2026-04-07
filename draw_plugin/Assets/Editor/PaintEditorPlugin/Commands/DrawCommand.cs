@@ -10,7 +10,7 @@ namespace UnityEditor.PaintEditor
         {
             var app = PaintEditorPlugin.Instance;
             Brush brush = (Brush)app.toolbox.currentTool;
-            app.canvas.Paint(app.currentColor, brush.size);
+            app.canvas.Paint(app.utils.currentColor, brush.size);
             return true;
         }
     }

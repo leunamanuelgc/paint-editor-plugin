@@ -1,12 +1,11 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.UIElements;
 
 namespace UnityEditor.PaintEditor
 {
     public class PaintEditorPlugin : EditorSingleton<PaintEditorPlugin>
     {
-        public Color currentColor { get; set; }
-
         public CanvasEditor canvas { get; set; }
 
         public MainMenu mainMenu { get; set; }
@@ -16,6 +15,9 @@ namespace UnityEditor.PaintEditor
         public CommandHistory history { get; set; }
 
         public CustomCursor cursor { get; set; }
+
+        public Utils utils { get; set; }
+
 
         [MenuItem("Tools/Raster Editor")]
         public static void CreateEditorWindow()
@@ -40,9 +42,10 @@ namespace UnityEditor.PaintEditor
 
             cursor = new CustomCursor(Vector2Int.one);
 
-            currentColor = Color.black;
-
             toolbox = new Toolbox();
+
+            utils = new Utils();
+            utils.currentColor = Color.black;
 
             Repaint();
         }
@@ -53,15 +56,17 @@ namespace UnityEditor.PaintEditor
 
             mainMenu.DisplayGUI();
 
+            EditorGUILayout.EndVertical();
+
             toolbox.currentTool.Select();
+
+            BeginWindows();
 
             toolbox.DisplayGUI();
 
-            EditorGUILayout.Space(15);
+            utils.DisplayGUI();
 
-            EditorGUILayout.BeginHorizontal();
-
-            EditorGUILayout.Space(400);
+            EndWindows();
 
             canvas.DisplayGUI();
 
@@ -165,22 +170,7 @@ namespace UnityEditor.PaintEditor
                 }
             }
 
-            displayFunctionsToolbar();
-
             Repaint();
-
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.EndVertical();
-        }
-
-        void displayFunctionsToolbar()
-        {
-            EditorGUILayout.BeginVertical();
-
-            currentColor = EditorGUILayout.ColorField(new GUIContent("Color"), currentColor, true, true, true);
-
-            EditorGUILayout.EndVertical();
         }
 
         public void ExecuteCommand(ACommand command)
