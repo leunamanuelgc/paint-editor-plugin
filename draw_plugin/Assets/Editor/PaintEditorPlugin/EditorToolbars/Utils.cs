@@ -5,6 +5,7 @@ namespace UnityEditor.PaintEditor
     public class Utils : IToolbar
     {
         private Rect rect;
+        private float width, height;
 
         private const string text = "Utils";
         private const string tooltip = "Change color";
@@ -14,13 +15,15 @@ namespace UnityEditor.PaintEditor
         public Utils()
         {
             var app = PaintEditorPlugin.Instance;
-            rect = new Rect(app.position.width - 220, 100, 200, 300);
+            width = 200;
+            height = 300;
+            rect = new Rect(app.position.width - (width + 20), 100, width, height);
         }
 
         public void DisplayGUI()
         {
             var app = PaintEditorPlugin.Instance;
-            rect = new Rect(app.position.width - 220, 100, 200, 300);
+            rect = new Rect(app.position.width - (width + 20), 100, width, height);
             GUIContent content = new GUIContent(text, tooltip);
             GUIStyle style = new GUIStyle(GUI.skin.window);
 
