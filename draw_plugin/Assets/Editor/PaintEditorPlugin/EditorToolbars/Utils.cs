@@ -18,6 +18,8 @@ namespace UnityEditor.PaintEditor
 
         internal List<Layer> layerList { get; set; }
 
+        public Layer selectedLayer { get; set; }
+
         public Utils()
         {
             var app = PaintEditorPlugin.Instance;
@@ -25,7 +27,8 @@ namespace UnityEditor.PaintEditor
             height = 300;
             rect = new Rect(app.position.width - (width + 20), 100, width, height);
 
-            layerList = new List<Layer>();
+            layerList = new List<Layer>() { new Layer(0) };
+            selectedLayer = layerList[0];
 
             layers = new ReorderableList(layerList, typeof(Layer), true, true, true, true);
             layers.drawElementCallback = DrawLayers;
@@ -33,14 +36,7 @@ namespace UnityEditor.PaintEditor
             layers.onAddCallback = AddLayer;
             layers.onRemoveCallback = RemoveLayer;
             layers.elementHeightCallback = (int index) => EditorGUIUtility.singleLineHeight + 10;
-
-
-            //m_ReorderableList.drawElementCallback = DrawSpriteSecondaryTextureElement;
-            //m_ReorderableList.onAddCallback = AddSpriteSecondaryTextureElement;
-            //m_ReorderableList.onRemoveCallback = RemoveSpriteSecondaryTextureElement;
-            //m_ReorderableList.onCanAddCallback = CanAddSpriteSecondaryTextureElement;
-            //m_ReorderableList.elementHeightCallback = (int index) => (EditorGUIUtility.singleLineHeight * 3) + 5;
-            //m_ReorderableList.onSelectCallback = OnSelectCallback;
+            layers.onSelectCallback = SelectLayer;
         }
 
         public void DisplayGUI()
@@ -70,6 +66,12 @@ namespace UnityEditor.PaintEditor
             {
                 var newValue = !layerList[index].isEnabled;
                 layerList[index].isEnabled = newValue;
+
+                if (newValue == false)
+                {
+                    //Hide texture (somehow). I think I might have to encode the data to save it and then restore it when it gets back to true or something.
+                    //layerList[index].texture 
+                }
             }
             
             layerList[index].name = EditorGUI.TextField(new Rect(rect.x + 30, rect.y + 4, 100, EditorGUIUtility.singleLineHeight), layerList[index].name);
@@ -83,12 +85,17 @@ namespace UnityEditor.PaintEditor
 
         private void AddLayer(ReorderableList list)
         {
-            layerList.Add(new Layer());
+            layerList.Add(new Layer(list.count));
         }
 
         private void RemoveLayer(ReorderableList list)
         {
+            layerList.RemoveAt(layerList.Count - 1);
+        }
 
+        private void SelectLayer(ReorderableList list)
+        {
+            selectedLayer = layerList[list.index];
         }
     }
 }

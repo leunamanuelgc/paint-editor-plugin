@@ -13,12 +13,12 @@ namespace UnityEditor.PaintEditor
 
         public string name { get; set; }
 
-        public Layer()
+        public Layer(int num)
         {
             var app = PaintEditorPlugin.Instance;
             texture = new Texture2D((int)app.canvas.size.x, (int)app.canvas.size.y, TextureFormat.ARGB32, true, false);
             isEnabled = true;
-            name = "New layer";
+            name = "Layer " + num;
         }
 
     }
