@@ -49,6 +49,8 @@ namespace UnityEditor.PaintEditor
 
         public void OnGUI()
         {
+            canvas.DisplayGUI();
+
             EditorGUILayout.BeginVertical();
 
             mainMenu.DisplayGUI();
@@ -65,7 +67,7 @@ namespace UnityEditor.PaintEditor
 
             EndWindows();
 
-            canvas.DisplayGUI();
+            
 
             Event e = Event.current;
 

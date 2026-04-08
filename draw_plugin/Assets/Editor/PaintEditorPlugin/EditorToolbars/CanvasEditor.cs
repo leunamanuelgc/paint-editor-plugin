@@ -215,11 +215,11 @@ namespace UnityEditor.PaintEditor
         {
             EditorGUI.DrawTextureTransparent(rect, bgTexture, ScaleMode.ScaleAndCrop);
 
-            foreach (var layer in layerList)
+            for (int i = layerList.Count - 1; i >= 0; i--)
             {
-                if (layer.isEnabled)
+                if (layerList[i].isEnabled)
                 {
-                    GUI.DrawTexture(rect, layer.texture);
+                    GUI.DrawTexture(rect, layerList[i].texture);
                 }
             }
         }
@@ -240,6 +240,26 @@ namespace UnityEditor.PaintEditor
             var app = PaintEditorPlugin.Instance;
             rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - newHeight / 2, app.canvas.rect.width, newHeight);
             selectedLayer.rect = rect;
+        }
+
+        public byte[] Save()
+        {
+            Texture2D finalTexture = new Texture2D((int)size.x, (int)size.y, TextureFormat.ARGB32, true);
+
+            for (int i = layerList.Count - 1; i >= 0; i--)
+            {
+                //This doesn't work. The two solutions that happens to occur to me are:
+                // First: set every pixel individually. It's simple to implement but really expensive due to the need of iterating to
+                // every single pixel in the texture. Maybe do it now but then change it.
+                // Second: create a compute shader to save the coloured pixels in one single texture. Would fix the expensive problem,
+                // but is harder to implement and I have no idea about it.
+
+                Color[] pixels = layerList[i].texture.GetPixels(0, 0, (int)size.x, (int)size.y);
+                pixels = Array.FindAll(pixels, col => col != new Color(0, 0, 0, 0));
+                finalTexture.SetPixels(0, 0, (int)size.x, (int)size.y, pixels);
+            }
+
+            return finalTexture.EncodeToPNG();
         }
 
         public void AddLayer(ReorderableList list)
