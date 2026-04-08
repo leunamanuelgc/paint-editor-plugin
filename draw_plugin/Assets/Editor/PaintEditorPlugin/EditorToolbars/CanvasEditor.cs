@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEditorInternal;
+using UnityEngine.Rendering;
 
 namespace UnityEditor.PaintEditor
 {
@@ -28,23 +31,37 @@ namespace UnityEditor.PaintEditor
 
         public Vector2 size { get; set; }
 
-        public Texture2D texture { get; set; }
+        public Texture2D bgTexture { get; set; }
 
-        public CanvasEditor(Rect rect, Texture2D texture)
+        public List<Layer> layerList { get; set; }
+
+        public Layer selectedLayer { get; set; }
+
+        public CanvasEditor(Rect rect)
         {
+            var app = PaintEditorPlugin.Instance;
+
             this.rect = rect;
             position = rect.position;
             aspectRatio = rect.width / rect.height;
 
             this.size = rect.size;
 
-            this.texture = texture;
-            this.texture.alphaIsTransparency = true;
-            this.texture.filterMode = FilterMode.Point;
+            layerList = new List<Layer>() { new Layer(0, rect) };
+            selectedLayer = layerList[0];
+
+            bgTexture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
+            bgTexture.alphaIsTransparency = true;
+            bgTexture.filterMode = FilterMode.Point;
+
+            Color[] transparent = new Color[bgTexture.width * bgTexture.height];
+            Array.Fill(transparent, new Color(0, 0, 0, 0));
+            bgTexture.SetPixels(transparent);
+            bgTexture.Apply();
 
             Zoom.onZoomLevelChange += Resize;
 
-            EmptyCanvas();
+            //EmptyCanvas();
         }
 
         private bool IsPosOutOfBounds(Vector2 pos, Vector2 pos0, Vector2 pos1)
@@ -81,20 +98,12 @@ namespace UnityEditor.PaintEditor
             float sizeX = point.size.x;
             float sizeY = point.size.y;
 
-            if (point.x + sizeX < 0 || point.y + sizeY < 0 || point.x > texture.width || point.y > texture.height)
+            if (point.x + sizeX < 0 || point.y + sizeY < 0 || point.x > selectedLayer.texture.width || point.y > selectedLayer.texture.height)
             {
                 return false;
             }
 
             return true;
-        }
-
-        private void EmptyCanvas()
-        {
-            Color[] transparent = new Color[texture.width * texture.height];
-            Array.Fill(transparent, new Color(0, 0, 0, 0));
-            texture.SetPixels(transparent);
-            texture.Apply();
         }
 
         public void Move(Vector2 delta)
@@ -108,11 +117,14 @@ namespace UnityEditor.PaintEditor
 
             this.size = rect.size;
 
-            texture = new Texture2D((int)size.x, (int)size.y, TextureFormat.ARGB32, true, false);
-            texture.alphaIsTransparency = true;
-            texture.filterMode = FilterMode.Point;
+            ResetLayers();
+        }
 
-            EmptyCanvas();
+        public void ResetLayers()
+        {
+            layerList.Clear();
+            layerList.Add(new Layer(0, rect));
+            selectedLayer = layerList[0];
         }
 
         public void Resize(float zoomLevel)
@@ -138,7 +150,7 @@ namespace UnityEditor.PaintEditor
 
         public Vector2 ConvertCanvasPosToTexturePos(Vector2 pos)
         {
-            Vector2 convertion = new Vector2(texture.width / rect.width, texture.height / rect.height);
+            Vector2 convertion = new Vector2(selectedLayer.texture.width / rect.width, selectedLayer.texture.height / rect.height);
 
             return new Vector2(pos.x * convertion.x, pos.y * convertion.y);
         }
@@ -174,7 +186,7 @@ namespace UnityEditor.PaintEditor
             }
 
             PaintPixels(color, pos, size);
-            texture.Apply();
+            selectedLayer.texture.Apply();
             PaintEditorPlugin.Instance.Repaint();
         }
 
@@ -186,8 +198,8 @@ namespace UnityEditor.PaintEditor
             {
                 pixelsRect.xMin = Mathf.Max(pixelsRect.xMin, 0);
                 pixelsRect.yMin = Mathf.Max(pixelsRect.yMin, 0);
-                pixelsRect.xMax = Mathf.Min(pixelsRect.xMax, texture.width);
-                pixelsRect.yMax = Mathf.Min(pixelsRect.yMax, texture.height);
+                pixelsRect.xMax = Mathf.Min(pixelsRect.xMax, selectedLayer.texture.width);
+                pixelsRect.yMax = Mathf.Min(pixelsRect.yMax, selectedLayer.texture.height);
 
                 Color[] colors;
                 colors = new Color[(int)pixelsRect.width * (int)pixelsRect.height];
@@ -195,30 +207,59 @@ namespace UnityEditor.PaintEditor
                 {
                     colors[j] = color;
                 }
-                texture.SetPixels((int)pixelsRect.x, (int)pixelsRect.y, (int)pixelsRect.width, (int)pixelsRect.height, colors);
+                selectedLayer.texture.SetPixels((int)pixelsRect.x, (int)pixelsRect.y, (int)pixelsRect.width, (int)pixelsRect.height, colors);
             }
         }
 
         public void DisplayGUI()
         {
-            EditorGUI.DrawTextureTransparent(rect, texture, ScaleMode.ScaleAndCrop);
+            EditorGUI.DrawTextureTransparent(rect, bgTexture, ScaleMode.ScaleAndCrop);
+
+            foreach (var layer in layerList)
+            {
+                GUI.DrawTexture(rect, layer.texture);
+            }
         }
 
         public void Load(Texture2D newTexture)
         {
-            texture = new Texture2D(newTexture.width, newTexture.height, newTexture.format, true, false);
-            Graphics.CopyTexture(newTexture, texture);
-            texture.alphaIsTransparency = true;
-            texture.filterMode = FilterMode.Point;
+            size = new Vector2(newTexture.width, newTexture.height);
+            aspectRatio = (float)newTexture.width / (float)newTexture.height;
 
-            size = new Vector2(texture.width, texture.height);
-            rect = new Rect(position, size);
-            aspectRatio = (float)texture.width / (float)texture.height;
+            ResetLayers();
+            selectedLayer.texture = new Texture2D(newTexture.width, newTexture.height, newTexture.format, true, false);
+            Graphics.CopyTexture(newTexture, selectedLayer.texture);
+            selectedLayer.texture.alphaIsTransparency = true;
+            selectedLayer.texture.filterMode = FilterMode.Point;
 
             float newHeight = rect.width / aspectRatio;
 
             var app = PaintEditorPlugin.Instance;
             rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - newHeight / 2, app.canvas.rect.width, newHeight);
+            selectedLayer.rect = rect;
+        }
+
+        public void AddLayer(ReorderableList list)
+        {
+            layerList.Add(new Layer(list.count, rect));
+        }
+
+        public void RemoveLayer(ReorderableList list)
+        {
+            var newIndex = (list.selectedIndices[0] - 1) >= 0 ? list.selectedIndices[0] - 1 : 0;
+            layerList.RemoveAt(list.selectedIndices[0]);
+            selectedLayer = layerList[newIndex];
+
+        }
+
+        public void SelectLayer(ReorderableList list)
+        {
+            selectedLayer = layerList[list.index];
+        }
+
+        public bool CanRemove(ReorderableList list)
+        {
+            return layerList.Count > 1;
         }
     }
 }

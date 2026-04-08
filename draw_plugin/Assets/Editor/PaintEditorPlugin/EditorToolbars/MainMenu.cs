@@ -43,7 +43,8 @@ namespace UnityEditor.PaintEditor
 
             if (path.Length != 0)
             {
-                byte[] bytes = PaintEditorPlugin.Instance.canvas.texture.EncodeToPNG();
+                //Guardar imagen tendrá que codificar todas las capas en una sola. Además, debería mover esta lógica al Canvas. De momento lo dejo así
+                byte[] bytes = PaintEditorPlugin.Instance.canvas.selectedLayer.texture.EncodeToPNG();
                 File.WriteAllBytes(path, bytes);
             }
         }

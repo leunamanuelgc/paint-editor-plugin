@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEditor;
-using UnityEditor.UIElements;
 
 namespace UnityEditor.PaintEditor
 {
@@ -34,15 +32,14 @@ namespace UnityEditor.PaintEditor
 
             history = new CommandHistory();
 
-            float width, height;
-            width = height = 256;
-            Rect rect = new Rect(this.position.width / 2, this.position.height / 2, width, height);
-            Texture2D texture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
-            canvas = new CanvasEditor(rect, texture);
+            toolbox = new Toolbox();
 
             cursor = new CustomCursor(Vector2Int.one);
 
-            toolbox = new Toolbox();
+            float width, height;
+            width = height = 256;
+            Rect rect = new Rect(this.position.width / 2, this.position.height / 2, width, height);
+            canvas = new CanvasEditor(rect);
 
             utils = new Utils();
             utils.currentColor = Color.black;

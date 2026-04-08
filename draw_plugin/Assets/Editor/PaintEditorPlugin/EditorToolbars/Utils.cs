@@ -16,10 +16,6 @@ namespace UnityEditor.PaintEditor
 
         public ReorderableList layers;
 
-        internal List<Layer> layerList { get; set; }
-
-        public Layer selectedLayer { get; set; }
-
         public Utils()
         {
             var app = PaintEditorPlugin.Instance;
@@ -27,16 +23,14 @@ namespace UnityEditor.PaintEditor
             height = 300;
             rect = new Rect(app.position.width - (width + 20), 100, width, height);
 
-            layerList = new List<Layer>() { new Layer(0) };
-            selectedLayer = layerList[0];
-
-            layers = new ReorderableList(layerList, typeof(Layer), true, true, true, true);
+            layers = new ReorderableList(app.canvas.layerList, typeof(Layer), true, true, true, true);
             layers.drawElementCallback = DrawLayers;
             layers.drawHeaderCallback = DrawHeader;
-            layers.onAddCallback = AddLayer;
-            layers.onRemoveCallback = RemoveLayer;
+            layers.onAddCallback = app.canvas.AddLayer;
+            layers.onRemoveCallback = app.canvas.RemoveLayer;
+            layers.onCanRemoveCallback = app.canvas.CanRemove;
+            layers.onSelectCallback = app.canvas.SelectLayer;
             layers.elementHeightCallback = (int index) => EditorGUIUtility.singleLineHeight + 10;
-            layers.onSelectCallback = SelectLayer;
         }
 
         public void DisplayGUI()
@@ -60,12 +54,13 @@ namespace UnityEditor.PaintEditor
 
         private void DrawLayers(Rect rect, int index, bool isActive, bool isFocused)
         {
-            var icon = layerList[index].isEnabled? Layer.iconTextureOn : Layer.iconTextureOff;
+            var app = PaintEditorPlugin.Instance;
+            var icon = app.canvas.layerList[index].isEnabled? Layer.iconTextureOn : Layer.iconTextureOff;
 
             if (GUI.Button(new Rect(rect.x, rect.y, 25, 25), new GUIContent((Texture)EditorGUIUtility.Load(icon))))
             {
-                var newValue = !layerList[index].isEnabled;
-                layerList[index].isEnabled = newValue;
+                var newValue = !app.canvas.layerList[index].isEnabled;
+                app.canvas.layerList[index].isEnabled = newValue;
 
                 if (newValue == false)
                 {
@@ -73,29 +68,14 @@ namespace UnityEditor.PaintEditor
                     //layerList[index].texture 
                 }
             }
-            
-            layerList[index].name = EditorGUI.TextField(new Rect(rect.x + 30, rect.y + 4, 100, EditorGUIUtility.singleLineHeight), layerList[index].name);
+
+            app.canvas.layerList[index].name = EditorGUI.TextField(new Rect(rect.x + 30, rect.y + 4, 100, EditorGUIUtility.singleLineHeight), app.canvas.layerList[index].name);
         }
 
         private void DrawHeader(Rect rect)
         {
             string name = "Layers";
             EditorGUI.LabelField(rect, name);
-        }
-
-        private void AddLayer(ReorderableList list)
-        {
-            layerList.Add(new Layer(list.count));
-        }
-
-        private void RemoveLayer(ReorderableList list)
-        {
-            layerList.RemoveAt(layerList.Count - 1);
-        }
-
-        private void SelectLayer(ReorderableList list)
-        {
-            selectedLayer = layerList[list.index];
         }
     }
 }
