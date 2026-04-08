@@ -217,7 +217,10 @@ namespace UnityEditor.PaintEditor
 
             foreach (var layer in layerList)
             {
-                GUI.DrawTexture(rect, layer.texture);
+                if (layer.isEnabled)
+                {
+                    GUI.DrawTexture(rect, layer.texture);
+                }
             }
         }
 

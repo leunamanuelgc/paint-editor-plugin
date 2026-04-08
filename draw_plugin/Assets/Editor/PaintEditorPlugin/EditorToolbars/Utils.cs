@@ -61,12 +61,6 @@ namespace UnityEditor.PaintEditor
             {
                 var newValue = !app.canvas.layerList[index].isEnabled;
                 app.canvas.layerList[index].isEnabled = newValue;
-
-                if (newValue == false)
-                {
-                    //Hide texture (somehow). I think I might have to encode the data to save it and then restore it when it gets back to true or something.
-                    //layerList[index].texture 
-                }
             }
 
             app.canvas.layerList[index].name = EditorGUI.TextField(new Rect(rect.x + 30, rect.y + 4, 100, EditorGUIUtility.singleLineHeight), app.canvas.layerList[index].name);
