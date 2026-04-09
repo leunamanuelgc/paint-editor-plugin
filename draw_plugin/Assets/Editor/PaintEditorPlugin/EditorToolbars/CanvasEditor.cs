@@ -245,21 +245,37 @@ namespace UnityEditor.PaintEditor
         public byte[] Save()
         {
             Texture2D finalTexture = new Texture2D((int)size.x, (int)size.y, TextureFormat.ARGB32, true);
+            Color[] transparent = new Color[(int)size.x * (int)size.y];
+            Array.Fill(transparent, new Color(0, 0, 0, 0));
+            finalTexture.SetPixels(transparent);
 
             for (int i = layerList.Count - 1; i >= 0; i--)
             {
-                //This doesn't work. The two solutions that happens to occur to me are:
-                // First: set every pixel individually. It's simple to implement but really expensive due to the need of iterating to
-                // every single pixel in the texture. Maybe do it now but then change it.
-                // Second: create a compute shader to save the coloured pixels in one single texture. Would fix the expensive problem,
-                // but is harder to implement and I have no idea about it.
-
-                Color[] pixels = layerList[i].texture.GetPixels(0, 0, (int)size.x, (int)size.y);
-                pixels = Array.FindAll(pixels, col => col != new Color(0, 0, 0, 0));
-                finalTexture.SetPixels(0, 0, (int)size.x, (int)size.y, pixels);
+                //Not ideal solution but will be changed later -> Probably with a shader
+                PaintLayerInTexture(i, finalTexture);
             }
 
             return finalTexture.EncodeToPNG();
+        }
+
+        private void PaintLayerInTexture(int index, Texture2D finalTexture)
+        {
+            for (int j = 0; j < size.y; j++)
+            {
+                for (int i = 0; i < size.x; i++)
+                {
+                    Color pixel = layerList[index].texture.GetPixel(i,j);
+                    if (pixel.a >= 1)
+                    {
+                        finalTexture.SetPixel(i, j, pixel);
+                    }
+                    else if(pixel.a > 0 && pixel.a < 1)
+                    {
+                        Color texturePixel = finalTexture.GetPixel(i, j);
+                        finalTexture.SetPixel(i, j, texturePixel + pixel);  //Adding pixels is not exactly how should work, but I'll let that be for now
+                    }
+                }
+            }
         }
 
         public void AddLayer(ReorderableList list)
