@@ -13,12 +13,12 @@
 //    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
 //}
 
-#pragma kernel FillWithRed
-
-RWTexture2D<float4> texture;
-
-[numthreads(8, 8, 1)]
-void FillWithRed(uint3 dtid : SV_DispatchThreadID)
-{
-    texture[dtid.xy] = float4(1, 0, 0, 1);
-}
+//#pragma kernel FillWithRed
+//
+//RWTexture2D<float4> texture;
+//
+//[numthreads(8, 8, 1)]
+//void FillWithRed(uint3 dtid : SV_DispatchThreadID)
+//{
+//    texture[dtid.xy] = float4(1, 0, 0, 1);
+//}
