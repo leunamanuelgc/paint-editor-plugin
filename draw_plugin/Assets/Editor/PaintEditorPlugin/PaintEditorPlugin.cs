@@ -16,7 +16,6 @@ namespace UnityEditor.PaintEditor
 
         public Utils utils { get; set; }
 
-
         [MenuItem("Tools/Raster Editor")]
         public static void CreateEditorWindow()
         {
@@ -66,8 +65,6 @@ namespace UnityEditor.PaintEditor
             utils.DisplayGUI();
 
             EndWindows();
-
-            
 
             Event e = Event.current;
 
