@@ -1,0 +1,23 @@
+#pragma kernel FillWithRed
+#pragma kernel FillTransparent
+
+RWTexture2D<float4> _T;
+uint2 _Resolution;
+
+[numthreads(8, 8, 1)]
+void FillWithRed(uint3 dtid : SV_DispatchThreadID)
+{
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
+    {
+        _T[dtid.xy] = float4(1, 0, 0, 1);
+    }
+}
+
+[numthreads(8, 8, 1)]
+void FillTransparent(uint3 dtid : SV_DispatchThreadID)
+{
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
+    {
+        _T[dtid.xy] = float4(0, 0, 0, 0);
+    }
+}
