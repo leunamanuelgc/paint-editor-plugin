@@ -1,0 +1,43 @@
+#pragma kernel FillWithRed
+#pragma kernel FillTransparent
+#pragma kernel Draw
+
+struct BrushData
+{
+    uint2 pos;
+    uint2 size;
+    float4 color;
+};
+
+RWTexture2D<float4> _Texture;
+StructuredBuffer<BrushData> _BrushBuffer;
+uint2 _Resolution;
+
+
+[numthreads(8, 8, 1)]
+void FillWithRed(uint3 dtid : SV_DispatchThreadID)
+{
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
+    {
+        _Texture[dtid.xy] = float4(1, 0, 0, 1);
+    }
+}
+
+[numthreads(8, 8, 1)]
+void FillTransparent(uint3 dtid : SV_DispatchThreadID)
+{
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
+    {
+        _Texture[dtid.xy] = float4(0, 0, 0, 0);
+    }
+}
+
+[numthreads(8, 8, 1)]
+void Draw(uint3 dtid : SV_DispatchThreadID)
+{
+    if (dtid.x < _BrushBuffer[0].size.x && dtid.y < _BrushBuffer[0].size.y)
+    {   
+        uint2 index = _BrushBuffer[0].pos.xy + dtid.xy;
+        _Texture[index] = float4(_BrushBuffer[0].color.r, _BrushBuffer[0].color.g, _BrushBuffer[0].color.b, _BrushBuffer[0].color.a);
+    }
+}
