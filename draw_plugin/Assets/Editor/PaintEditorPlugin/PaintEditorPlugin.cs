@@ -165,8 +165,6 @@ namespace UnityEditor.PaintEditor
                     command.Execute();
                 }
             }
-
-            Repaint();
         }
 
         public void ExecuteCommand(ACommand command)

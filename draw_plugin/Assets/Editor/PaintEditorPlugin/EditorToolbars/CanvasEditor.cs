@@ -279,7 +279,8 @@ namespace UnityEditor.PaintEditor
 
         public void AddLayer(ReorderableList list)
         {
-            layerList.Add(new Layer(list.count, rect));
+            Rect r = new Rect(rect.x, rect.y, size.x, size.y);
+            layerList.Add(new Layer(list.count, r));
         }
 
         public void RemoveLayer(ReorderableList list)
