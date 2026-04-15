@@ -1,52 +1,120 @@
-using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace UnityEditor.PaintEditor
 {
     public class Layer
     {
+        private struct PaintData
+        {
+            public Vector2Int pos;
+            public Vector2Int size;
+            public Color color;
+        }
+
+        private ComputeShader computeShader;
+        private ComputeBuffer buffer;
+        PaintData[] data;
+
+        private static readonly int textureId = Shader.PropertyToID("_Texture");
+        private static readonly int resolutionId = Shader.PropertyToID("_Resolution");
+        private static readonly int bufferId = Shader.PropertyToID("_Buffer");
+
         public static string iconTextureOn = "d_VisibilityOn";
         public static string iconTextureOff = "d_VisibilityOff";
 
         public Rect rect {  get; set; }
 
-        public Texture2D texture { get; set; }
+        public RenderTexture rTexture { get; set; }
 
         public bool isEnabled { get; set; }
 
         public string name { get; set; }
 
-        public Layer(int num)
-        {
-            var app = PaintEditorPlugin.Instance;
-            this.rect = app.canvas.rect;
-            texture = new Texture2D((int)app.canvas.size.x, (int)app.canvas.size.y, TextureFormat.ARGB32, true, false);
-            texture.alphaIsTransparency = true;
-            texture.filterMode = FilterMode.Point;
-            isEnabled = true;
-            name = "Layer " + num;
-            EmptyTexture();
-        }
-
         public Layer(int num, Rect rect)
         {
-            var app = PaintEditorPlugin.Instance;
             this.rect = rect;
-            texture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
-            texture.alphaIsTransparency = true;
-            texture.filterMode = FilterMode.Point;
-            isEnabled = true;
-            name = "Layer " + num;
-            EmptyTexture();
+            this.isEnabled = true;
+            this.name = "Layer " + num;
+
+            InitializeTexture();
+            InitializeComputeShader();
         }
 
-        private void EmptyTexture()
+        ~Layer()
         {
-            Color[] transparent = new Color[texture.width * texture.height];
-            Array.Fill(transparent, new Color(0, 0, 0, 0));
-            texture.SetPixels(transparent);
-            texture.Apply();
+            buffer.Release();
+            buffer = null;
         }
 
+        private void InitializeTexture()
+        {
+            rTexture = new RenderTexture((int)rect.width, (int)rect.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+            rTexture.filterMode = FilterMode.Point;
+            rTexture.enableRandomWrite = true;
+            rTexture.Create();
+        }
+
+        private void InitializeComputeShader()
+        {
+            computeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/Editor/PaintEditorPlugin/ComputePaint.compute");
+            buffer = new ComputeBuffer(1, Marshal.SizeOf<PaintData>());
+            data = new PaintData[1];
+            data[0].pos = Vector2Int.zero;
+            data[0].size = Vector2Int.one;
+            data[0].color = Color.black;
+        }
+
+        public void PaintTexture(Vector2Int pos0, Vector2Int pos1, Vector2Int size, Color color)
+        {
+            data[0].color = color;
+            data[0].size = size;
+
+            PlotLine(pos0.x, pos0.y, pos1.x, pos1.y);
+        }
+
+        private void PlotLine(int x0, int y0, int x1, int y1)
+        {
+            int dx = Mathf.Abs(x1 - x0);
+            int sx = x0 < x1 ? 1 : -1;
+            int dy = -Mathf.Abs(y1 - y0);
+            int sy = y0 < y1 ? 1 : -1;
+            int error = dx + dy;
+
+            while (true)
+            {
+                Plot(new Vector2Int(x0, y0));
+                int e2 = 2 * error;
+                if (e2 >= dy)
+                {
+                    if (x0 == x1) break;
+                    error += dy;
+                    x0 += sx;
+                }
+
+                if (e2 <= dx)
+                {
+                    if (y0 == y1) break;
+                    error += dx;
+                    y0 += sy;
+                }
+            }
+        }
+
+        private void Plot(Vector2Int pos)
+        {
+            data[0].pos = pos;
+            buffer.SetData(data);
+
+            int kernelId = computeShader.FindKernel("Plot");
+            var canvasSize = PaintEditorPlugin.Instance.canvas.size;
+            int groups = Mathf.CeilToInt(canvasSize.x / 8);
+            Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
+
+            computeShader.SetVector(resolutionId, resolution);
+            computeShader.SetTexture(kernelId, textureId, rTexture);
+            computeShader.SetBuffer(kernelId, bufferId, buffer);
+            computeShader.Dispatch(kernelId, groups, groups, 1); //I think this may lead to some errors with different resolutions
+        }
     }
 }

@@ -75,8 +75,6 @@ namespace UnityEditor.PaintEditor
 
             Rect position = new Rect(Event.current.mousePosition - size * Mathf.RoundToInt(zoomLevel) / 2, size * Mathf.CeilToInt(zoomLevel));
             GUI.DrawTexture(position, texture, ScaleMode.ScaleToFit, true);
-
-            PaintEditorPlugin.Instance.Repaint();
         }
     }
 }

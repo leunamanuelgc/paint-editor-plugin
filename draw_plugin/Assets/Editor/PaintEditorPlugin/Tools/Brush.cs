@@ -19,7 +19,7 @@ namespace UnityEditor.PaintEditor
 
         public int maxSize { get; set; }
 
-        public Vector2 size { get; set; }
+        public Vector2Int size { get; set; }
 
         public int typeIndex { get; set; }
 
@@ -27,7 +27,7 @@ namespace UnityEditor.PaintEditor
 
         public static event Action<Vector2Int> onSizeChange;
 
-        public Brush(int minSize, int maxSize, Vector2 size, int typeIndex)
+        public Brush(int minSize, int maxSize, Vector2Int size, int typeIndex)
         {
             this.minSize = minSize;
             this.maxSize = maxSize;

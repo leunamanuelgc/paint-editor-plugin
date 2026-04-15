@@ -37,7 +37,7 @@ void Draw(uint3 dtid : SV_DispatchThreadID)
 {
     if (dtid.x < _BrushBuffer[0].size.x && dtid.y < _BrushBuffer[0].size.y)
     {   
-        uint2 index = _BrushBuffer[0].pos.xy + dtid.xy;
+        uint2 index = _BrushBuffer[0].pos.xy + dtid.xy - _BrushBuffer[0].size.xy/2;
         _Texture[index] = float4(_BrushBuffer[0].color.r, _BrushBuffer[0].color.g, _BrushBuffer[0].color.b, _BrushBuffer[0].color.a);
     }
 }

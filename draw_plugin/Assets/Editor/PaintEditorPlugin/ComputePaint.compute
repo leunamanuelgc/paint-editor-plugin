@@ -1,0 +1,32 @@
+#pragma kernel FillTransparent
+#pragma kernel Plot
+
+struct BrushData
+{
+    uint2 pos;
+    uint2 size;
+    float4 color;
+};
+
+RWTexture2D<float4> _Texture;
+StructuredBuffer<BrushData> _Buffer;
+uint2 _Resolution;
+
+[numthreads(8, 8, 1)]
+void FillTransparent(uint3 dtid : SV_DispatchThreadID)
+{
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
+    {
+        _Texture[dtid.xy] = float4(0, 0, 0, 0);
+    }
+}
+
+[numthreads(8, 8, 1)]
+void Plot(uint3 dtid : SV_DispatchThreadID)
+{
+    if ((dtid.x < _Buffer[0].size.x && dtid.x < _Resolution.x) && (dtid.y < _Buffer[0].size.y && dtid.y < _Resolution.y))
+    {
+        uint2 index = _Buffer[0].pos.xy + dtid.xy - _Buffer[0].size.xy / 2;
+        _Texture[index] = float4(_Buffer[0].color.r, _Buffer[0].color.g, _Buffer[0].color.b, _Buffer[0].color.a);
+    }
+}

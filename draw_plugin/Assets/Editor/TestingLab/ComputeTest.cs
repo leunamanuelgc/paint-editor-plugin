@@ -1,13 +1,6 @@
-using PlasticGui.WorkspaceWindow.QueryViews.Branches;
-using System;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEditor;
-using UnityEditor.PaintEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 public class ComputeTest : EditorWindow
 {
@@ -60,6 +53,12 @@ public class ComputeTest : EditorWindow
 
         size = new Vector2Int(1, 1);
         col = Color.black;
+    }
+
+    private void OnDisable()
+    {
+        buffer.Release();
+        buffer = null;
     }
 
     private void OnGUI()

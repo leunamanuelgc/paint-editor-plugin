@@ -24,8 +24,8 @@ namespace UnityEditor.PaintEditor
         {
             rect = new Rect(10, 100, 50, 300);
 
-            brush = new Brush(1, 100, Vector2.one, 0);
-            eraser = new Eraser(1, 100, Vector2.one, 0);
+            brush = new Brush(1, 100, Vector2Int.one, 0);
+            eraser = new Eraser(1, 100, Vector2Int.one, 0);
             pan = new Pan(1f);
             zoom = new Zoom(1f);
 
