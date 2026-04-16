@@ -55,7 +55,8 @@ namespace UnityEditor.PaintEditor
 
             var rawImageData = File.ReadAllBytes(selectedImage);
 
-            Texture2D loadedTexture = new Texture2D(1, 1);
+            Texture2D loadedTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+            loadedTexture.alphaIsTransparency = true;
             ImageConversion.LoadImage(loadedTexture, rawImageData);
 
             var app = PaintEditorPlugin.Instance;

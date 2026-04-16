@@ -7,24 +7,9 @@ namespace UnityEditor.PaintEditor
 {
     public class CanvasEditor : IToolbar
     {
-        private float _aspectRatio;
-        private Rect _rect;
+       public float aspectRatio {  get; set; }
 
-        public float aspectRatio
-        {
-            get { return _aspectRatio; }
-            set
-            {
-                _aspectRatio = value;
-                _rect.height = _rect.width * aspectRatio;
-            }
-        }
-
-        public Rect rect
-        {
-            get { return _rect; }
-            set { _rect = value; }
-        }
+        public Rect rect { get; set; }
 
         public Vector2 position { get; set; }
 
@@ -78,7 +63,7 @@ namespace UnityEditor.PaintEditor
         public void ResetLayers()
         {
             layerList.Clear();
-            layerList.Add(new Layer(0, rect));
+            layerList.Add(new Layer(0, new Rect(rect.x, rect.y, size.x, size.y)));
             selectedLayer = layerList[0];
         }
 
@@ -102,20 +87,18 @@ namespace UnityEditor.PaintEditor
 
         public void Load(Texture2D newTexture)
         {
-            //size = new Vector2(newTexture.width, newTexture.height);
-            //aspectRatio = (float)newTexture.width / (float)newTexture.height;
+            size = new Vector2(newTexture.width, newTexture.height);
+            aspectRatio = (float)newTexture.width / (float)newTexture.height;
 
-            //ResetLayers();
-            //selectedLayer.texture = new Texture2D(newTexture.width, newTexture.height, newTexture.format, true, false);
-            //Graphics.CopyTexture(newTexture, selectedLayer.texture);
-            //selectedLayer.texture.alphaIsTransparency = true;
-            //selectedLayer.texture.filterMode = FilterMode.Point;
+            ResetLayers();
+            selectedLayer.InitializeTexture(newTexture.width, newTexture.height);
+            Graphics.Blit(newTexture, selectedLayer.rTexture);
 
-            //float newHeight = rect.width / aspectRatio;
+            float newHeight = rect.width / aspectRatio;
 
-            //var app = PaintEditorPlugin.Instance;
-            //rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - newHeight / 2, app.canvas.rect.width, newHeight);
-            //selectedLayer.rect = rect;
+            var app = PaintEditorPlugin.Instance;
+            rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - newHeight / 2, app.canvas.rect.width, newHeight);
+            selectedLayer.rect = rect;
         }
 
         public byte[] Save()
@@ -165,7 +148,6 @@ namespace UnityEditor.PaintEditor
             var newIndex = (list.selectedIndices[0] - 1) >= 0 ? list.selectedIndices[0] - 1 : 0;
             layerList.RemoveAt(list.selectedIndices[0]);
             selectedLayer = layerList[newIndex];
-
         }
 
         public void SelectLayer(ReorderableList list)

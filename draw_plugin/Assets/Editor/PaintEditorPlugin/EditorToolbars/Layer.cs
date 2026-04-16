@@ -37,7 +37,7 @@ namespace UnityEditor.PaintEditor
             this.isEnabled = true;
             this.name = "Layer " + num;
 
-            InitializeTexture();
+            InitializeTexture((int)rect.width, (int)rect.height);
             InitializeComputeShader();
         }
 
@@ -47,9 +47,9 @@ namespace UnityEditor.PaintEditor
             buffer = null;
         }
 
-        private void InitializeTexture()
+        public void InitializeTexture(int width, int height)
         {
-            rTexture = new RenderTexture((int)rect.width, (int)rect.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+            rTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
             rTexture.filterMode = FilterMode.Point;
             rTexture.enableRandomWrite = true;
             rTexture.Create();
