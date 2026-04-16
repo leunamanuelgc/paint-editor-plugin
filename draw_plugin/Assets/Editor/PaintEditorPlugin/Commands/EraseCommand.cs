@@ -13,7 +13,7 @@ namespace UnityEditor.PaintEditor
             var pos1 = app.PosInRectInt(app.MousePosition(), app.canvas.rect);
             var delta = app.DeltaInt();
             var pos0 = new Vector2Int(pos1.x - delta.x, pos1.y + delta.y);
-            app.canvas.selectedLayer.PaintTexture(pos0, pos1, eraser.size, new Color(0,0,0,0)); //Crear una clase para sacar cosas genericas como MousePosition en texture, 
+            app.canvas.selectedLayer.PaintTexture(pos0, pos1, eraser.size, new Color(0,0,0,0));
             return true;
         }
     }
