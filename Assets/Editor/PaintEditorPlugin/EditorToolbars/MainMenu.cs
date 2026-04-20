@@ -15,11 +15,11 @@ namespace UnityEditor.PaintEditor
             {
                 GenericMenu menu = new GenericMenu();
 
-                menu.AddItem(new GUIContent("New"), true, CreateNewImageWindow);
+                menu.AddItem(new GUIContent("New"), false, CreateNewImageWindow);
 
-                menu.AddItem(new GUIContent("Save"), true, SaveImage);
+                menu.AddItem(new GUIContent("Save"), false, SaveImage);
 
-                menu.AddItem(new GUIContent("Load"), true, LoadImage);
+                menu.AddItem(new GUIContent("Load"), false, LoadImage);
 
                 menu.ShowAsContext();
             }
@@ -28,7 +28,7 @@ namespace UnityEditor.PaintEditor
             {
                 GenericMenu menu = new GenericMenu();
 
-                menu.AddItem(new GUIContent("Undo"), true, PaintEditorPlugin.Instance.Undo);
+                menu.AddItem(new GUIContent("Undo"), false, PaintEditorPlugin.Instance.Undo);
 
                 menu.ShowAsContext();
             }
