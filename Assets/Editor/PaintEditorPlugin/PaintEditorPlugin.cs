@@ -217,5 +217,16 @@ namespace UnityEditor.PaintEditor
         {
             return "Assets/Editor/PaintEditorPlugin/ComputeShaders/";
         }
+
+        private void OnDisable()
+        {
+            foreach (var layer in canvas.layerList)
+            {
+                layer.Release();
+            }
+
+            canvas.layerList.Clear();
+            canvas.layerList = null;
+        }
     }
 }

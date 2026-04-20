@@ -116,6 +116,7 @@ namespace UnityEditor.PaintEditor
         public void RemoveLayer(ReorderableList list)
         {
             var newIndex = (list.selectedIndices[0] - 1) >= 0 ? list.selectedIndices[0] - 1 : 0;
+            layerList[list.selectedIndices[0]].Release();
             layerList.RemoveAt(list.selectedIndices[0]);
             selectedLayer = layerList[newIndex];
         }

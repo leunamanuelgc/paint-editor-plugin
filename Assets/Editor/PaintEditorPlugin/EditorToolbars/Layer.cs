@@ -45,8 +45,7 @@ namespace UnityEditor.PaintEditor
 
         ~Layer()
         {
-            buffer.Release();
-            buffer = null;
+            Release();
         }
 
         public void InitializeTexture(int width, int height)
@@ -117,6 +116,17 @@ namespace UnityEditor.PaintEditor
             computeShader.SetTexture(kernelId, textureId, rTexture);
             computeShader.SetBuffer(kernelId, bufferId, buffer);
             computeShader.Dispatch(kernelId, groups, groups, 1);
+        }
+
+        public void Release()
+        {
+            buffer.Release();
+            rTexture.Release();
+
+            buffer = null;
+            computeShader = null;
+            data = null;
+            rTexture = null;   
         }
     }
 }
