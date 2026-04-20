@@ -14,6 +14,7 @@ namespace UnityEditor.PaintEditor
         public static string name = "Brush";
         public static string iconTextureName = "d_Grid.PaintTool";
         public static string tooltip = "Draw pixels in canvas";
+        public static GUIContent guiContent = new GUIContent((Texture)EditorGUIUtility.Load(iconTextureName), tooltip);
 
         public int minSize { get; set; }
 

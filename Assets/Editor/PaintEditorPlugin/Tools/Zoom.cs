@@ -12,6 +12,7 @@ namespace UnityEditor.PaintEditor
         public static string name = "Zoom";
         public static string iconTextureName = "d_ViewToolZoom";
         public static string tooltip = "Drag to add zoom to canvas";
+        public static GUIContent guiContent = new GUIContent((Texture)EditorGUIUtility.Load(iconTextureName), tooltip);
 
         public float zoomLevel;
 

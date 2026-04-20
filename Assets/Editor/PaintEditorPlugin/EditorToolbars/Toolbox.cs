@@ -50,22 +50,22 @@ namespace UnityEditor.PaintEditor
 
         private void CreateWindow(int id)
         {
-            if (GUILayout.Button(new GUIContent((Texture)EditorGUIUtility.Load(Brush.iconTextureName), Brush.tooltip)))
+            if (GUILayout.Button(Brush.guiContent))
             {
                 SelectTool(brush);
             }
 
-            if (GUILayout.Button(new GUIContent((Texture)EditorGUIUtility.Load(Eraser.iconTextureName), Eraser.tooltip)))
+            if (GUILayout.Button(Eraser.guiContent))
             {
                 SelectTool(eraser);
             }
 
-            if (GUILayout.Button(new GUIContent((Texture) EditorGUIUtility.Load(Pan.iconTextureName), Pan.tooltip)))
+            if (GUILayout.Button(Pan.guiContent))
             {
                 SelectTool(pan);
             }
 
-            if (GUILayout.Button(new GUIContent((Texture)EditorGUIUtility.Load(Zoom.iconTextureName), Zoom.tooltip)))
+            if (GUILayout.Button(Zoom.guiContent))
             {
                 SelectTool(zoom);
             }

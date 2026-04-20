@@ -10,6 +10,7 @@ namespace UnityEditor.PaintEditor
         public static string name = "Pan";
         public static string iconTextureName = "d_ViewToolMove";
         public static string tooltip = "Drag to move the canvas";
+        public static GUIContent guiContent = new GUIContent((Texture)EditorGUIUtility.Load(iconTextureName), tooltip);
 
         public float speed { get; set; }
 
