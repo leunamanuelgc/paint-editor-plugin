@@ -37,13 +37,11 @@ namespace UnityEditor.PaintEditor
 
             float width, height;
             width = height = 256;
-            Rect rect = new Rect(this.position.width / 2, this.position.height / 2, width, height);
+            Rect rect = new Rect(0, 0, width, height);
             canvas = new CanvasEditor(rect);
 
             utils = new Utils();
             utils.currentColor = Color.black;
-
-            Repaint();
         }
 
         public void OnGUI()
