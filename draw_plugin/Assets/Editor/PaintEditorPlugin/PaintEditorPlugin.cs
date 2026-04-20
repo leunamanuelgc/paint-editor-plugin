@@ -214,5 +214,10 @@ namespace UnityEditor.PaintEditor
 
             return new Vector2(pos.x * convertion.x, pos.y * convertion.y);
         }
+
+        public string ComputePath()
+        {
+            return "Assets/Editor/PaintEditorPlugin/ComputeShaders/";
+        }
     }
 }

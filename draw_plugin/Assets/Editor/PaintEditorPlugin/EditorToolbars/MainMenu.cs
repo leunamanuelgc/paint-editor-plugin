@@ -39,13 +39,7 @@ namespace UnityEditor.PaintEditor
 
         public void SaveImage()
         {
-            var path = EditorUtility.SaveFilePanelInProject("SaveImage", "new_image", "png", "Save Image");
-
-            if (path.Length != 0)
-            {
-                byte[] bytes = PaintEditorPlugin.Instance.canvas.Save();
-                File.WriteAllBytes(path, bytes);
-            }
+            PaintEditorPlugin.Instance.ExecuteCommand(new SaveCommand());
         }
 
         public void LoadImage()

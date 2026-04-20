@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace UnityEditor.PaintEditor
 {
     public class UndoCommand : ACommand

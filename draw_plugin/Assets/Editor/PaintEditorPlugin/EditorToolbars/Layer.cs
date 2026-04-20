@@ -14,7 +14,7 @@ namespace UnityEditor.PaintEditor
 
         private ComputeShader computeShader;
         private ComputeBuffer buffer;
-        PaintData[] data;
+        private PaintData[] data;
 
         private static readonly int textureId = Shader.PropertyToID("_Texture");
         private static readonly int resolutionId = Shader.PropertyToID("_Resolution");
@@ -22,6 +22,8 @@ namespace UnityEditor.PaintEditor
 
         public static string iconTextureOn = "d_VisibilityOn";
         public static string iconTextureOff = "d_VisibilityOff";
+        private static string computePath = PaintEditorPlugin.Instance.ComputePath() + "ComputePaint.compute";
+        private static string computeFunc = "Plot";
 
         public Rect rect {  get; set; }
 
@@ -57,7 +59,7 @@ namespace UnityEditor.PaintEditor
 
         private void InitializeComputeShader()
         {
-            computeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/Editor/PaintEditorPlugin/ComputePaint.compute");
+            computeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computePath);
             buffer = new ComputeBuffer(1, Marshal.SizeOf<PaintData>());
             data = new PaintData[1];
             data[0].pos = Vector2Int.zero;
@@ -106,7 +108,7 @@ namespace UnityEditor.PaintEditor
             data[0].pos = pos;
             buffer.SetData(data);
 
-            int kernelId = computeShader.FindKernel("Plot");
+            int kernelId = computeShader.FindKernel(computeFunc);
             var canvasSize = PaintEditorPlugin.Instance.canvas.size;
             int groups = Mathf.CeilToInt(canvasSize.x / 8);
             Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
@@ -114,7 +116,7 @@ namespace UnityEditor.PaintEditor
             computeShader.SetVector(resolutionId, resolution);
             computeShader.SetTexture(kernelId, textureId, rTexture);
             computeShader.SetBuffer(kernelId, bufferId, buffer);
-            computeShader.Dispatch(kernelId, groups, groups, 1); //I think this may lead to some errors with different resolutions
+            computeShader.Dispatch(kernelId, groups, groups, 1);
         }
     }
 }

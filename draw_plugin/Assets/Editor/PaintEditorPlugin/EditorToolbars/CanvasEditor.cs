@@ -101,21 +101,21 @@ namespace UnityEditor.PaintEditor
             selectedLayer.rect = rect;
         }
 
-        public byte[] Save()
-        {
-            Texture2D finalTexture = new Texture2D((int)size.x, (int)size.y, TextureFormat.ARGB32, true);
-            Color[] transparent = new Color[(int)size.x * (int)size.y];
-            Array.Fill(transparent, new Color(0, 0, 0, 0));
-            finalTexture.SetPixels(transparent);
+        //public byte[] Save()
+        //{
+        //    Texture2D finalTexture = new Texture2D((int)size.x, (int)size.y, TextureFormat.ARGB32, true);
+        //    Color[] transparent = new Color[(int)size.x * (int)size.y];
+        //    Array.Fill(transparent, new Color(0, 0, 0, 0));
+        //    finalTexture.SetPixels(transparent);
 
-            for (int i = layerList.Count - 1; i >= 0; i--)
-            {
-                //Not ideal solution but will be changed later -> Probably with a shader
-                PaintLayerInTexture(i, finalTexture);
-            }
+        //    for (int i = layerList.Count - 1; i >= 0; i--)
+        //    {
+        //        //Not ideal solution but will be changed later -> Probably with a shader
+        //        PaintLayerInTexture(i, finalTexture);
+        //    }
 
-            return finalTexture.EncodeToPNG();
-        }
+        //    return finalTexture.EncodeToPNG();
+        //}
 
         private void PaintLayerInTexture(int index, Texture2D finalTexture)
         {

@@ -30,3 +30,4 @@ void Plot(uint3 dtid : SV_DispatchThreadID)
         _Texture[index] = float4(_Buffer[0].color.r, _Buffer[0].color.g, _Buffer[0].color.b, _Buffer[0].color.a);
     }
 }
+
