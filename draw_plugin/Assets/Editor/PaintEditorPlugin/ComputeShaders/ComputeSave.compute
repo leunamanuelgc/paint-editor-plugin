@@ -1,12 +1,11 @@
-#pragma kernel Save
+#pragma kernel ComposeColors
 
 RWTexture2D<float4> _Source;
 RWTexture2D<float4> _Destination;
 uint2 _Resolution;
 
-
 [numthreads(8,8,1)]
-void Save (uint3 dtid : SV_DispatchThreadID)
+void ComposeColors (uint3 dtid : SV_DispatchThreadID)
 {
     if (dtid.x < _Resolution.x & dtid.y < _Resolution.y)
     {

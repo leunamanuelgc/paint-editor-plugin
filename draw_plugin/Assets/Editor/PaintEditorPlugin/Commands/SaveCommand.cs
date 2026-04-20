@@ -13,7 +13,7 @@ namespace UnityEditor.PaintEditor
         private static readonly int resolutionId = Shader.PropertyToID("_Resolution");
 
         private static string computePath = PaintEditorPlugin.Instance.ComputePath() + "ComputeSave.compute";
-        private static string computeFunc = "Save";
+        private static string computeFunc = "ComposeColors";
 
         public SaveCommand() { }
 
