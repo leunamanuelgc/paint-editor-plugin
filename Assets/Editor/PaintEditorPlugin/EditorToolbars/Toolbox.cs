@@ -16,6 +16,8 @@ namespace UnityEditor.PaintEditor
 
         public Eraser eraser { get; private set; }
 
+        public BucketFill bucket { get; private set; }
+
         public Pan pan { get; private set; }
 
         public Zoom zoom { get; private set; }
@@ -26,6 +28,7 @@ namespace UnityEditor.PaintEditor
 
             brush = new Brush(1, 100, Vector2Int.one, 0);
             eraser = new Eraser(1, 100, Vector2Int.one, 0);
+            bucket = new BucketFill();
             pan = new Pan(1f);
             zoom = new Zoom(1f);
 
@@ -58,6 +61,11 @@ namespace UnityEditor.PaintEditor
             if (GUILayout.Button(Eraser.guiContent))
             {
                 SelectTool(eraser);
+            }
+
+            if (GUILayout.Button(BucketFill.guiContent))
+            {
+                SelectTool(bucket);
             }
 
             if (GUILayout.Button(Pan.guiContent))

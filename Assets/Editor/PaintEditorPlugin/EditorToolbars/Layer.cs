@@ -1,29 +1,77 @@
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 namespace UnityEditor.PaintEditor
 {
     public class Layer
     {
+        private const int threadSize = 8;
+
+        #region Paint
+
+        // Paint buffer data
         private struct PaintData
         {
-            public Vector2Int pos;
-            public Vector2Int size;
-            public Color color;
+            public Vector2Int pos { get; set; }
+            public Vector2Int size { get; set; }
+            public Color color { get; set; }
+
+            public PaintData(Vector2Int _pos, Vector2Int _size, Color _color)
+            {
+                pos = _pos; size = _size; color = _color;
+            }
         }
 
-        private ComputeShader computeShader;
-        private ComputeBuffer buffer;
-        private PaintData[] data;
-
+        private ComputeShader paintComputeShader;
+        private ComputeBuffer paintBuffer;
+        private PaintData[] paintData;
         private static readonly int textureId = Shader.PropertyToID("_Texture");
         private static readonly int resolutionId = Shader.PropertyToID("_Resolution");
         private static readonly int bufferId = Shader.PropertyToID("_Buffer");
+        private static string computePaintPath = PaintEditorPlugin.Instance.ComputePath() + "ComputePaint.compute";
+        private static string computePaintFunc = "PlotSize";
+
+        #endregion
+
+        #region Fill
+
+        private struct FillData
+        {
+            public int check;
+        }
+
+        // Span filling algorithm pixel data
+        private struct SFPixelData
+        {
+            public int x1 { get; set; }
+            public int x2 { get; set; }
+            public int y { get; set; }
+            public int dy { get; set; }
+
+            public SFPixelData(int _x1, int _x2, int _y, int _dy)
+            {
+                x1 = _x1;
+                x2 = _x2;
+                y = _y;
+                dy = _dy;
+            }
+        }
+
+        private ComputeShader fillComputeShader;
+        private ComputeBuffer fillBuffer;
+        private Texture2D onePixelTexture;
+        private FillData[] textureFillData;
+        private static readonly int fillColorId = Shader.PropertyToID("_FillColor");
+        private static readonly int lengthId = Shader.PropertyToID("_Length");
+        private static string computeFillPath = PaintEditorPlugin.Instance.ComputePath() + "ComputeFill.compute";
+        private static string computeFillFunc = "Fill";
+
+        #endregion
 
         public static string iconTextureOn = "d_VisibilityOn";
         public static string iconTextureOff = "d_VisibilityOff";
-        private static string computePath = PaintEditorPlugin.Instance.ComputePath() + "ComputePaint.compute";
-        private static string computeFunc = "Plot";
 
         public Rect rect {  get; set; }
 
@@ -39,8 +87,8 @@ namespace UnityEditor.PaintEditor
             this.isEnabled = true;
             this.name = "Layer " + num;
 
-            InitializeTexture((int)rect.width, (int)rect.height);
-            InitializeComputeShader();
+            InitializeTextures((int)rect.width, (int)rect.height);
+            InitializeComputeShaders();
         }
 
         ~Layer()
@@ -48,28 +96,132 @@ namespace UnityEditor.PaintEditor
             Release();
         }
 
-        public void InitializeTexture(int width, int height)
+        public void InitializeTextures(int width, int height)
         {
             rTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
             rTexture.filterMode = FilterMode.Point;
             rTexture.enableRandomWrite = true;
             rTexture.Create();
+
+            this.onePixelTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+            textureFillData = new FillData[rTexture.width * rTexture.height];
         }
 
-        private void InitializeComputeShader()
+        private void InitializeComputeShaders()
         {
-            computeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computePath);
-            buffer = new ComputeBuffer(1, Marshal.SizeOf<PaintData>());
-            data = new PaintData[1];
-            data[0].pos = Vector2Int.zero;
-            data[0].size = Vector2Int.one;
-            data[0].color = Color.black;
+            paintComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computePaintPath);
+            paintBuffer = new ComputeBuffer(1, Marshal.SizeOf<PaintData>());
+            paintData = new PaintData[1];
+            paintData[0] = new PaintData(Vector2Int.zero, Vector2Int.one, Color.black);
+
+            fillComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computeFillPath);
+            fillBuffer = new ComputeBuffer(rTexture.width * rTexture.height, Marshal.SizeOf<FillData>());
+
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            RenderTexture.active = rTexture;
+            onePixelTexture.ReadPixels(new Rect(x, y, 1, 1), 0, 0);
+            return onePixelTexture.GetPixels()[0];
+        }
+
+        public void Fill(Vector2Int pos, Color targetColor, Color fillColor)
+        {
+            int x = pos.x;
+            if (!Inside(pos.x, pos.y, targetColor)) return;
+
+            Queue<SFPixelData> pixels = new Queue<SFPixelData>();
+            pixels.Enqueue(new SFPixelData(x, x, pos.y, 1) );
+            pixels.Enqueue(new SFPixelData(x, x, pos.y - 1, -1) );
+
+            while (pixels.Count > 0)
+            {
+                SFPixelData px = pixels.Dequeue();
+                x = px.x1;
+                if (Inside(x, px.y, targetColor))
+                {
+                    while (Inside(x-1, px.y, targetColor))
+                    {
+                        RegisterTexturePixel(x - 1, px.y);
+                        x = x - 1;
+                    }
+
+                    if(x < px.x1)
+                    {
+                        pixels.Enqueue(new SFPixelData(x, px.x1 - 1, px.y - px.dy, -px.dy));
+                    }
+                }
+
+                while(px.x1 <= px.x2)
+                {
+                    while (Inside(px.x1, px.y, targetColor))
+                    {
+                        RegisterTexturePixel(px.x1, px.y);
+                        px.x1 += 1;
+                    }
+
+                    if (px.x1 > x)
+                    {
+                        pixels.Enqueue(new SFPixelData(x, px.x1 - 1, px.y + px.dy, px.dy));
+                    }
+
+                    if ((px.x1 - 1) > px.x2)
+                    {
+                        pixels.Enqueue(new SFPixelData(px.x2 + 1, px.x1 - 1, px.y - px.dy, -px.dy));
+                    }
+
+                    px.x1 += 1;
+
+                    while (px.x1 <= px.x2 && !Inside(px.x1, px.y, targetColor)) px.x1 += 1;
+
+                    x = px.x1;
+                }
+            }
+
+            ComputeFill(fillColor);
+        }
+
+        private void ComputeFill(Color color)
+        {   
+            int kernelId = paintComputeShader.FindKernel(computePaintFunc);
+            var canvasSize = PaintEditorPlugin.Instance.canvas.size;
+            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
+            Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
+
+            fillBuffer.SetData(textureFillData);
+            fillComputeShader.SetVector(resolutionId, resolution);
+            fillComputeShader.SetVector(fillColorId, color);
+            fillComputeShader.SetTexture(kernelId, textureId, rTexture);
+            fillComputeShader.SetBuffer(kernelId, bufferId, fillBuffer);
+            fillComputeShader.Dispatch(kernelId, groups, groups, 1);
+
+            for (int i = 0; i < textureFillData.Length; i++)
+            {
+                textureFillData[i].check = 0;
+            }
+        }
+
+        private bool Inside(int x, int y, Color targetColor)
+        {
+            if ((x >= 0 && x < rTexture.width) && (y >= 0 && y < rTexture.height))
+            {
+                if (textureFillData[rTexture.width * y + x].check == 1) return false;
+            
+                return GetPixel(x, y) == targetColor;
+            }
+            return false;
+        }
+
+        private void RegisterTexturePixel(int x, int y)
+        {
+            textureFillData[rTexture.width * y + x].check = 1;
         }
 
         public void PaintTexture(Vector2Int pos0, Vector2Int pos1, Vector2Int size, Color color)
         {
-            data[0].color = color;
-            data[0].size = size;
+            paintData[0].color = color;
+            paintData[0].size = size;
 
             PlotLine(pos0.x, pos0.y, pos1.x, pos1.y);
         }
@@ -104,28 +256,31 @@ namespace UnityEditor.PaintEditor
 
         private void Plot(Vector2Int pos)
         {
-            data[0].pos = pos;
-            buffer.SetData(data);
+            paintData[0].pos = pos;
+            paintBuffer.SetData(paintData);
 
-            int kernelId = computeShader.FindKernel(computeFunc);
+            int kernelId = paintComputeShader.FindKernel(computePaintFunc);
             var canvasSize = PaintEditorPlugin.Instance.canvas.size;
-            int groups = Mathf.CeilToInt(canvasSize.x / 8);
+            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
             Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
 
-            computeShader.SetVector(resolutionId, resolution);
-            computeShader.SetTexture(kernelId, textureId, rTexture);
-            computeShader.SetBuffer(kernelId, bufferId, buffer);
-            computeShader.Dispatch(kernelId, groups, groups, 1);
+            paintComputeShader.SetVector(resolutionId, resolution);
+            paintComputeShader.SetTexture(kernelId, textureId, rTexture);
+            paintComputeShader.SetBuffer(kernelId, bufferId, paintBuffer);
+            paintComputeShader.Dispatch(kernelId, groups, groups, 1);
         }
 
         public void Release()
         {
-            buffer.Release();
+            paintBuffer.Release();
+            fillBuffer.Release();
             rTexture.Release();
 
-            buffer = null;
-            computeShader = null;
-            data = null;
+            paintBuffer = null;
+            fillBuffer = null;
+            paintComputeShader = null;
+            textureFillData = null;
+            paintData = null;
             rTexture = null;   
         }
     }

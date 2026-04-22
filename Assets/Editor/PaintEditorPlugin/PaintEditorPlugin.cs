@@ -149,6 +149,16 @@ namespace UnityEditor.PaintEditor
                     history.Push(command);
                     command.Execute();
                 }
+                else if(toolbox.currentTool is BucketFill)
+                {
+                    if (canvas.rect.Contains(e.mousePosition))
+                    {
+                        FillCommand command = new FillCommand();
+                        command.SaveBackup();
+                        history.Push(command);
+                        command.Execute();
+                    }
+                }
             }
 
             if (e.type == EventType.MouseDrag)

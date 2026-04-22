@@ -1,0 +1,24 @@
+#pragma kernel Fill
+
+struct FillData
+{
+    uint check;
+};
+
+RWTexture2D<float4> _Texture;
+StructuredBuffer<FillData> _Buffer;
+float4 _FillColor;
+uint2 _Resolution;
+
+[numthreads(8, 8, 1)]
+void Fill(uint3 dtid : SV_DispatchThreadID)
+{
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
+    {
+        if (_Buffer[_Resolution.x * dtid.y + dtid.x].check == 1)
+        {
+            _Texture[dtid.xy] = _FillColor.rgba;
+        }
+        
+    }
+}

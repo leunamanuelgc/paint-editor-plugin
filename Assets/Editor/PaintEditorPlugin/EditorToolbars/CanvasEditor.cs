@@ -97,7 +97,7 @@ namespace UnityEditor.PaintEditor
             aspectRatio = (float)newTexture.width / (float)newTexture.height;
 
             ResetLayers();
-            selectedLayer.InitializeTexture(newTexture.width, newTexture.height);
+            selectedLayer.InitializeTextures(newTexture.width, newTexture.height);
             Graphics.Blit(newTexture, selectedLayer.rTexture);
 
             float newHeight = rect.width / aspectRatio;

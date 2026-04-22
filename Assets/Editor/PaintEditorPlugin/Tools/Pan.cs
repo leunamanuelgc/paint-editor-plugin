@@ -6,6 +6,7 @@ namespace UnityEditor.PaintEditor
     {
         private const float minSpeed = .1f;
         private const float maxSpeed = 3f;
+        private const string prefixSpeedLabel = "Pan speed";
 
         public static string name = "Pan";
         public static string iconTextureName = "d_ViewToolMove";
@@ -14,11 +15,8 @@ namespace UnityEditor.PaintEditor
 
         public float speed { get; set; }
 
-        protected string prefixLabelText { get; set; }
-
         public Pan(float speed)
         {
-            prefixLabelText = "Pan speed";
             this.speed = speed;
         }
 
@@ -30,7 +28,8 @@ namespace UnityEditor.PaintEditor
         private void DisplayOptionsGUI()
         {
             EditorGUILayout.BeginHorizontal();
-            speed = EditorGUILayout.Slider(new GUIContent(prefixLabelText), speed, minSpeed, maxSpeed);
+            EditorGUILayout.LabelField(guiContent);
+            speed = EditorGUILayout.Slider(new GUIContent(prefixSpeedLabel), speed, minSpeed, maxSpeed);
             EditorGUILayout.EndHorizontal();
         }
     }

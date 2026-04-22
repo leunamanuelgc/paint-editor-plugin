@@ -8,6 +8,7 @@ namespace UnityEditor.PaintEditor
         private const float minZoom = 0.01f;
         private const float maxZoom = 20f;
         private const float speed = 0.01f;
+        private const string prefixLevelLabel = "Zoom level";
 
         public static string name = "Zoom";
         public static string iconTextureName = "d_ViewToolZoom";
@@ -18,11 +19,8 @@ namespace UnityEditor.PaintEditor
 
         public static event Action<float> onZoomLevelChange;
 
-        protected string prefixLabelText { get; set; }
-
         public Zoom(float zoomLevel)
         {
-            prefixLabelText = "Zoom level";
             this.zoomLevel = zoomLevel;
         }
 
@@ -33,13 +31,17 @@ namespace UnityEditor.PaintEditor
 
         private void DisplayOptionsGUI()
         {
-            var newZoomLevel = EditorGUILayout.Slider(new GUIContent(prefixLabelText), zoomLevel, minZoom, maxZoom);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(guiContent);
+            
+            var newZoomLevel = EditorGUILayout.Slider(new GUIContent(prefixLevelLabel), zoomLevel, minZoom, maxZoom);
 
             if(newZoomLevel != zoomLevel)
             {
                 zoomLevel = newZoomLevel;
                 onZoomLevelChange?.Invoke(zoomLevel);
             }
+            EditorGUILayout.EndHorizontal();
         }
 
         public void ChangeZoomLevel(float zoomChange)

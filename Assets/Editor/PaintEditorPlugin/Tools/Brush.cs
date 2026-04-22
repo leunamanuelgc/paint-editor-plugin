@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static Codice.Client.Common.Connection.AskCredentialsToUser;
 
 namespace UnityEditor.PaintEditor
 {
@@ -11,10 +12,13 @@ namespace UnityEditor.PaintEditor
             rect,
         }
 
+        protected string prefixSizeLabel = "Brush size";
+
         public static string name = "Brush";
         public static string iconTextureName = "d_Grid.PaintTool";
         public static string tooltip = "Draw pixels in canvas";
         public static GUIContent guiContent = new GUIContent((Texture)EditorGUIUtility.Load(iconTextureName), tooltip);
+        public static event Action<Vector2Int> onSizeChange;
 
         public int minSize { get; set; }
 
@@ -24,34 +28,29 @@ namespace UnityEditor.PaintEditor
 
         public int typeIndex { get; set; }
 
-        protected string prefixLabelText { get; set; }
-
-        public static event Action<Vector2Int> onSizeChange;
-
         public Brush(int minSize, int maxSize, Vector2Int size, int typeIndex)
         {
             this.minSize = minSize;
             this.maxSize = maxSize;
             this.size = size;
             this.typeIndex = typeIndex;
-
-            prefixLabelText = "Brush size";
         }
 
-        public void Select()
+        public virtual void Select()
         {
-            DisplayOptionsGUI();
+            DisplayOptionsGUI(guiContent, prefixSizeLabel);
             onSizeChange?.Invoke(new Vector2Int((int)size.x, (int)size.y));
         }
 
-        private void DisplayOptionsGUI()
+        protected void DisplayOptionsGUI(GUIContent gui, string prefixSizeLabel)
         {
             EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(gui);
 
             string[] brushTypeOptionsList = { ShapeType.box.ToString(), ShapeType.rect.ToString() };
             typeIndex = EditorGUILayout.Popup(typeIndex, brushTypeOptionsList);
-            EditorGUILayout.PrefixLabel(prefixLabelText);
 
+            EditorGUILayout.PrefixLabel(prefixSizeLabel);
             Vector2Int newSize = Vector2Int.one;
             switch (typeIndex)
             {
