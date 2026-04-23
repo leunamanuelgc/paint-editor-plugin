@@ -6,24 +6,40 @@ struct BinData
     uint data;
 };
 
+struct TestData
+{
+    float4 col;
+};
+
 RWTexture2D<float4> _Texture;
 RWStructuredBuffer<BinData> _BinTextureBuffer;
+RWStructuredBuffer<TestData> _TestBuffer;
 StructuredBuffer<BinData> _FillBuffer;
 uint2 _Resolution;
 float4 _TargetColor;
 float4 _FillColor;
 
 [numthreads(8,8,1)]
-void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID)
+void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID, uint3 blockId : SV_GroupID)
 {
     if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
     {
-        if (_Texture[dtid.xy].r == _TargetColor.r && _Texture[dtid.xy].g == _TargetColor.g && _Texture[dtid.xy].b == _TargetColor.b && _Texture[dtid.xy].a == _TargetColor.a)
+        // Due to float's precision difference in cpu and gpu, some colors didn't get fill because they were "different".
+        // i.e: 0.09411765 from texture vs 0.09411766 from targetColor. To fix this, I clamp one decimal value from both color values.
+        float4 textureColor = _Texture[dtid.xy];
+        float4 targetColor = _TargetColor;
+        
+        textureColor = round(textureColor * 1000000) / 1000000;
+        targetColor = round(targetColor * 1000000) / 1000000;
+        
+        if (textureColor.r == targetColor.r && textureColor.g == targetColor.g && textureColor.b == targetColor.b && textureColor.a == targetColor.a)
         {
             _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 1;
+            _TestBuffer[dtid.y * _Resolution.x + dtid.x].col = textureColor;
             return;
         }
         _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 0;
+        _TestBuffer[dtid.y * _Resolution.x + dtid.x].col = textureColor;
     }
 }
 
