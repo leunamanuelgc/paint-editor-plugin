@@ -8,6 +8,7 @@ namespace UnityEditor.PaintEditor
         {
             SaveBackup();
             PaintEditorPlugin.Instance.Undo();
+            PaintEditorPlugin.Instance.Repaint();
             return false;
         }
     }

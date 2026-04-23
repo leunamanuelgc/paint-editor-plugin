@@ -13,6 +13,7 @@ namespace UnityEditor.PaintEditor
             var posInt = new Vector2Int((int)pos.x, (int)pos.y);
             var targetColor = app.canvas.selectedLayer.GetPixel(posInt.x, posInt.y);
             app.canvas.selectedLayer.Fill(posInt, targetColor, app.utils.currentColor);
+            app.Repaint();
             return false;
         }
     }

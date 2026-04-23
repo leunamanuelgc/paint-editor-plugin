@@ -23,7 +23,6 @@ namespace UnityEditor.PaintEditor
         public void Undo()
         {
             Graphics.CopyTexture(backup, PaintEditorPlugin.Instance.canvas.selectedLayer.rTexture);
-            PaintEditorPlugin.Instance.Repaint();
         }
 
         public abstract bool Execute();

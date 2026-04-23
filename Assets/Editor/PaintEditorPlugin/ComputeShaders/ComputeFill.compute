@@ -1,24 +1,40 @@
 #pragma kernel Fill
+#pragma kernel ComputeBinaryTexture
 
-struct FillData
+struct BinData
 {
-    uint check;
+    uint data;
 };
 
 RWTexture2D<float4> _Texture;
-StructuredBuffer<FillData> _Buffer;
-float4 _FillColor;
+RWStructuredBuffer<BinData> _BinTextureBuffer;
+StructuredBuffer<BinData> _FillBuffer;
 uint2 _Resolution;
+float4 _TargetColor;
+float4 _FillColor;
+
+[numthreads(8,8,1)]
+void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID)
+{
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
+    {
+        if (_Texture[dtid.xy].r == _TargetColor.r && _Texture[dtid.xy].g == _TargetColor.g && _Texture[dtid.xy].b == _TargetColor.b && _Texture[dtid.xy].a == _TargetColor.a)
+        {
+            _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 1;
+            return;
+        }
+        _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 0;
+    }
+}
 
 [numthreads(8, 8, 1)]
 void Fill(uint3 dtid : SV_DispatchThreadID)
 {
     if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
     {
-        if (_Buffer[_Resolution.x * dtid.y + dtid.x].check == 1)
+        if (_FillBuffer[_Resolution.x * dtid.y + dtid.x].data == 1)
         {
             _Texture[dtid.xy] = _FillColor.rgba;
         }
-        
     }
 }
