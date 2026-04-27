@@ -135,16 +135,26 @@ namespace UnityEditor.PaintEditor
 
             if (e.type == EventType.MouseDown)
             {
-                if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+                if(toolbox.currentTool is Move)
                 {
-                    DrawCommand command = new DrawCommand();
+                    MoveCommand command = new MoveCommand(canvas.selectedLayer, e.delta);
+                    command.SaveBackup();
+                    history.Push(command);
+                    command.Execute();
+                    Repaint();
+                }
+                else if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+                {
+                    Brush brush = (Brush)toolbox.currentTool;
+                    DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, utils.currentColor, brush.size);
                     command.SaveBackup();
                     history.Push(command);
                     command.Execute();
                 }
                 else if (toolbox.currentTool is Eraser)
                 {
-                    EraseCommand command = new EraseCommand();
+                    Eraser eraser = (Eraser)toolbox.currentTool;
+                    EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, eraser.size);
                     command.SaveBackup();
                     history.Push(command);
                     command.Execute();
@@ -153,24 +163,33 @@ namespace UnityEditor.PaintEditor
                 {
                     if (canvas.rect.Contains(e.mousePosition))
                     {
-                        FillCommand command = new FillCommand();
+                        FillCommand command = new FillCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, utils.currentColor);
                         command.SaveBackup();
                         history.Push(command);
                         command.Execute();
+                        Repaint();
                     }
                 }
             }
 
             if (e.type == EventType.MouseDrag)
             {
-                if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+                if (toolbox.currentTool is Move)
                 {
-                    DrawCommand command = new DrawCommand();
+                    MoveCommand command = new MoveCommand(canvas.selectedLayer, e.delta);
+                    command.Execute();
+                    Repaint();
+                }
+                else if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+                {
+                    Brush brush = (Brush)toolbox.currentTool;
+                    DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, utils.currentColor, brush.size);
                     command.Execute();
                 }
                 else if (toolbox.currentTool is Eraser)
                 {
-                    EraseCommand command = new EraseCommand();
+                    Eraser eraser = (Eraser)toolbox.currentTool;
+                    EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, eraser.size);
                     command.Execute();
                 }
             }
@@ -195,32 +214,6 @@ namespace UnityEditor.PaintEditor
                     command.Undo();
                 }
             }
-        }
-
-        public Vector2 MousePosition()
-        {
-            return Event.current.mousePosition;
-        }
-
-        public Vector2Int DeltaInt()
-        {
-            Vector2Int delta = new Vector2Int((int)Event.current.delta.x, (int)Event.current.delta.y);
-            return delta;
-        }
-
-        public Vector2Int PosInRectInt(Vector2 pos, Rect rect)
-        {
-            float new_x = pos.x - rect.x;
-            float new_y = rect.height - (pos.y - rect.y);
-
-            return new Vector2Int((int)new_x, (int)new_y);
-        }
-
-        public Vector2 ConvertPos(Vector2 pos, Rect r, Vector2 size)
-        {
-            Vector2 convertion = new Vector2(size.x / r.width, size.y / r.height);
-
-            return new Vector2(pos.x * convertion.x, pos.y * convertion.y);
         }
 
         public string ComputePath()

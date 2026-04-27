@@ -4,16 +4,27 @@ namespace UnityEditor.PaintEditor
 {
     public class FillCommand : ACommand
     {
-        public FillCommand() { }
+        private Layer layer;
+        private Rect canvas;
+        private Vector2 canvasSize;
+        private Vector2 position;
+        private Color color;
+
+        public FillCommand(Layer layer, Rect canvas, Vector2 canvasSize, Vector2 position, Color color)
+        {
+            this.layer = layer;
+            this.canvas = canvas;
+            this.canvasSize = canvasSize;
+            this.position = position;
+            this.color = color;
+        }
 
         public override bool Execute()
         {
-            var app = PaintEditorPlugin.Instance;
-            var pos = app.ConvertPos(app.PosInRectInt(app.MousePosition(), app.canvas.rect), app.canvas.rect, app.canvas.size);
+            var pos = ConvertPos(PosInRectInt(position - layer.offset, canvas), canvas, canvasSize);
             var posInt = new Vector2Int((int)pos.x, (int)pos.y);
-            var targetColor = app.canvas.selectedLayer.GetPixel(posInt.x, posInt.y);
-            app.canvas.selectedLayer.Fill(posInt, targetColor, app.utils.currentColor);
-            app.Repaint();
+            var targetColor = layer.GetPixel(posInt.x, posInt.y);
+            layer.Fill(posInt, targetColor, color);
             return false;
         }
     }

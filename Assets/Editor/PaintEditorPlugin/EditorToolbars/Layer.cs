@@ -81,20 +81,24 @@ namespace UnityEditor.PaintEditor
 
         public Rect rect {  get; set; }
 
+        public Vector2 offset {  get; set; }
+
         public RenderTexture rTexture { get; set; }
 
         public bool isEnabled { get; set; }
 
         public string name { get; set; }
 
-        public Layer(int num, Rect rect)
+        public Layer(int num, Rect rect, Vector2 offset)
         {
             this.rect = rect;
+            this.offset = offset;
             this.isEnabled = true;
             this.name = "Layer " + num;
 
             InitializeTextures((int)rect.width, (int)rect.height);
             InitializeComputeShaders();
+            
         }
 
         ~Layer()
@@ -138,8 +142,6 @@ namespace UnityEditor.PaintEditor
             if (GetPixel(pos.x, pos.y) == fillColor) return;
 
             binTextureData = GetBinaryTexture(targetColor);
-
-            SaveBinaryTexture();
 
             SpanFilling(pos);
 
@@ -330,6 +332,16 @@ namespace UnityEditor.PaintEditor
             paintComputeShader.SetTexture(kernelId, textureId, rTexture);
             paintComputeShader.SetBuffer(kernelId, paintBufferId, paintBuffer);
             paintComputeShader.Dispatch(kernelId, groups, groups, 1);
+        }
+
+        public void Move(Vector2 delta)
+        {
+            rect = new Rect(rect.x + delta.x, rect.y + delta.y, rect.width, rect.height);
+        }
+
+        public void AddOffset(Vector2 offset)
+        {
+            this.offset += offset;
         }
 
         public void Release()

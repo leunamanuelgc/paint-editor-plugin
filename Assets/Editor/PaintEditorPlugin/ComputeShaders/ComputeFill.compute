@@ -13,7 +13,6 @@ struct TestData
 
 RWTexture2D<float4> _Texture;
 RWStructuredBuffer<BinData> _BinTextureBuffer;
-RWStructuredBuffer<TestData> _TestBuffer;
 StructuredBuffer<BinData> _FillBuffer;
 uint2 _Resolution;
 float4 _TargetColor;
@@ -35,11 +34,9 @@ void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID, uint3 blockId : SV_G
         if (textureColor.r == targetColor.r && textureColor.g == targetColor.g && textureColor.b == targetColor.b && textureColor.a == targetColor.a)
         {
             _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 1;
-            _TestBuffer[dtid.y * _Resolution.x + dtid.x].col = textureColor;
             return;
         }
         _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 0;
-        _TestBuffer[dtid.y * _Resolution.x + dtid.x].col = textureColor;
     }
 }
 

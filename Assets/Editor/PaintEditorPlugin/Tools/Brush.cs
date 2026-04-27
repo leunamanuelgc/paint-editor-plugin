@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using static Codice.Client.Common.Connection.AskCredentialsToUser;
 
 namespace UnityEditor.PaintEditor
 {

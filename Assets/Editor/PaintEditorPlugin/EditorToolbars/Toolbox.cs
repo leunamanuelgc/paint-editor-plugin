@@ -12,6 +12,8 @@ namespace UnityEditor.PaintEditor
         public ITool currentTool { get; set; }
         public ITool lastTool { get; set; }
 
+        public Move move { get; private set; }
+
         public Brush brush { get; private set; }
 
         public Eraser eraser { get; private set; }
@@ -26,6 +28,7 @@ namespace UnityEditor.PaintEditor
         {
             rect = new Rect(10, 100, 50, 300);
 
+            move = new Move();
             brush = new Brush(1, 100, Vector2Int.one, 0);
             eraser = new Eraser(1, 100, Vector2Int.one, 0);
             bucket = new BucketFill();
@@ -53,6 +56,11 @@ namespace UnityEditor.PaintEditor
 
         private void CreateWindow(int id)
         {
+            if (GUILayout.Button(Move.guiContent))
+            {
+                SelectTool(move);
+            }
+
             if (GUILayout.Button(Brush.guiContent))
             {
                 SelectTool(brush);

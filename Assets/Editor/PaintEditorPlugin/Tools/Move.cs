@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace UnityEditor.PaintEditor
 {
-    public class BucketFill : ITool
+    public class Move : ITool
     {
-        public static string name = "Bucket fill";
-        public static string iconTextureName = "d_Grid.FillTool";
-        public static string tooltip = "Fill areas with a given color";
+        public static string name = "Move";
+        public static string iconTextureName = "d_MoveTool";
+        public static string tooltip = "Move layers through canvas";
         public static GUIContent guiContent = new GUIContent((Texture)EditorGUIUtility.Load(iconTextureName), tooltip);
 
         public void Select()

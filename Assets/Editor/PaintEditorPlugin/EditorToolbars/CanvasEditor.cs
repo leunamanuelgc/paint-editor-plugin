@@ -12,6 +12,8 @@ namespace UnityEditor.PaintEditor
 
         public Rect rect { get; set; }
 
+        public Rect[] borders { get; set; }
+
         public Vector2 size { get; set; }
 
         public Texture2D bgTexture { get; set; }
@@ -26,10 +28,11 @@ namespace UnityEditor.PaintEditor
 
             this.rect = new Rect(rect);
             aspectRatio = rect.width / rect.height;
-
             this.size = rect.size;
+            borders = new Rect[4];
+            InitBorders(this.rect, app.position);
 
-            layerList = new List<Layer>() { new Layer(0, rect) };
+            layerList = new List<Layer>() { new Layer(0, rect, Vector2.zero) };
             selectedLayer = layerList[0];
 
             bgTexture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
@@ -44,9 +47,26 @@ namespace UnityEditor.PaintEditor
             Zoom.onZoomLevelChange += Resize;
         }
 
+        private void InitBorders(Rect canvasRect, Rect windowRect)
+        {
+            borders[0] = new Rect(0, 0, canvasRect.x, windowRect.height);
+            borders[1] = new Rect(0, 0, windowRect.width, canvasRect.y);
+            float b2x = canvasRect.x + canvasRect.width;
+            borders[2] = new Rect(b2x, 0, windowRect.width - b2x, windowRect.height);
+            float b3y = canvasRect.y + canvasRect.height;
+            borders[3] = new Rect(0, b3y, windowRect.width, windowRect.height - b3y);
+        }
+
         public void Move(Vector2 delta)
         {
             rect = new Rect(rect.position + delta, rect.size);
+            foreach(var layer in layerList)
+            {
+                layer.Move(delta);
+            }
+
+            var windowRect = PaintEditorPlugin.Instance.position;
+            InitBorders(rect, windowRect);
         }
 
         public void Reinitialize(Vector2 size)
@@ -61,7 +81,7 @@ namespace UnityEditor.PaintEditor
         public void ResetLayers()
         {
             layerList.Clear();
-            layerList.Add(new Layer(0, new Rect(rect.x, rect.y, size.x, size.y)));
+            layerList.Add(new Layer(0, new Rect(rect.x, rect.y, size.x, size.y), Vector2.zero));
             selectedLayer = layerList[0];
         }
 
@@ -75,8 +95,9 @@ namespace UnityEditor.PaintEditor
             // Fix for the canvas starting at a point that is not the center
             if (start)
             {
-                var rect = PaintEditorPlugin.Instance.position;
-                this.rect = new Rect(rect.width / 2 - this.rect.width / 2, rect.height / 2 - this.rect.height / 2, this.rect.width, this.rect.height);
+                var windowRect = PaintEditorPlugin.Instance.position;
+                Move(new Vector2(windowRect.width / 2 - this.rect.width / 2, windowRect.height / 2 - this.rect.height / 2));
+                InitBorders(this.rect, windowRect);
                 start = false;
             }
 
@@ -86,8 +107,13 @@ namespace UnityEditor.PaintEditor
             {
                 if (layerList[i].isEnabled)
                 {
-                    GUI.DrawTexture(rect, layerList[i].rTexture);
+                    GUI.DrawTexture(layerList[i].rect, layerList[i].rTexture);
                 }
+            }
+
+            foreach(var border in borders)
+            {
+                EditorGUI.DrawRect(border, new Color(0.2f, 0.2f, 0.2f, 1f));
             }
         }
 
@@ -110,7 +136,7 @@ namespace UnityEditor.PaintEditor
         public void AddLayer(ReorderableList list)
         {
             Rect r = new Rect(rect.x, rect.y, size.x, size.y);
-            layerList.Add(new Layer(list.count, r));
+            layerList.Add(new Layer(list.count, r, Vector2.zero));
         }
 
         public void RemoveLayer(ReorderableList list)
