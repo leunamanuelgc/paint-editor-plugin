@@ -73,7 +73,7 @@ namespace UnityEditor.PaintEditor
 
             if (e.control && e.keyCode == KeyCode.S && e.type == EventType.KeyDown)
             {
-                mainMenu.SaveImage();
+                ExecuteCommand(new SaveCommand());
             }
 
             if (e.control && e.keyCode == KeyCode.L && e.type == EventType.KeyDown)
@@ -132,7 +132,6 @@ namespace UnityEditor.PaintEditor
                     cursor.Render();
                 }
             }
-
 
             if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
             {

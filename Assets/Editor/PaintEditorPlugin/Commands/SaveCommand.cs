@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -21,13 +22,18 @@ namespace UnityEditor.PaintEditor
         {
             var path = EditorUtility.SaveFilePanelInProject("SaveImage", "new_image", "png", "Save Image");
 
-            if (path != null)
+            try
             {
                 var app = PaintEditorPlugin.Instance;
                 RenderTexture result = InitializeTexture((int)app.canvas.realSize.x, (int)app.canvas.realSize.y);
                 byte[] bytes = ComputeSaveLayers(app.canvas.layerList, result);
                 File.WriteAllBytes(path, bytes);
             }
+            catch
+            {
+                Debug.Log($"Save cancelled: Empty path name");
+            }
+
             return false;
         }
 
