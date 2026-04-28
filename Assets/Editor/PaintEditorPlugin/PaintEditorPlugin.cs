@@ -78,7 +78,7 @@ namespace UnityEditor.PaintEditor
 
             if (e.control && e.keyCode == KeyCode.L && e.type == EventType.KeyDown)
             {
-                mainMenu.LoadImage();
+                ExecuteCommand(new LoadCommand());
             }
 
             if (e.control && e.keyCode == KeyCode.Z && e.type == EventType.KeyDown)

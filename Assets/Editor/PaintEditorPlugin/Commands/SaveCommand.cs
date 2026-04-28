@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -31,9 +30,9 @@ namespace UnityEditor.PaintEditor
             }
             catch
             {
-                Debug.Log($"Save cancelled: Empty path name");
+                Debug.Log("Save cancelled: Empty path name");
+                return false;
             }
-
             return false;
         }
 
