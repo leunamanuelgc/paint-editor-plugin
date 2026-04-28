@@ -21,7 +21,7 @@ namespace UnityEditor.PaintEditor
 
         public override bool Execute()
         {
-            var pos = ConvertPos(PosInRectInt(position, layer.rect), canvas, canvasSize);
+            var pos = ConvertPos(PosInRectInt(position - layer.offset, canvas), canvas, canvasSize);
             var posInt = new Vector2Int((int)pos.x, (int)pos.y);
             var targetColor = layer.GetPixel(posInt.x, posInt.y);
             layer.Fill(posInt, targetColor, color);

@@ -79,9 +79,9 @@ namespace UnityEditor.PaintEditor
         public static string iconTextureOn = "d_VisibilityOn";
         public static string iconTextureOff = "d_VisibilityOff";
 
-        private static int layerExtraSizeMultiplier = 6;
-
         public Rect rect {  get; set; }
+
+        public Vector2 offset {  get; set; }
 
         public RenderTexture rTexture { get; set; }
 
@@ -89,17 +89,16 @@ namespace UnityEditor.PaintEditor
 
         public string name { get; set; }
 
-        public Layer(int num, Rect rect)
+        public Layer(int num, Rect rect, Vector2 offset)
         {
-            float x = rect.x - rect.width * layerExtraSizeMultiplier / 2 + rect.width / 2;
-            float y = rect.y - rect.height * layerExtraSizeMultiplier / 2 + rect.height / 2;
-
-            this.rect = new Rect(x, y, rect.width * layerExtraSizeMultiplier, rect.height * layerExtraSizeMultiplier);
+            this.rect = rect;
+            this.offset = offset;
             this.isEnabled = true;
             this.name = "Layer " + num;
 
-            InitializeTextures((int)rect.width * layerExtraSizeMultiplier, (int)rect.height * layerExtraSizeMultiplier);
+            InitializeTextures((int)rect.width, (int)rect.height);
             InitializeComputeShaders();
+            
         }
 
         ~Layer()
@@ -152,10 +151,10 @@ namespace UnityEditor.PaintEditor
         private BinData[] GetBinaryTexture(Color targetColor)
         {
             int kernelId = fillComputeShader.FindKernel(computeBinTextureFunc);
-            //var canvasSize = PaintEditorPlugin.Instance.canvas.size;
-            int groups = Mathf.CeilToInt(rect.size.x / threadSize);
+            var canvasSize = PaintEditorPlugin.Instance.canvas.size;
+            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
 
-            fillComputeShader.SetVector(resolutionId, new Vector4(rect.size.x, rect.size.y));
+            fillComputeShader.SetVector(resolutionId, new Vector4(canvasSize.x, canvasSize.y));
             fillComputeShader.SetVector(targetColorId, targetColor);
             fillComputeShader.SetTexture(kernelId, textureId, rTexture);
             fillComputeShader.SetBuffer(kernelId, binaryBufferId, binTextureBuffer);
@@ -265,8 +264,9 @@ namespace UnityEditor.PaintEditor
         private void ComputeFill(Color color)
         {   
             int kernelId = fillComputeShader.FindKernel(computeFillFunc);
-            int groups = Mathf.CeilToInt(rect.size.x / threadSize);
-            Vector4 resolution = new Vector4(rect.size.x, rect.size.y);
+            var canvasSize = PaintEditorPlugin.Instance.canvas.size;
+            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
+            Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
 
             fillBuffer.SetData(textureFillData);
             fillComputeShader.SetVector(resolutionId, resolution);
@@ -324,8 +324,9 @@ namespace UnityEditor.PaintEditor
             paintBuffer.SetData(paintData);
 
             int kernelId = paintComputeShader.FindKernel(computePaintFunc);
-            int groups = Mathf.CeilToInt(rect.size.x / threadSize);
-            Vector4 resolution = new Vector4(rect.size.x, rect.size.y);
+            var canvasSize = PaintEditorPlugin.Instance.canvas.size;
+            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
+            Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
 
             paintComputeShader.SetVector(resolutionId, resolution);
             paintComputeShader.SetTexture(kernelId, textureId, rTexture);
@@ -336,6 +337,11 @@ namespace UnityEditor.PaintEditor
         public void Move(Vector2 delta)
         {
             rect = new Rect(rect.x + delta.x, rect.y + delta.y, rect.width, rect.height);
+        }
+
+        public void AddOffset(Vector2 offset)
+        {
+            this.offset += offset;
         }
 
         public void Release()

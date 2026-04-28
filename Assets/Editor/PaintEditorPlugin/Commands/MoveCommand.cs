@@ -15,6 +15,7 @@ namespace UnityEditor.PaintEditor
         public override bool Execute()
         {            
             layer.Move(delta);
+            layer.AddOffset(delta);
             return true;
         }
     }

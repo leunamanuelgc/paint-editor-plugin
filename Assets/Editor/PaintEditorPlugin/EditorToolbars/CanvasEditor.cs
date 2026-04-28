@@ -32,7 +32,7 @@ namespace UnityEditor.PaintEditor
             borders = new Rect[4];
             InitBorders(this.rect, app.position);
 
-            layerList = new List<Layer>() { new Layer(0, rect) };
+            layerList = new List<Layer>() { new Layer(0, rect, Vector2.zero) };
             selectedLayer = layerList[0];
 
             bgTexture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
@@ -81,7 +81,7 @@ namespace UnityEditor.PaintEditor
         public void ResetLayers()
         {
             layerList.Clear();
-            layerList.Add(new Layer(0, new Rect(rect.x, rect.y, size.x, size.y)));
+            layerList.Add(new Layer(0, new Rect(rect.x, rect.y, size.x, size.y), Vector2.zero));
             selectedLayer = layerList[0];
         }
 
@@ -101,7 +101,7 @@ namespace UnityEditor.PaintEditor
                 start = false;
             }
 
-            EditorGUI.DrawTextureTransparent(rect, bgTexture);
+            EditorGUI.DrawTextureTransparent(rect, bgTexture, ScaleMode.ScaleAndCrop);
 
             for (int i = layerList.Count - 1; i >= 0; i--)
             {
@@ -136,7 +136,7 @@ namespace UnityEditor.PaintEditor
         public void AddLayer(ReorderableList list)
         {
             Rect r = new Rect(rect.x, rect.y, size.x, size.y);
-            layerList.Add(new Layer(list.count, r));
+            layerList.Add(new Layer(list.count, r, Vector2.zero));
         }
 
         public void RemoveLayer(ReorderableList list)

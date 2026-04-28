@@ -6,6 +6,11 @@ struct BinData
     uint data;
 };
 
+struct TestData
+{
+    float4 col;
+};
+
 RWTexture2D<float4> _Texture;
 RWStructuredBuffer<BinData> _BinTextureBuffer;
 StructuredBuffer<BinData> _FillBuffer;
@@ -14,7 +19,7 @@ float4 _TargetColor;
 float4 _FillColor;
 
 [numthreads(8,8,1)]
-void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID)
+void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID, uint3 blockId : SV_GroupID)
 {
     if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
     {
