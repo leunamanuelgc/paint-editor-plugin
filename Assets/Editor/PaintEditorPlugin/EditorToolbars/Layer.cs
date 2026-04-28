@@ -81,7 +81,7 @@ namespace UnityEditor.PaintEditor
 
         public Rect rect {  get; set; }
 
-        public Vector2 offset {  get; set; }
+        public Vector2 realSize { get; set; }
 
         public RenderTexture rTexture { get; set; }
 
@@ -89,16 +89,15 @@ namespace UnityEditor.PaintEditor
 
         public string name { get; set; }
 
-        public Layer(int num, Rect rect, Vector2 offset)
+        public Layer(int num, Rect rect)
         {
-            this.rect = rect;
-            this.offset = offset;
+            this.rect = new Rect(rect.position, rect.size * PaintEditorPlugin.Instance.GetZoomLevel());
+            this.realSize = rect.size;
             this.isEnabled = true;
             this.name = "Layer " + num;
 
             InitializeTextures((int)rect.width, (int)rect.height);
             InitializeComputeShaders();
-            
         }
 
         ~Layer()
@@ -151,7 +150,7 @@ namespace UnityEditor.PaintEditor
         private BinData[] GetBinaryTexture(Color targetColor)
         {
             int kernelId = fillComputeShader.FindKernel(computeBinTextureFunc);
-            var canvasSize = PaintEditorPlugin.Instance.canvas.size;
+            var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
             int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
 
             fillComputeShader.SetVector(resolutionId, new Vector4(canvasSize.x, canvasSize.y));
@@ -264,7 +263,7 @@ namespace UnityEditor.PaintEditor
         private void ComputeFill(Color color)
         {   
             int kernelId = fillComputeShader.FindKernel(computeFillFunc);
-            var canvasSize = PaintEditorPlugin.Instance.canvas.size;
+            var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
             int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
             Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
 
@@ -324,7 +323,7 @@ namespace UnityEditor.PaintEditor
             paintBuffer.SetData(paintData);
 
             int kernelId = paintComputeShader.FindKernel(computePaintFunc);
-            var canvasSize = PaintEditorPlugin.Instance.canvas.size;
+            var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
             int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
             Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
 
@@ -339,9 +338,9 @@ namespace UnityEditor.PaintEditor
             rect = new Rect(rect.x + delta.x, rect.y + delta.y, rect.width, rect.height);
         }
 
-        public void AddOffset(Vector2 offset)
+        public void Resize(Vector2 newSize)
         {
-            this.offset += offset;
+            rect = new Rect(rect.position, newSize);
         }
 
         public void Release()

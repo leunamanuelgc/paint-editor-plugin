@@ -24,7 +24,7 @@ namespace UnityEditor.PaintEditor
             if (path != null)
             {
                 var app = PaintEditorPlugin.Instance;
-                RenderTexture result = InitializeTexture((int)app.canvas.size.x, (int)app.canvas.size.y);
+                RenderTexture result = InitializeTexture((int)app.canvas.realSize.x, (int)app.canvas.realSize.y);
                 byte[] bytes = ComputeSaveLayers(app.canvas.layerList, result);
                 File.WriteAllBytes(path, bytes);
             }

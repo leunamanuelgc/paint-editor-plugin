@@ -113,7 +113,7 @@ namespace UnityEditor.PaintEditor
             if (e.type == EventType.ScrollWheel)
             {
                 EditorGUIUtility.AddCursorRect(new Rect(0,0,this.position.width, this.position.height), MouseCursor.Zoom);
-                toolbox.zoom.ChangeZoomLevel(-e.delta.y);
+                SetZoom(-e.delta.y);
             }
             else if (toolbox.currentTool is Zoom)
             {
@@ -121,7 +121,7 @@ namespace UnityEditor.PaintEditor
 
                 if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
                 {
-                    toolbox.zoom.ChangeZoomLevel(-e.delta.y);
+                    SetZoom(-e.delta.y);
                 }
             }
 
@@ -135,18 +135,10 @@ namespace UnityEditor.PaintEditor
 
             if (e.type == EventType.MouseDown)
             {
-                if(toolbox.currentTool is Move)
-                {
-                    MoveCommand command = new MoveCommand(canvas.selectedLayer, e.delta);
-                    command.SaveBackup();
-                    history.Push(command);
-                    command.Execute();
-                    Repaint();
-                }
-                else if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+                if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
                 {
                     Brush brush = (Brush)toolbox.currentTool;
-                    DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, utils.currentColor, brush.size);
+                    DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size);
                     command.SaveBackup();
                     history.Push(command);
                     command.Execute();
@@ -154,7 +146,7 @@ namespace UnityEditor.PaintEditor
                 else if (toolbox.currentTool is Eraser)
                 {
                     Eraser eraser = (Eraser)toolbox.currentTool;
-                    EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, eraser.size);
+                    EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, eraser.size);
                     command.SaveBackup();
                     history.Push(command);
                     command.Execute();
@@ -163,7 +155,7 @@ namespace UnityEditor.PaintEditor
                 {
                     if (canvas.rect.Contains(e.mousePosition))
                     {
-                        FillCommand command = new FillCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, utils.currentColor);
+                        FillCommand command = new FillCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor);
                         command.SaveBackup();
                         history.Push(command);
                         command.Execute();
@@ -174,22 +166,16 @@ namespace UnityEditor.PaintEditor
 
             if (e.type == EventType.MouseDrag)
             {
-                if (toolbox.currentTool is Move)
-                {
-                    MoveCommand command = new MoveCommand(canvas.selectedLayer, e.delta);
-                    command.Execute();
-                    Repaint();
-                }
-                else if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+                if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
                 {
                     Brush brush = (Brush)toolbox.currentTool;
-                    DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, utils.currentColor, brush.size);
+                    DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size);
                     command.Execute();
                 }
                 else if (toolbox.currentTool is Eraser)
                 {
                     Eraser eraser = (Eraser)toolbox.currentTool;
-                    EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.size, e.mousePosition, eraser.size);
+                    EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, eraser.size);
                     command.Execute();
                 }
             }
@@ -230,6 +216,16 @@ namespace UnityEditor.PaintEditor
 
             canvas.layerList.Clear();
             canvas.layerList = null;
+        }
+
+        public float GetZoomLevel()
+        {
+            return toolbox.zoom.zoomLevel;
+        }
+
+        public void SetZoom(float zoom)
+        {
+            toolbox.zoom.ChangeZoomLevel(zoom);
         }
     }
 }
