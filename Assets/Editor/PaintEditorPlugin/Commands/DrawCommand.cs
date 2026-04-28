@@ -23,7 +23,7 @@ namespace UnityEditor.PaintEditor
 
         public override bool Execute()
         {
-            var posf = ConvertPos(PosInRectInt(position - layer.offset, canvas), canvas, canvasSize);
+            var posf = ConvertPos(PosInRectInt(position, layer.rect), canvas, canvasSize);
             var pos1 = new Vector2Int((int)posf.x, (int)posf.y);
             var deltaf = ConvertPos(DeltaInt(), canvas, canvasSize);
             var delta = new Vector2Int((int)deltaf.x, (int)deltaf.y);
