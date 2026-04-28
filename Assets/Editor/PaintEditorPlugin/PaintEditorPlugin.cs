@@ -133,50 +133,28 @@ namespace UnityEditor.PaintEditor
                 }
             }
 
-            if (e.type == EventType.MouseDown)
-            {
-                if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
-                {
-                    Brush brush = (Brush)toolbox.currentTool;
-                    DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size);
-                    command.SaveBackup();
-                    history.Push(command);
-                    command.Execute();
-                }
-                else if (toolbox.currentTool is Eraser)
-                {
-                    Eraser eraser = (Eraser)toolbox.currentTool;
-                    EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, eraser.size);
-                    command.SaveBackup();
-                    history.Push(command);
-                    command.Execute();
-                }
-                else if(toolbox.currentTool is BucketFill)
-                {
-                    if (canvas.rect.Contains(e.mousePosition))
-                    {
-                        FillCommand command = new FillCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor);
-                        command.SaveBackup();
-                        history.Push(command);
-                        command.Execute();
-                        Repaint();
-                    }
-                }
-            }
 
-            if (e.type == EventType.MouseDrag)
+            if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
             {
-                if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+                Brush brush = (Brush)toolbox.currentTool;
+                DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
+                ExecuteCommand(command);
+            }
+            else if (toolbox.currentTool is Eraser)
+            {
+                Eraser eraser = (Eraser)toolbox.currentTool;
+                EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, eraser.size, e.type);
+                ExecuteCommand(command);
+            }
+            else if (toolbox.currentTool is BucketFill)
+            {
+                if (canvas.rect.Contains(e.mousePosition))
                 {
-                    Brush brush = (Brush)toolbox.currentTool;
-                    DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size);
+                    FillCommand command = new FillCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, e.type);
+                    command.SaveBackup();
+                    history.Push(command);
                     command.Execute();
-                }
-                else if (toolbox.currentTool is Eraser)
-                {
-                    Eraser eraser = (Eraser)toolbox.currentTool;
-                    EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, eraser.size);
-                    command.Execute();
+                    Repaint();
                 }
             }
         }
