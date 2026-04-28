@@ -67,6 +67,8 @@ namespace UnityEditor.PaintEditor
 
         public void Render()
         {
+            if (!PaintEditorPlugin.Instance.IsMouseInCanvas()) return;
+
             Texture2D transparentCursor = new Texture2D(1, 1, TextureFormat.RGBA32, false);
             transparentCursor.alphaIsTransparency = true;
 

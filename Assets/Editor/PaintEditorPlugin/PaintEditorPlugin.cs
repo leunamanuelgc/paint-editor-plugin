@@ -46,6 +46,15 @@ namespace UnityEditor.PaintEditor
 
         public void OnGUI()
         {
+            DisplayGUI();
+
+            HandleShortcuts();
+
+            HandleTools();
+        }
+
+        public void DisplayGUI()
+        {
             canvas.DisplayGUI();
 
             EditorGUILayout.BeginVertical();
@@ -63,7 +72,10 @@ namespace UnityEditor.PaintEditor
             utils.DisplayGUI();
 
             EndWindows();
+        }
 
+        public void HandleShortcuts()
+        {
             Event e = Event.current;
 
             if (e.control && e.keyCode == KeyCode.N && e.type == EventType.KeyDown)
@@ -90,7 +102,7 @@ namespace UnityEditor.PaintEditor
             {
                 toolbox.currentTool = toolbox.pan;
             }
-            else if(e.control && e.type == EventType.MouseDown)
+            else if (e.control && e.type == EventType.MouseDown)
             {
                 toolbox.currentTool = toolbox.zoom;
             }
@@ -98,6 +110,11 @@ namespace UnityEditor.PaintEditor
             {
                 toolbox.currentTool = toolbox.lastTool;
             }
+        }
+
+        public void HandleTools()
+        {
+            Event e = Event.current;
 
             if (toolbox.currentTool is Pan)
             {
@@ -109,38 +126,22 @@ namespace UnityEditor.PaintEditor
                     Repaint();
                 }
             }
-
-            if (e.type == EventType.ScrollWheel)
-            {
-                EditorGUIUtility.AddCursorRect(new Rect(0,0,this.position.width, this.position.height), MouseCursor.Zoom);
-                SetZoom(-e.delta.y);
-            }
-            else if (toolbox.currentTool is Zoom)
+            else if (e.type == EventType.ScrollWheel || toolbox.currentTool is Zoom)
             {
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
 
-                if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
-                {
-                    SetZoom(-e.delta.y);
-                }
+                ExecuteCommand(new ZoomCommand(toolbox.zoom, -e.delta.y));
             }
-
-            if (canvas.rect.Contains(e.mousePosition))
+            else if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
             {
-                if (toolbox.currentTool is Brush)
-                {
-                    cursor.Render();
-                }
-            }
-
-            if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
-            {
+                cursor.Render();
                 Brush brush = (Brush)toolbox.currentTool;
                 DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
                 ExecuteCommand(command);
             }
             else if (toolbox.currentTool is Eraser)
             {
+                cursor.Render();
                 Eraser eraser = (Eraser)toolbox.currentTool;
                 EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, eraser.size, e.type);
                 ExecuteCommand(command);
@@ -155,6 +156,11 @@ namespace UnityEditor.PaintEditor
                     command.Execute();
                     Repaint();
                 }
+            }
+
+            if (e.type == EventType.MouseUp)
+            {
+                Repaint();
             }
         }
 
@@ -202,7 +208,12 @@ namespace UnityEditor.PaintEditor
 
         public void SetZoom(float zoom)
         {
-            toolbox.zoom.ChangeZoomLevel(zoom);
+            toolbox.zoom.SetZoomLevel(zoom);
+        }
+
+        public bool IsMouseInCanvas()
+        {
+            return canvas.rect.Contains(Event.current.mousePosition);
         }
     }
 }

@@ -49,5 +49,11 @@ namespace UnityEditor.PaintEditor
             zoomLevel = Mathf.Clamp(zoomLevel + zoomChange * speed, minZoom, maxZoom);
             onZoomLevelChange?.Invoke(zoomLevel);
         }
+
+        public void SetZoomLevel(float zoomLevel)
+        {
+            this.zoomLevel = zoomLevel;
+            onZoomLevelChange?.Invoke(zoomLevel);
+        }
     }
 }
