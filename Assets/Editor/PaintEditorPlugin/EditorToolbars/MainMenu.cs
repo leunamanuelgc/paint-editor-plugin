@@ -13,6 +13,8 @@ namespace UnityEditor.PaintEditor
 
             if (EditorGUILayout.DropdownButton(new GUIContent("File"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
+                PaintEditorPlugin.Instance.CancelClick(true);
+
                 GenericMenu menu = new GenericMenu();
 
                 menu.AddItem(new GUIContent("New"), false, CreateNewImageWindow);
@@ -26,6 +28,8 @@ namespace UnityEditor.PaintEditor
 
             if (EditorGUILayout.DropdownButton(new GUIContent("Edit"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
+                PaintEditorPlugin.Instance.CancelClick(true);
+
                 GenericMenu menu = new GenericMenu();
 
                 menu.AddItem(new GUIContent("Undo"), false, PaintEditorPlugin.Instance.Undo);

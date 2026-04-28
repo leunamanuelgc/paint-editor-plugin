@@ -43,10 +43,19 @@ namespace UnityEditor.PaintEditor
             Zoom.onZoomLevelChange += Resize;
         }
 
-        public void Move(Vector2 delta)
+        public void Move(Vector2 delta, params Rect[] limits)
         {
-            rect = new Rect(rect.position + delta, rect.size);
-            foreach(var layer in layerList)
+            Rect newRect = new Rect(rect.position + delta, rect.size);
+
+            if (limits.Length > 0)
+            {
+                bool statement = newRect.xMin < limits[0].width - 50 && newRect.yMin < limits[0].height - 50 && newRect.xMax > 50 && newRect.yMax > 50;
+
+                if (!statement) return;
+            }
+
+            rect = newRect;
+            foreach (var layer in layerList)
             {
                 layer.Move(delta);
             }

@@ -4,10 +4,10 @@ namespace UnityEditor.PaintEditor
 {
     public class Toolbox : IToolbar
     {
-        private Rect rect;
-
         private const string text = "Toolbox";
         private const string tooltip = "Select one of the tools available";
+
+        public Rect rect;
 
         public ITool currentTool { get; set; }
         public ITool lastTool { get; set; }

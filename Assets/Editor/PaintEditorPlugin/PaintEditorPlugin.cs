@@ -4,6 +4,8 @@ namespace UnityEditor.PaintEditor
 {
     public class PaintEditorPlugin : EditorSingleton<PaintEditorPlugin>
     {
+        private bool cancelClick = false;
+
         public CanvasEditor canvas { get; set; }
 
         public MainMenu mainMenu { get; set; }
@@ -48,9 +50,19 @@ namespace UnityEditor.PaintEditor
         {
             DisplayGUI();
 
-            HandleShortcuts();
+            if (!cancelClick)
+            {
+                HandleShortcuts();
 
-            HandleTools();
+                HandleTools();
+            }
+            else
+            {
+                if (Event.current.type == EventType.MouseUp)
+                {
+                    cancelClick = false;
+                }
+            }
         }
 
         public void DisplayGUI()
@@ -122,14 +134,13 @@ namespace UnityEditor.PaintEditor
 
                 if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
                 {
-                    canvas.Move(e.delta * toolbox.pan.speed);
+                    canvas.Move(e.delta * toolbox.pan.speed, this.position);
                     Repaint();
                 }
             }
             else if (e.type == EventType.ScrollWheel || toolbox.currentTool is Zoom)
             {
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
-
                 ExecuteCommand(new ZoomCommand(toolbox.zoom, -e.delta.y));
             }
             else if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
@@ -214,6 +225,11 @@ namespace UnityEditor.PaintEditor
         public bool IsMouseInCanvas()
         {
             return canvas.rect.Contains(Event.current.mousePosition);
+        }
+
+        public void CancelClick(bool value)
+        {
+            cancelClick = value;
         }
     }
 }
