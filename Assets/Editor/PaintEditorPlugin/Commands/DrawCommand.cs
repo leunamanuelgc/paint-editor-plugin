@@ -33,9 +33,9 @@ namespace UnityEditor.PaintEditor
                 PaintEditorPlugin.Instance.history.Push(this);
             }
 
-            var posf = ConvertPos(PosInRectInt(position, canvas), canvas, canvasSize);
+            var posf = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvas), canvas, canvasSize);
             var pos1 = new Vector2Int((int)posf.x, (int)posf.y);
-            var deltaf = ConvertPos(DeltaInt(), canvas, canvasSize);
+            var deltaf = CommonPaintEditor.ConvertPos(CommonPaintEditor.DeltaInt(), canvas, canvasSize);
             var delta = new Vector2Int((int)deltaf.x, (int)deltaf.y);
             var pos0 = new Vector2Int(pos1.x - delta.x, pos1.y + delta.y);
             layer.PaintTexture(pos0, pos1, size, color);

@@ -25,7 +25,7 @@ namespace UnityEditor.PaintEditor
         {
             if (eType != EventType.MouseDown) return false;
 
-            var pos = ConvertPos(PosInRectInt(position, canvas), canvas, canvasSize);
+            var pos = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvas), canvas, canvasSize);
             var posInt = new Vector2Int((int)pos.x, (int)pos.y);
             var targetColor = layer.GetPixel(posInt.x, posInt.y);
             layer.Fill(posInt, targetColor, color);
