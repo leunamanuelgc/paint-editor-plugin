@@ -18,6 +18,8 @@ namespace UnityEditor.PaintEditor
 
         public Utils utils { get; set; }
 
+        public LayerSelection layerSelection { get; set; }
+
         [MenuItem("Tools/Raster Editor")]
         public static void CreateEditorWindow()
         {
@@ -84,6 +86,12 @@ namespace UnityEditor.PaintEditor
             utils.DisplayGUI();
 
             EndWindows();
+
+            if(layerSelection != null)
+            {
+                layerSelection.DisplayGUI();
+                Repaint();
+            }
         }
 
         public void HandleShortcuts()
@@ -128,18 +136,58 @@ namespace UnityEditor.PaintEditor
         {
             Event e = Event.current;
 
-            if (toolbox.currentTool is Pan)
+            if(toolbox.currentTool is Selection)
+            {
+                if ((e.type == EventType.MouseDrag || e.type == EventType.MouseDown) &&
+                    layerSelection != null && layerSelection.rect.Contains(e.mousePosition) && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                {
+                    layerSelection.Move(e.delta);
+                }
+                else if(e.type == EventType.MouseDown && layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                {
+                    ExecuteCommand(new MergeCommand(layerSelection, canvas.rect));
+                    layerSelection.Clear();
+                    layerSelection = null;
+                }
+                else if (e.type == EventType.MouseDown && layerSelection == null)
+                {
+                    layerSelection = new LayerSelection(e.mousePosition, canvas);
+                }
+                else if(e.type == EventType.MouseDrag && layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.open)
+                {
+                    layerSelection.Expand(e.mousePosition, canvas.rect);
+                }
+                else if(e.type == EventType.MouseUp && layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.open)
+                {
+                    if (layerSelection.IsWidthAndHeightGreaterThanZero())
+                    {
+                        ExecuteCommand(new SelectCommand(layerSelection, canvas.rect, canvas.realSize));
+                    }
+                    else
+                    {
+                        layerSelection.Clear();
+                        layerSelection = null;
+                    }
+                }
+            }
+            else if (toolbox.currentTool is Pan)
             {
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Pan);
 
                 if (e.type == EventType.MouseDrag && e.delta != Vector2.zero)
                 {
-                    canvas.Move(e.delta * toolbox.pan.speed, this.position);
+                    ExecuteCommand(new PanCommand(e.delta * toolbox.pan.speed, canvas.rect, this.position));
                     Repaint();
                 }
             }
             else if (e.type == EventType.ScrollWheel || toolbox.currentTool is Zoom)
             {
+                if (layerSelection != null)
+                {
+                    ExecuteCommand(new MergeCommand(layerSelection, canvas.rect));
+                    layerSelection.Clear();
+                    layerSelection = null;
+                }
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
                 ExecuteCommand(new ZoomCommand(toolbox.zoom, -e.delta.y));
             }

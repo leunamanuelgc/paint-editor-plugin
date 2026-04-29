@@ -17,7 +17,7 @@ namespace UnityEditor.PaintEditor
 
         public float zoomLevel;
 
-        public static event Action<float> onZoomLevelChange;
+        public static event Action<float> OnZoomLevelChange;
 
         public Zoom(float zoomLevel)
         {
@@ -39,7 +39,7 @@ namespace UnityEditor.PaintEditor
             if(newZoomLevel != zoomLevel)
             {
                 zoomLevel = newZoomLevel;
-                onZoomLevelChange?.Invoke(zoomLevel);
+                OnZoomLevelChange?.Invoke(zoomLevel);
             }
             EditorGUILayout.EndHorizontal();
         }
@@ -47,13 +47,13 @@ namespace UnityEditor.PaintEditor
         public void ChangeZoomLevel(float zoomChange)
         {
             zoomLevel = Mathf.Clamp(zoomLevel + zoomChange * speed, minZoom, maxZoom);
-            onZoomLevelChange?.Invoke(zoomLevel);
+            OnZoomLevelChange?.Invoke(zoomLevel);
         }
 
         public void SetZoomLevel(float zoomLevel)
         {
             this.zoomLevel = zoomLevel;
-            onZoomLevelChange?.Invoke(zoomLevel);
+            OnZoomLevelChange?.Invoke(zoomLevel);
         }
     }
 }

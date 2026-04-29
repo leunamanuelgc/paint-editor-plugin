@@ -30,6 +30,7 @@ namespace UnityEditor.PaintEditor
 
             layerList = new List<Layer>() { new Layer(0, rect) };
             selectedLayer = layerList[0];
+            layerList[0].isSelected = true;
 
             bgTexture = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.ARGB32, true, false);
             bgTexture.alphaIsTransparency = true;
@@ -40,25 +41,15 @@ namespace UnityEditor.PaintEditor
             bgTexture.SetPixels(transparent);
             bgTexture.Apply();
 
-            Zoom.onZoomLevelChange += Resize;
+            Zoom.OnZoomLevelChange += Resize;
+            PanCommand.OnPanMove += Move;
         }
 
-        public void Move(Vector2 delta, params Rect[] limits)
+        public void Move(Vector2 delta)
         {
             Rect newRect = new Rect(rect.position + delta, rect.size);
 
-            if (limits.Length > 0)
-            {
-                bool statement = newRect.xMin < limits[0].width - 50 && newRect.yMin < limits[0].height - 50 && newRect.xMax > 50 && newRect.yMax > 50;
-
-                if (!statement) return;
-            }
-
             rect = newRect;
-            foreach (var layer in layerList)
-            {
-                layer.Move(delta);
-            }
         }
 
         public void Reinitialize(Vector2 size)
@@ -77,16 +68,12 @@ namespace UnityEditor.PaintEditor
             layerList.Clear();
             layerList.Add(new Layer(0, new Rect(rect.x, rect.y, realSize.x, realSize.y)));
             selectedLayer = layerList[0];
+            layerList[0].isSelected = true;
         }
 
         public void Resize(float zoomLevel)
         {
             rect = new Rect(rect.position, realSize * zoomLevel);
-
-            foreach(var layer in layerList)
-            {
-                layer.Resize(layer.realSize * zoomLevel);
-            }
         }
 
         public void DisplayGUI()
@@ -95,7 +82,7 @@ namespace UnityEditor.PaintEditor
             if (start)
             {
                 var windowRect = PaintEditorPlugin.Instance.position;
-                Move(new Vector2(windowRect.width / 2 - this.rect.width / 2, windowRect.height / 2 - this.rect.height / 2));
+                PaintEditorPlugin.Instance.ExecuteCommand(new PanCommand(new Vector2(windowRect.width / 2 - this.rect.width / 2, windowRect.height / 2 - this.rect.height / 2), rect));
                 start = false;
             }
 
@@ -106,8 +93,16 @@ namespace UnityEditor.PaintEditor
                 if (layerList[i].isEnabled)
                 {
                     GUI.DrawTexture(layerList[i].rect, layerList[i].rTexture);
+
+                    LayerSelection layerSelection = PaintEditorPlugin.Instance.layerSelection;
+                    if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit && layerList[i].isSelected)
+                    {
+                        GUI.DrawTexture(layerSelection.textureRect, layerSelection.textureSection);
+                    }
                 }
             }
+
+            EditorGUI.DrawRect(new Rect(0, 0, 0, 0), Color.black);
         }
 
         public void Load(Texture2D newTexture)
@@ -142,7 +137,9 @@ namespace UnityEditor.PaintEditor
 
         public void SelectLayer(ReorderableList list)
         {
+            selectedLayer.isSelected = false;
             selectedLayer = layerList[list.index];
+            selectedLayer.isSelected = true;
         }
 
         public bool CanRemove(ReorderableList list)

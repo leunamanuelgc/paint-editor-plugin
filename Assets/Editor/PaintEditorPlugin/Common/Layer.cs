@@ -87,6 +87,8 @@ namespace UnityEditor.PaintEditor
 
         public bool isEnabled { get; set; }
 
+        public bool isSelected { get; set; }
+
         public string name { get; set; }
 
         public Layer(int num, Rect rect)
@@ -98,6 +100,9 @@ namespace UnityEditor.PaintEditor
 
             InitializeTextures((int)rect.width, (int)rect.height);
             InitializeComputeShaders();
+
+            PanCommand.OnPanMove += Move;
+            Zoom.OnZoomLevelChange += Resize;
         }
 
         ~Layer()
@@ -338,9 +343,9 @@ namespace UnityEditor.PaintEditor
             rect = new Rect(rect.x + delta.x, rect.y + delta.y, rect.width, rect.height);
         }
 
-        public void Resize(Vector2 newSize)
+        public void Resize(float zoomLevel)
         {
-            rect = new Rect(rect.position, newSize);
+            rect = new Rect(rect.position, realSize * zoomLevel);
         }
 
         public void Release()
@@ -357,7 +362,9 @@ namespace UnityEditor.PaintEditor
             textureFillData = null;
             binTextureData = null;
             paintData = null;
-            rTexture = null;   
+            rTexture = null;
+
+            Zoom.OnZoomLevelChange -= Resize;
         }
     }
 }

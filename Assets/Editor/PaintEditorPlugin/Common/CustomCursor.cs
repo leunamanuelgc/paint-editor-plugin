@@ -20,14 +20,14 @@ namespace UnityEditor.PaintEditor
 
             Brush.onSizeChange += Resize;
             Eraser.onSizeChange += Resize;
-            Zoom.onZoomLevelChange += Resize;
+            Zoom.OnZoomLevelChange += Resize;
         }
 
         ~CustomCursor()
         {
             Brush.onSizeChange -= Resize;
             Eraser.onSizeChange -= Resize;
-            Zoom.onZoomLevelChange -= Resize;
+            Zoom.OnZoomLevelChange -= Resize;
         }
 
         private void InitTexture(Vector2Int size)
