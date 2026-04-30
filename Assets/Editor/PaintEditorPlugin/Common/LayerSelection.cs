@@ -157,19 +157,20 @@ namespace UnityEditor.PaintEditor
             this.textureRect = new Rect(PaintEditorPlugin.Instance.canvas.rect);
         }
 
-        struct Data
-        {
-            public Vector2 idx;
-        }
-
         public void MergeSection(Rect destinationRect)
         {
             int kernelId = takeSectionComputeShader.FindKernel(computeMergeSectionFunc);
             var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
             int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
 
-            Vector2 offset = textureRect.position - destinationRect.position;
+            var texturePos = CommonPaintEditor.ConvertPos(textureRect.position, destinationRect, canvasSize);
+            var canvasPos = CommonPaintEditor.ConvertPos(destinationRect.position, destinationRect, canvasSize);
+
+            Vector2 offset = texturePos - canvasPos;
             offset.y = -offset.y;
+
+            offset.x = Mathf.RoundToInt(offset.x);
+            offset.y = Mathf.RoundToInt(offset.y);
 
             takeSectionComputeShader.SetTexture(kernelId, sourceTextureId, textureSection);
             takeSectionComputeShader.SetTexture(kernelId, destinationTextureId, layer.rTexture);
