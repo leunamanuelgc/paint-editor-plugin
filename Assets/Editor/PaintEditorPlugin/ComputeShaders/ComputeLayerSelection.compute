@@ -13,7 +13,7 @@ float2 _Offset;
 [numthreads(8, 8, 1)]
 void TakeSection(uint3 dtid : SV_DispatchThreadID)
 {
-    if (dtid.x > _MinLimits.x && dtid.x < _MaxLimits.x && dtid.y > _MinLimits.y && dtid.y < _MaxLimits.y)
+    if (dtid.x >= 0 && dtid.x >= _MinLimits.x && dtid.x < _MaxLimits.x && dtid.y >= 0 && dtid.y >= _MinLimits.y && dtid.y < _MaxLimits.y)
     {   
         _Destination[dtid.xy] = _Source[dtid.xy];
         _Source[dtid.xy] = float4(0, 0, 0, 0);
@@ -25,7 +25,8 @@ void MergeSection(uint3 dtid : SV_DispatchThreadID)
 {
     uint2 srcIdx = dtid.xy - _Offset.xy;
     
-    if (dtid.x >= 0 && dtid.x < _Resolution.x && dtid.y >= 0 && dtid.y < _Resolution.y)
+    if ((dtid.x >= 0 && dtid.x < _Resolution.x && dtid.y >= 0 && dtid.y < _Resolution.y) &&
+        (srcIdx.x > 0 && srcIdx.y > 0))
     {
         float4 col;
         col.rgb = _Source[srcIdx.xy].rgb + (_Destination[dtid.xy].rgb * (1 - _Source[srcIdx.xy].a));
