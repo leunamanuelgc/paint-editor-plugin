@@ -10,32 +10,6 @@ namespace UnityEditor.PaintEditor
     {
         private const int threadSize = 8;
 
-        #region Paint
-
-        // Paint buffer data
-        private struct PaintData
-        {
-            public Vector2Int pos { get; set; }
-            public Vector2Int size { get; set; }
-            public Color color { get; set; }
-
-            public PaintData(Vector2Int _pos, Vector2Int _size, Color _color)
-            {
-                pos = _pos; size = _size; color = _color;
-            }
-        }
-
-        private ComputeShader paintComputeShader;
-        private ComputeBuffer paintBuffer;
-        private PaintData[] paintData;
-        private static readonly int textureId = Shader.PropertyToID("_Texture");
-        private static readonly int resolutionId = Shader.PropertyToID("_Resolution");
-        private static readonly int paintBufferId = Shader.PropertyToID("_Buffer");
-        private static string computePaintPath = PaintEditorPlugin.Instance.ComputePath() + "ComputePaint.compute";
-        private static string computePaintFunc = "PlotSize";
-
-        #endregion
-
         #region Fill
 
         struct BinData
@@ -66,6 +40,8 @@ namespace UnityEditor.PaintEditor
         private Texture2D onePixelTexture;
         private BinData[] binTextureData;
         private BinData[] textureFillData;
+        private static readonly int textureId = Shader.PropertyToID("_Texture");
+        private static readonly int resolutionId = Shader.PropertyToID("_Resolution");
         private static readonly int targetColorId = Shader.PropertyToID("_TargetColor");
         private static readonly int fillColorId = Shader.PropertyToID("_FillColor");
         private static readonly int binaryBufferId = Shader.PropertyToID("_BinTextureBuffer");
@@ -124,11 +100,6 @@ namespace UnityEditor.PaintEditor
 
         private void InitializeComputeShaders()
         {
-            paintComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computePaintPath);
-            paintBuffer = new ComputeBuffer(1, Marshal.SizeOf<PaintData>());
-            paintData = new PaintData[1];
-            paintData[0] = new PaintData(Vector2Int.zero, Vector2Int.one, Color.black);
-
             fillComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computeFillPath);
             fillBuffer = new ComputeBuffer(rTexture.width * rTexture.height, Marshal.SizeOf<BinData>());
             binTextureBuffer = new ComputeBuffer(rTexture.width * rTexture.height, Marshal.SizeOf<BinData>());
@@ -286,58 +257,6 @@ namespace UnityEditor.PaintEditor
             }
         }
 
-        public void PaintTexture(Vector2Int pos0, Vector2Int pos1, Vector2Int size, Color color)
-        {
-            paintData[0].color = color;
-            paintData[0].size = size;
-
-            PlotLine(pos0.x, pos0.y, pos1.x, pos1.y);
-        }
-
-        private void PlotLine(int x0, int y0, int x1, int y1)
-        {
-            int dx = Mathf.Abs(x1 - x0);
-            int sx = x0 < x1 ? 1 : -1;
-            int dy = -Mathf.Abs(y1 - y0);
-            int sy = y0 < y1 ? 1 : -1;
-            int error = dx + dy;
-
-            while (true)
-            {
-                Plot(new Vector2Int(x0, y0));
-                int e2 = 2 * error;
-                if (e2 >= dy)
-                {
-                    if (x0 == x1) break;
-                    error += dy;
-                    x0 += sx;
-                }
-
-                if (e2 <= dx)
-                {
-                    if (y0 == y1) break;
-                    error += dx;
-                    y0 += sy;
-                }
-            }
-        }
-
-        private void Plot(Vector2Int pos)
-        {
-            paintData[0].pos = pos;
-            paintBuffer.SetData(paintData);
-
-            int kernelId = paintComputeShader.FindKernel(computePaintFunc);
-            var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
-            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
-            Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
-
-            paintComputeShader.SetVector(resolutionId, resolution);
-            paintComputeShader.SetTexture(kernelId, textureId, rTexture);
-            paintComputeShader.SetBuffer(kernelId, paintBufferId, paintBuffer);
-            paintComputeShader.Dispatch(kernelId, groups, groups, 1);
-        }
-
         public void Move(Vector2 delta)
         {
             rect = new Rect(rect.x + delta.x, rect.y + delta.y, rect.width, rect.height);
@@ -350,18 +269,14 @@ namespace UnityEditor.PaintEditor
 
         public void Release()
         {
-            paintBuffer.Release();
             fillBuffer.Release();
             binTextureBuffer.Release();
             rTexture.Release();
 
-            paintBuffer = null;
             fillBuffer = null;
             binTextureBuffer = null;
-            paintComputeShader = null;
             textureFillData = null;
             binTextureData = null;
-            paintData = null;
             rTexture = null;
 
             Zoom.OnZoomLevelChange -= Resize;

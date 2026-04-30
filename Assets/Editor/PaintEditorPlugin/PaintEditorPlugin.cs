@@ -195,15 +195,34 @@ namespace UnityEditor.PaintEditor
             {
                 cursor.Render();
                 Brush brush = (Brush)toolbox.currentTool;
-                DrawCommand command = new DrawCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
-                ExecuteCommand(command);
+
+                if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                {
+                    DrawCommand command = new DrawCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
+                    ExecuteCommand(command);
+                }
+                else
+                {
+                    DrawCommand command = new DrawCommand(canvas.selectedLayer.rTexture, canvas.rect, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
+                    ExecuteCommand(command);
+                }
+                
             }
             else if (toolbox.currentTool is Eraser)
             {
                 cursor.Render();
                 Eraser eraser = (Eraser)toolbox.currentTool;
-                EraseCommand command = new EraseCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, eraser.size, e.type);
-                ExecuteCommand(command);
+                if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                {
+                    EraseCommand command = new EraseCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, eraser.size, e.type);
+                    ExecuteCommand(command);
+                }
+                else
+                {
+                    EraseCommand command = new EraseCommand(canvas.selectedLayer.rTexture, canvas.rect, canvas.rect, canvas.realSize, e.mousePosition, eraser.size, e.type);
+                    ExecuteCommand(command);
+                }
+                
             }
             else if (toolbox.currentTool is BucketFill)
             {

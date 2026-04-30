@@ -1,15 +1,8 @@
 #pragma kernel TakeSection
 #pragma kernel MergeSection
 
-//struct Data
-//{
-//    uint2 idx;
-//};
-
 RWTexture2D<float4> _Source;
 RWTexture2D<float4> _Destination;
-
-//RWStructuredBuffer<Data> _Buffer;
 
 float2 _MinLimits;
 float2 _MaxLimits;

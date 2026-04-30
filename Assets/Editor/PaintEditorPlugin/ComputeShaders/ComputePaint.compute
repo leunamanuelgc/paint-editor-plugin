@@ -10,14 +10,23 @@ struct BrushData
 RWTexture2D<float4> _Texture;
 StructuredBuffer<BrushData> _Buffer;
 uint2 _Resolution;
+uint2 _MinLimit;
+uint2 _MaxLimit;
 
 [numthreads(8, 8, 1)]
 void PlotSize(uint3 dtid : SV_DispatchThreadID)
 {
     if ((dtid.x < _Buffer[0].size.x && dtid.x < _Resolution.x) && (dtid.y < _Buffer[0].size.y && dtid.y < _Resolution.y))
     {
-        uint2 index = _Buffer[0].pos.xy + dtid.xy - _Buffer[0].size.xy / 2;
+        int xMin = _Buffer[0].pos.x - _Buffer[0].size.x / 2;
+        int xMax = _Buffer[0].pos.x + _Buffer[0].size.x / 2;
+        int yMin = _Buffer[0].pos.y - _Buffer[0].size.y / 2;
+        int yMax = _Buffer[0].pos.y + _Buffer[0].size.y / 2;
         
-        _Texture[index] = _Buffer[0].color;
+        if (xMin >= _MinLimit.x && xMax <= _MaxLimit.x && yMin >= _MinLimit.y && yMax <= _MaxLimit.y)
+        {
+            uint2 index = _Buffer[0].pos.xy + dtid.xy - _Buffer[0].size.xy / 2;
+            _Texture[index] = _Buffer[0].color;
+        }
     }
 }
