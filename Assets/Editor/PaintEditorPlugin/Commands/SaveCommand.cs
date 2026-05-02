@@ -25,6 +25,10 @@ namespace UnityEditor.PaintEditor
             {
                 var app = PaintEditorPlugin.Instance;
                 RenderTexture result = InitializeTexture((int)app.canvas.realSize.x, (int)app.canvas.realSize.y);
+                if(app.layerSelection != null)
+                {
+                    app.ExecuteCommand(new MergeCommand(app.layerSelection, app.canvas.rect));
+                }
                 byte[] bytes = ComputeSaveLayers(app.canvas.layerList, result);
                 File.WriteAllBytes(path, bytes);
             }
@@ -63,6 +67,7 @@ namespace UnityEditor.PaintEditor
 
             Texture2D result = new Texture2D(rTextureResult.width, rTextureResult.height, TextureFormat.ARGB32, false);
             RenderTexture.active = rTextureResult;
+
             result.ReadPixels(new Rect(0, 0, rTextureResult.width, rTextureResult.height), 0, 0);
             return result.EncodeToPNG();
         }
