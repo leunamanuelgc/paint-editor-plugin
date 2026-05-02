@@ -113,24 +113,21 @@ namespace UnityEditor.PaintEditor
 
         private static void Plot(RenderTexture rTexture, Vector2Int pos)
         {
-            if (pos.x >= minLimit.x && pos.x <= maxLimit.x && pos.y >= minLimit.y && pos.y <= maxLimit.y)
-            {
-                paintData[0].pos = pos;
+            paintData[0].pos = pos;
 
-                paintBuffer.SetData(paintData);
+            paintBuffer.SetData(paintData);
 
-                int kernelId = paintComputeShader.FindKernel(computePaintFunc);
-                var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
-                int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
-                Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
+            int kernelId = paintComputeShader.FindKernel(computePaintFunc);
+            var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
+            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
+            Vector4 resolution = new Vector4(canvasSize.x, canvasSize.y);
 
-                paintComputeShader.SetVector(resolutionId, resolution);
-                paintComputeShader.SetVector(minLimitId, minLimit);
-                paintComputeShader.SetVector(maxLimitId, maxLimit);
-                paintComputeShader.SetTexture(kernelId, textureId, rTexture);
-                paintComputeShader.SetBuffer(kernelId, paintBufferId, paintBuffer);
-                paintComputeShader.Dispatch(kernelId, groups, groups, 1);
-            }
+            paintComputeShader.SetVector(resolutionId, resolution);
+            paintComputeShader.SetVector(minLimitId, minLimit);
+            paintComputeShader.SetVector(maxLimitId, maxLimit);
+            paintComputeShader.SetTexture(kernelId, textureId, rTexture);
+            paintComputeShader.SetBuffer(kernelId, paintBufferId, paintBuffer);
+            paintComputeShader.Dispatch(kernelId, groups, groups, 1);
         }
     }
 }
