@@ -281,6 +281,8 @@ namespace UnityEditor.PaintEditor
 
             canvas.layerList.Clear();
             canvas.layerList = null;
+
+            CommonPaintEditor.Release();
         }
 
         public float GetZoomLevel()

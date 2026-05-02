@@ -347,5 +347,18 @@ namespace UnityEditor.PaintEditor
 
             return new Vector2(pos.x * convertion.x, pos.y * convertion.y);
         }
+
+        public static void Release()
+        {
+            if (paintBuffer != null) paintBuffer.Release();
+            if (fillBuffer != null) fillBuffer.Release();
+            if (binTextureBuffer != null) binTextureBuffer.Release();
+
+            paintBuffer = null;
+            fillBuffer = null;
+            binTextureBuffer = null;
+            textureFillData = null;
+            binTextureData = null;
+        }
     }
 }
