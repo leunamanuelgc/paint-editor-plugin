@@ -4,17 +4,19 @@ namespace UnityEditor.PaintEditor
 {
     public class FillCommand : ACommand
     {
-        private Layer layer;
-        private Rect canvas;
+        private RenderTexture rTexture;
+        private Rect canvasRect;
+        private Rect limits;
         private Vector2 canvasSize;
         private Vector2 position;
         private Color color;
         private EventType eType;
 
-        public FillCommand(Layer layer, Rect canvas, Vector2 canvasSize, Vector2 position, Color color, EventType eType)
+        public FillCommand(RenderTexture rTexture, Rect canvasRect, Rect limits, Vector2 canvasSize, Vector2 position, Color color, EventType eType)
         {
-            this.layer = layer;
-            this.canvas = canvas;
+            this.rTexture = rTexture;
+            this.canvasRect = canvasRect;
+            this.limits = limits;
             this.canvasSize = canvasSize;
             this.position = position;
             this.color = color;
@@ -25,10 +27,10 @@ namespace UnityEditor.PaintEditor
         {
             if (eType != EventType.MouseDown) return false;
 
-            var pos = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvas), canvas, canvasSize);
+            var pos = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvasRect), canvasRect, canvasSize);
             var posInt = new Vector2Int((int)pos.x, (int)pos.y);
-            var targetColor = layer.GetPixel(posInt.x, posInt.y);
-            layer.Fill(posInt, targetColor, color);
+            var targetColor = CommonPaintEditor.GetPixel(rTexture, posInt.x, posInt.y);
+            CommonPaintEditor.Fill(rTexture, canvasRect, limits, PaintEditorPlugin.Instance.canvas.realSize, posInt, targetColor, color);
             return false;
         }
     }

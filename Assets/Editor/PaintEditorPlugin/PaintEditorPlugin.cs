@@ -224,9 +224,15 @@ namespace UnityEditor.PaintEditor
             }
             else if (toolbox.currentTool is BucketFill)
             {
-                if (canvas.rect.Contains(e.mousePosition))
+                if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit && layerSelection.textureRect.Contains(e.mousePosition))
                 {
-                    FillCommand command = new FillCommand(canvas.selectedLayer, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, e.type);
+                    FillCommand command = new FillCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, utils.currentColor, e.type);
+                    command.Execute();
+                    Repaint();
+                }
+                else if (canvas.rect.Contains(e.mousePosition))
+                {
+                    FillCommand command = new FillCommand(canvas.selectedLayer.rTexture, canvas.rect, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, e.type);
                     command.SaveBackup();
                     history.Push(command);
                     command.Execute();

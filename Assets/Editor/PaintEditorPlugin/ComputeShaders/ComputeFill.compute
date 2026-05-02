@@ -10,13 +10,15 @@ RWTexture2D<float4> _Texture;
 RWStructuredBuffer<BinData> _BinTextureBuffer;
 StructuredBuffer<BinData> _FillBuffer;
 uint2 _Resolution;
+uint2 _MinLimit;
+uint2 _MaxLimit;
 float4 _TargetColor;
 float4 _FillColor;
 
 [numthreads(8,8,1)]
 void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID)
 {
-    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
+    if (dtid.x >= _MinLimit.x && dtid.x <= _MaxLimit.x && dtid.y >= _MinLimit.y && dtid.y <= _MaxLimit.y)
     {
         // Due to float's precision difference in cpu and gpu, some colors didn't get fill because they were "different".
         // i.e: 0.09411765 from texture vs 0.09411766 from targetColor. To fix this, I clamp one decimal value from both color values.
@@ -31,8 +33,9 @@ void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID)
             _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 1;
             return;
         }
-        _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 0;
     }
+    
+    _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 0;
 }
 
 [numthreads(8, 8, 1)]
