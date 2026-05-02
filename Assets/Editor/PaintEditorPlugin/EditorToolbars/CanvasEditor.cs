@@ -60,7 +60,7 @@ namespace UnityEditor.PaintEditor
 
             ResetLayers();
 
-            PaintEditorPlugin.Instance.SetZoom(1);
+            PaintEditorPlugin.Instance.Reset();
         }
 
         public void ResetLayers()

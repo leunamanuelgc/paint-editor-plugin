@@ -165,8 +165,7 @@ namespace UnityEditor.PaintEditor
                     }
                     else
                     {
-                        layerSelection.Clear();
-                        layerSelection = null;
+                        ResetSelection();
                     }
                 }
             }
@@ -185,8 +184,7 @@ namespace UnityEditor.PaintEditor
                 if (layerSelection != null)
                 {
                     ExecuteCommand(new MergeCommand(layerSelection, canvas.rect));
-                    layerSelection.Clear();
-                    layerSelection = null;
+                    ResetSelection();
                 }
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
                 ExecuteCommand(new ZoomCommand(toolbox.zoom, -e.delta.y));
@@ -297,6 +295,20 @@ namespace UnityEditor.PaintEditor
         public void CancelClick(bool value)
         {
             cancelClick = value;
+        }
+
+        public void ResetSelection()
+        {
+            layerSelection.Clear();
+            layerSelection = null;
+        }
+
+        public void Reset()
+        {
+            SetZoom(1);
+            if (layerSelection != null)
+                ResetSelection();
+            CancelClick(false);
         }
     }
 }
