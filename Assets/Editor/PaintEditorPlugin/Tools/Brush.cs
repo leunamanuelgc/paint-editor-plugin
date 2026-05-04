@@ -38,7 +38,6 @@ namespace UnityEditor.PaintEditor
         public virtual void Select()
         {
             DisplayOptionsGUI(guiContent, prefixSizeLabel);
-            onSizeChange?.Invoke(new Vector2Int((int)size.x, (int)size.y));
         }
 
         protected void DisplayOptionsGUI(GUIContent gui, string prefixSizeLabel)
