@@ -54,13 +54,22 @@ namespace UnityEditor.PaintEditor
 
         public void Reinitialize(Vector2 size)
         {
+            var app = PaintEditorPlugin.Instance;
             rect = new Rect(rect.position, size);
+            this.realSize = size;
 
-            this.realSize = rect.size;
+            float appW = app.position.width;
+            float appH = app.position.height;
+            float w = this.rect.width;
+            float h = this.rect.height;
 
+            Vector2 startPos = new Vector2(appW / 2 - w / 2, appH / 2 - h / 2);
+            Vector2 diff = startPos - this.rect.position;
+            PaintEditorPlugin.Instance.ExecuteCommand(new PanCommand(diff, this.rect));
+            
             ResetLayers();
 
-            PaintEditorPlugin.Instance.Reset();
+            app.Reset();
         }
 
         public void ResetLayers()
