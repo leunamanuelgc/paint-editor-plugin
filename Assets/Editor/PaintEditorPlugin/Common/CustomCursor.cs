@@ -74,6 +74,7 @@ namespace UnityEditor.PaintEditor
 
         public void Render()
         {
+            PaintEditorPlugin.Instance.Repaint();
             if (!PaintEditorPlugin.Instance.IsMouseInCanvas()) return;
 
             Texture2D transparentCursor = new Texture2D(1, 1, TextureFormat.RGBA32, false);
@@ -84,7 +85,7 @@ namespace UnityEditor.PaintEditor
 
             Rect position = new Rect(Event.current.mousePosition - this.size / 2, this.size);
             GUI.DrawTexture(position, texture, ScaleMode.ScaleToFit, true);
-            PaintEditorPlugin.Instance.Repaint();
+            
 
             UnityEngine.Object.DestroyImmediate(transparentCursor);
         }
