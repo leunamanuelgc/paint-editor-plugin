@@ -31,6 +31,7 @@ namespace UnityEditor.PaintEditor
             var posInt = new Vector2Int((int)pos.x, (int)pos.y);
             var targetColor = CommonPaintEditor.GetPixel(rTexture, posInt.x, posInt.y);
             CommonPaintEditor.Fill(rTexture, canvasRect, limits, PaintEditorPlugin.Instance.canvas.realSize, posInt, targetColor, color);
+            CommonPaintEditor.Release();
             return false;
         }
     }

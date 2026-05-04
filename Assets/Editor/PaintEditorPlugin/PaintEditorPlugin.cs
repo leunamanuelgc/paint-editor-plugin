@@ -184,12 +184,14 @@ namespace UnityEditor.PaintEditor
             }
             else if (e.type == EventType.ScrollWheel || toolbox.currentTool is Zoom)
             {
+                EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
+
                 if (layerSelection != null)
                 {
                     ExecuteCommand(new MergeCommand(layerSelection, canvas.rect));
                     ResetSelection();
                 }
-                EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
+
                 ExecuteCommand(new ZoomCommand(toolbox.zoom, -e.delta.y));
             }
             else if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)

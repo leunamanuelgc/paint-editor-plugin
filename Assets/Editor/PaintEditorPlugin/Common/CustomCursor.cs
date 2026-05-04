@@ -17,8 +17,9 @@ namespace UnityEditor.PaintEditor
         {
             this.realSize = realSize;
             this.zoomLevel = PaintEditorPlugin.Instance.GetZoomLevel();
+            texture = new Texture2D(1, 1);
 
-            InitTexture();
+            ReinitTexture();
 
             Brush.onSizeChange += Resize;
             Eraser.onSizeChange += Resize;
@@ -32,7 +33,7 @@ namespace UnityEditor.PaintEditor
             Zoom.OnZoomLevelChange -= Resize;
         }
 
-        private void InitTexture()
+        private void ReinitTexture()
         {
             int width = Mathf.CeilToInt(this.realSize.x * zoomLevel);
             int height = Mathf.CeilToInt(this.realSize.y * zoomLevel);
@@ -41,8 +42,8 @@ namespace UnityEditor.PaintEditor
             height = height <= 0 ? 1 : height;
 
             this.size = new Vector2Int(width, height);
-
-            texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            
+            texture.Reinitialize(width, height, TextureFormat.ARGB32, false);
             texture.alphaIsTransparency = true;
 
             Color[] colors = new Color[width * height];
@@ -63,13 +64,13 @@ namespace UnityEditor.PaintEditor
         public void Resize(Vector2Int size)
         {
             this.realSize = size;
-            InitTexture();
+            ReinitTexture();
         }
 
         public void Resize(float zoomLevel)
         {
             this.zoomLevel = zoomLevel;
-            InitTexture();
+            ReinitTexture();
         }
 
         public void Render()

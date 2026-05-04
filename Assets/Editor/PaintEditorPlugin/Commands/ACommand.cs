@@ -5,24 +5,24 @@ namespace UnityEditor.PaintEditor
 {
     public abstract class ACommand
     {
-        protected RenderTexture backup;
+        //protected RenderTexture backup;
 
         public ACommand()
         {
             var app = PaintEditorPlugin.Instance;
             //De momento lo dejo así, pero el backup tendrá q ser de todas las capas
-            backup = new RenderTexture(app.canvas.selectedLayer.rTexture.width, app.canvas.selectedLayer.rTexture.height, 0,
-                app.canvas.selectedLayer.rTexture.format, RenderTextureReadWrite.sRGB);
+            //backup = new RenderTexture(app.canvas.selectedLayer.rTexture.width, app.canvas.selectedLayer.rTexture.height, 0,
+                //app.canvas.selectedLayer.rTexture.format, RenderTextureReadWrite.sRGB);
         }
 
         public void SaveBackup()
         {
-            Graphics.CopyTexture(PaintEditorPlugin.Instance.canvas.selectedLayer.rTexture, backup);
+            //Graphics.CopyTexture(PaintEditorPlugin.Instance.canvas.selectedLayer.rTexture, backup);
         }
 
         public void Undo()
         {
-            Graphics.CopyTexture(backup, PaintEditorPlugin.Instance.canvas.selectedLayer.rTexture);
+            //Graphics.CopyTexture(backup, PaintEditorPlugin.Instance.canvas.selectedLayer.rTexture);
         }
 
         public abstract bool Execute();

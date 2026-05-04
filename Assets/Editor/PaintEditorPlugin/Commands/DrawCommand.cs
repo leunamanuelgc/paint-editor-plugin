@@ -42,6 +42,7 @@ namespace UnityEditor.PaintEditor
             var pos0 = new Vector2Int(pos1.x - delta.x, pos1.y + delta.y);
 
             CommonPaintEditor.PaintTexture(rTexture, canvas, limits, PaintEditorPlugin.Instance.canvas.realSize, pos0, pos1, size, color);
+            CommonPaintEditor.Release();
 
             return true;
         }

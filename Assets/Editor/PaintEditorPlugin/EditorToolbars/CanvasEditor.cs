@@ -45,6 +45,11 @@ namespace UnityEditor.PaintEditor
             PanCommand.OnPanMove += Move;
         }
 
+        ~CanvasEditor()
+        {
+            Zoom.OnZoomLevelChange -= Resize;
+            PanCommand.OnPanMove -= Move;
+        }
         public void Move(Vector2 delta)
         {
             Rect newRect = new Rect(rect.position + delta, rect.size);
