@@ -43,7 +43,7 @@ namespace UnityEditor.PaintEditor
         protected void DisplayOptionsGUI(GUIContent gui, string prefixSizeLabel)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(gui);
+            EditorGUILayout.LabelField(gui, GUILayout.Width(20));
 
             string[] brushTypeOptionsList = { ShapeType.box.ToString(), ShapeType.rect.ToString() };
             typeIndex = EditorGUILayout.Popup(typeIndex, brushTypeOptionsList);
@@ -53,17 +53,17 @@ namespace UnityEditor.PaintEditor
             switch (typeIndex)
             {
                 case 0:
-                    int brushSize = EditorGUILayout.IntSlider(new GUIContent(""), (int)size.x, minSize, maxSize);
+                    int brushSize = EditorGUILayout.IntSlider(new GUIContent(""), size.x, minSize, maxSize, GUILayout.Width(500f));
                     newSize = new Vector2Int(brushSize, brushSize);
                     break;
                 case 1:
-                    int brushSizeX = EditorGUILayout.IntSlider(new GUIContent("X"), (int)size.x, minSize, maxSize);
-                    int brushSizeY = EditorGUILayout.IntSlider(new GUIContent("Y"), (int)size.y, minSize, maxSize);
+                    int brushSizeX = EditorGUILayout.IntSlider(new GUIContent("X"), size.x, minSize, maxSize, GUILayout.Width(350f));
+                    int brushSizeY = EditorGUILayout.IntSlider(new GUIContent("Y"), size.y, minSize, maxSize, GUILayout.Width(350f));
                     newSize = new Vector2Int(brushSizeX, brushSizeY);
                     break;
             }
 
-            if (size != newSize)
+            if (size.x != newSize.x || size.y != newSize.y)
             {
                 size = newSize;
                 onSizeChange?.Invoke(newSize);

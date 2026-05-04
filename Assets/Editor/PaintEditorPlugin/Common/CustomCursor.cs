@@ -38,8 +38,8 @@ namespace UnityEditor.PaintEditor
             int width = Mathf.CeilToInt(this.realSize.x * zoomLevel);
             int height = Mathf.CeilToInt(this.realSize.y * zoomLevel);
 
-            width = width <= 0 ? 1 : width;
-            height = height <= 0 ? 1 : height;
+            width = width <= 0 ? 2 : width;
+            height = height <= 0 ? 2 : height;
 
             this.size = new Vector2Int(width, height);
             
@@ -47,14 +47,21 @@ namespace UnityEditor.PaintEditor
             texture.alphaIsTransparency = true;
 
             Color[] colors = new Color[width * height];
-            Array.Fill(colors, Color.black);
+            Array.Fill(colors, Color.gray);
             texture.SetPixels(colors);
 
-            if (width > 1 && height > 1)
+            if (width > 2 && height > 2)
             {
                 Color[] transparent = new Color[(width - 2) * (height - 2)];
-                Array.Fill(transparent, new Color(0, 0, 0, 0));
+                Array.Fill(transparent, Color.black);
                 texture.SetPixels(1, 1, width - 2, height - 2, transparent);
+            }
+            
+            if (width > 3 && height > 3)
+            {
+                Color[] transparent = new Color[(width - 4) * (height - 4)];
+                Array.Fill(transparent, new Color(0, 0, 0, 0));
+                texture.SetPixels(2, 2, width - 4, height - 4, transparent);
             }
 
             texture.Apply();

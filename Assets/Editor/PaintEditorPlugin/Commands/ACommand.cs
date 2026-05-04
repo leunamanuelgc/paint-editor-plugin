@@ -9,7 +9,7 @@ namespace UnityEditor.PaintEditor
 
         public ACommand()
         {
-            var app = PaintEditorPlugin.Instance;
+            //var app = PaintEditorPlugin.Instance;
             //De momento lo dejo así, pero el backup tendrá q ser de todas las capas
             //backup = new RenderTexture(app.canvas.selectedLayer.rTexture.width, app.canvas.selectedLayer.rTexture.height, 0,
                 //app.canvas.selectedLayer.rTexture.format, RenderTextureReadWrite.sRGB);

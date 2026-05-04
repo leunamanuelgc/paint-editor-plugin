@@ -28,7 +28,7 @@ namespace UnityEditor.PaintEditor
         private void DisplayOptionsGUI()
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(guiContent);
+            EditorGUILayout.LabelField(guiContent, GUILayout.Width(20));
             speed = EditorGUILayout.Slider(new GUIContent(prefixSpeedLabel), speed, minSpeed, maxSpeed);
             EditorGUILayout.EndHorizontal();
         }

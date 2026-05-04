@@ -37,7 +37,7 @@ namespace UnityEditor.PaintEditor
         private void DisplayOptionsGUI()
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(guiContent);
+            EditorGUILayout.LabelField(guiContent, GUILayout.Width(20));
             
             zoom = EditorGUILayout.Slider(new GUIContent(prefixLevelLabel), zoom, minZoom, maxZoom);
 
