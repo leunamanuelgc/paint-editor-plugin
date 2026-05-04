@@ -5,10 +5,11 @@ namespace UnityEditor.PaintEditor
 {
     public class Zoom : ITool
     {
-        private const float minZoom = 0.01f;
-        private const float maxZoom = 20f;
+        private const float minZoom = 0.1f;
+        private const float maxZoom = 5f;
         private const float speed = 0.01f;
         private const string prefixLevelLabel = "Zoom level";
+        private float zoom = 1f;
 
         public static string name = "Zoom";
         public static string iconTextureName = "d_ViewToolZoom";
@@ -17,11 +18,15 @@ namespace UnityEditor.PaintEditor
 
         public float zoomLevel;
 
+        public float baseZoom;
+
         public static event Action<float> OnZoomLevelChange;
 
-        public Zoom(float zoomLevel)
+        public Zoom(float baseZoom)
         {
-            this.zoomLevel = zoomLevel;
+            this.baseZoom = baseZoom;
+            this.zoom = 1f;
+            this.zoomLevel = baseZoom * this.zoom;
         }
 
         public void Select()
@@ -34,11 +39,11 @@ namespace UnityEditor.PaintEditor
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(guiContent);
             
-            var newZoomLevel = EditorGUILayout.Slider(new GUIContent(prefixLevelLabel), zoomLevel, minZoom, maxZoom);
+            zoom = EditorGUILayout.Slider(new GUIContent(prefixLevelLabel), zoom, minZoom, maxZoom);
 
-            if(newZoomLevel != zoomLevel)
+            if(zoom * baseZoom != zoomLevel)
             {
-                zoomLevel = newZoomLevel;
+                zoomLevel = zoom * baseZoom;
                 OnZoomLevelChange?.Invoke(zoomLevel);
             }
             EditorGUILayout.EndHorizontal();
@@ -46,21 +51,20 @@ namespace UnityEditor.PaintEditor
 
         public void ChangeZoomLevel(float zoomChange)
         {
-            var newZoomLevel = Mathf.Clamp(zoomLevel + zoomChange * speed, minZoom, maxZoom);
-            if(newZoomLevel != this.zoomLevel )
+            zoom = Mathf.Clamp(zoom + zoomChange * speed, minZoom, maxZoom);
+            if(zoom != this.zoomLevel )
             {
-                this.zoomLevel = newZoomLevel;
+                this.zoomLevel = zoom * baseZoom;
                 OnZoomLevelChange?.Invoke(zoomLevel);
             }
         }
 
-        public void SetZoomLevel(float newZoomLevel)
+        public void SetBaseZoom(float newBaseZoom)
         {
-            if (newZoomLevel != this.zoomLevel)
-            {
-                this.zoomLevel = newZoomLevel;
-                OnZoomLevelChange?.Invoke(zoomLevel);
-            }
+            this.baseZoom = newBaseZoom;
+            this.zoom = 1f;
+            this.zoomLevel = this.zoom * this.baseZoom;
+            OnZoomLevelChange?.Invoke(zoomLevel);
         }
     }
 }

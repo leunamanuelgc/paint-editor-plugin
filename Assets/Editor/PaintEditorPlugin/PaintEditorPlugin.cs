@@ -6,6 +6,9 @@ namespace UnityEditor.PaintEditor
     {
         private bool cancelClick = false;
 
+        private const int defaultResolution = 256;
+        private const int baseSizeCanvas = 512;
+
         public CanvasEditor canvas { get; set; }
 
         public MainMenu mainMenu { get; set; }
@@ -31,18 +34,18 @@ namespace UnityEditor.PaintEditor
         {
             base.OnEnable();
 
-            mainMenu = new MainMenu();
-
-            history = new CommandHistory();
-
-            toolbox = new Toolbox();
-
-            cursor = new CustomCursor(Vector2Int.one);
-
             float width, height;
-            width = height = 256;
+            width = height = defaultResolution; // defaultResolution is the default realSize
             Rect rect = new Rect(0, 0, width, height);
+            float baseZoom = baseSizeCanvas / width;   //baseSizeCanvas is the base size to stretch the canvas rect when opening the editor
+
+            mainMenu = new MainMenu();
+            history = new CommandHistory();
+            toolbox = new Toolbox(1f, 1f);
+            cursor = new CustomCursor(Vector2Int.one);
             canvas = new CanvasEditor(rect);
+
+            SetBaseZoom(baseZoom);
 
             utils = new Utils();
             utils.currentColor = Color.black;
@@ -285,14 +288,24 @@ namespace UnityEditor.PaintEditor
             CommonPaintEditor.Release();
         }
 
+        public float GetBaseZoom()
+        {
+            return toolbox.zoom.baseZoom;
+        }
+
+        public float GetBaseSizeCanvas()
+        {
+            return baseSizeCanvas;
+        }
+
         public float GetZoomLevel()
         {
             return toolbox.zoom.zoomLevel;
         }
 
-        public void SetZoom(float zoom)
+        public void SetBaseZoom(float zoom)
         {
-            toolbox.zoom.SetZoomLevel(zoom);
+            toolbox.zoom.SetBaseZoom(zoom);
         }
 
         public bool IsMouseInCanvas()
@@ -311,9 +324,9 @@ namespace UnityEditor.PaintEditor
             layerSelection = null;
         }
 
-        public void Reset()
+        public void ResetEditor(float baseZoom)
         {
-            SetZoom(1);
+            SetBaseZoom(baseZoom);
             if (layerSelection != null)
                 ResetSelection();
             CancelClick(false);

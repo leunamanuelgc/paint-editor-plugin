@@ -62,14 +62,24 @@ namespace UnityEditor.PaintEditor
             float appH = app.position.height;
             float w = this.rect.width;
             float h = this.rect.height;
-
-            Vector2 startPos = new Vector2(appW / 2 - w / 2, appH / 2 - h / 2);
-            Vector2 diff = startPos - this.rect.position;
-            PaintEditorPlugin.Instance.ExecuteCommand(new PanCommand(diff, this.rect));
             
             ResetLayers();
 
-            app.Reset();
+            float newBaseZoom;
+            if (w < h)
+            {
+                newBaseZoom = app.GetBaseSizeCanvas() / h;
+            }
+            else
+            {
+                newBaseZoom = app.GetBaseSizeCanvas() / w;
+            }
+
+            app.ResetEditor(newBaseZoom);
+
+            Vector2 startPos = new Vector2(appW / 2 - w * app.GetBaseZoom() / 2, appH / 2 - h * app.GetBaseZoom() / 2);
+            Vector2 diff = startPos - this.rect.position;
+            app.ExecuteCommand(new PanCommand(diff, this.rect));
         }
 
         public void ResetLayers()
@@ -82,7 +92,43 @@ namespace UnityEditor.PaintEditor
 
         public void Resize(float zoomLevel)
         {
-            rect = new Rect(rect.position, realSize * zoomLevel);
+            var app = PaintEditorPlugin.Instance;
+            Vector2 newSize = realSize * zoomLevel;
+            Vector2 diff = this.rect.size - newSize;
+
+            rect = new Rect(rect.position, newSize);
+
+            app.ExecuteCommand(new PanCommand(diff / 2, rect));
+
+            float appW = app.position.width;
+            float appH = app.position.height;
+            if (rect.xMax < 100 || rect.xMin > appW - 100 || rect.yMax < 100 || rect.yMin > appH - 100)
+            {
+                float w = this.rect.width;
+                float h = this.rect.height;
+                Vector2 startPos = this.rect.position;
+
+                if (rect.xMax < 100)
+                {
+                    startPos.x = 100 - w * app.GetBaseZoom() / 2;
+                }
+                else if (rect.xMin > appW - 100)
+                {
+                    startPos.x = (appW - 100);
+                }
+
+                if (rect.yMax < 100)
+                {
+                    startPos.y = 100 - h * app.GetBaseZoom() / 2;
+                }
+                else if (rect.yMin > appH - 100)
+                {
+                    startPos.y = (appH - 100);
+                }
+
+                diff = startPos - this.rect.position;
+                app.ExecuteCommand(new PanCommand(diff, this.rect));
+            }   
         }
 
         public void DisplayGUI()

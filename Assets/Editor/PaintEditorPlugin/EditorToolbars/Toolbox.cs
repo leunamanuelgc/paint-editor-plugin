@@ -24,16 +24,16 @@ namespace UnityEditor.PaintEditor
 
         public Zoom zoom { get; private set; }
 
-        public Toolbox()
+        public Toolbox(float panSpeed, float baseZoom)
         {
-            rect = new Rect(10, 100, 50, 300);
+            this.rect = new Rect(10, 100, 50, 300);
 
-            selection = new Selection();
-            brush = new Brush(1, 100, Vector2Int.one, 0);
-            eraser = new Eraser(1, 100, Vector2Int.one, 0);
-            bucket = new BucketFill();
-            pan = new Pan(1f);
-            zoom = new Zoom(1f);
+            this.selection = new Selection();
+            this.brush = new Brush(1, 100, Vector2Int.one, 0);
+            this.eraser = new Eraser(1, 100, Vector2Int.one, 0);
+            this.bucket = new BucketFill();
+            this.pan = new Pan(panSpeed);
+            this.zoom = new Zoom(baseZoom);
 
             currentTool = brush;
             lastTool = currentTool;
