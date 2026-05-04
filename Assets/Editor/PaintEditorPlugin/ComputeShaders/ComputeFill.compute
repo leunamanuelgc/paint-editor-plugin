@@ -43,7 +43,7 @@ void Fill(uint3 dtid : SV_DispatchThreadID)
 {
     if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
     {
-        if (_FillBuffer[_Resolution.x * dtid.y + dtid.x].data == 1)
+        if (_FillBuffer[dtid.y * _Resolution.x + dtid.x].data == 1)
         {
             _Texture[dtid.xy] = _FillColor.rgba;
         }

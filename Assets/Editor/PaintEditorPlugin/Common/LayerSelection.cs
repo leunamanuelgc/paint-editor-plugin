@@ -138,7 +138,8 @@ namespace UnityEditor.PaintEditor
         {
             int kernelId = takeSectionComputeShader.FindKernel(computeTakeSectionFunc);
             var canvasSize = canvasRealSize;
-            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
+            int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
+            int groupsY = Mathf.CeilToInt(canvasSize.y / threadSize);
 
             textureSection = new RenderTexture((int)canvasSize.x, (int)canvasSize.y, 0, RenderTextureFormat.ARGB32);
             textureSection.filterMode = FilterMode.Point;
@@ -152,7 +153,7 @@ namespace UnityEditor.PaintEditor
             takeSectionComputeShader.SetTexture(kernelId, destinationTextureId, textureSection);
             takeSectionComputeShader.SetVector(minLimitsId, minLimit);
             takeSectionComputeShader.SetVector(maxLimitsId, maxLimit);
-            takeSectionComputeShader.Dispatch(kernelId, groups, groups, 1);
+            takeSectionComputeShader.Dispatch(kernelId, groupsX, groupsY, 1);
 
             this.textureRect = new Rect(PaintEditorPlugin.Instance.canvas.rect);
         }
@@ -161,7 +162,8 @@ namespace UnityEditor.PaintEditor
         {
             int kernelId = takeSectionComputeShader.FindKernel(computeMergeSectionFunc);
             var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
-            int groups = Mathf.CeilToInt(canvasSize.x / threadSize);
+            int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
+            int groupsY = Mathf.CeilToInt(canvasSize.y / threadSize);
 
             var texturePos = CommonPaintEditor.ConvertPos(textureRect.position, destinationRect, canvasSize);
             var canvasPos = CommonPaintEditor.ConvertPos(destinationRect.position, destinationRect, canvasSize);
@@ -176,7 +178,7 @@ namespace UnityEditor.PaintEditor
             takeSectionComputeShader.SetTexture(kernelId, destinationTextureId, layer.rTexture);
             takeSectionComputeShader.SetVector(resolutionId, canvasSize);
             takeSectionComputeShader.SetVector(offsetId, offset);
-            takeSectionComputeShader.Dispatch(kernelId, groups, groups, 1);
+            takeSectionComputeShader.Dispatch(kernelId, groupsX, groupsY, 1);
         }
 
         public void DisplayGUI()

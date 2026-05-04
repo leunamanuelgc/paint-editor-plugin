@@ -191,7 +191,9 @@ namespace UnityEditor.PaintEditor
         private static BinData[] GetBinaryTexture(RenderTexture rTexture, Color targetColor)
         {
             int kernelId = fillComputeShader.FindKernel(computeBinTextureFunc);
-            int groups = Mathf.CeilToInt(realSize.x / threadSize);
+            int groupsX = Mathf.CeilToInt(realSize.x / threadSize);
+            int groupsY = Mathf.CeilToInt(realSize.y / threadSize);
+
             Vector4 resolution = new Vector4(realSize.x, realSize.y);
 
             fillComputeShader.SetVector(resolutionId, resolution);
@@ -200,7 +202,7 @@ namespace UnityEditor.PaintEditor
             fillComputeShader.SetVector(maxLimitId, maxLimit);
             fillComputeShader.SetTexture(kernelId, textureId, rTexture);
             fillComputeShader.SetBuffer(kernelId, binaryBufferId, binTextureBuffer);
-            fillComputeShader.Dispatch(kernelId, groups, groups, 1);
+            fillComputeShader.Dispatch(kernelId, groupsX, groupsY, 1);
 
             BinData[] binData = new BinData[rTexture.width * rTexture.height];
             binTextureBuffer.GetData(binData);
@@ -306,7 +308,8 @@ namespace UnityEditor.PaintEditor
         private static void ComputeFill(RenderTexture rTexture, Color color)
         {
             int kernelId = fillComputeShader.FindKernel(computeFillFunc);
-            int groups = Mathf.CeilToInt(realSize.x / threadSize);
+            int groupsX = Mathf.CeilToInt(realSize.x / threadSize);
+            int groupsY = Mathf.CeilToInt(realSize.y / threadSize);
             Vector4 resolution = new Vector4(realSize.x, realSize.y);
 
             fillBuffer.SetData(textureFillData);
@@ -314,7 +317,7 @@ namespace UnityEditor.PaintEditor
             fillComputeShader.SetVector(fillColorId, color);
             fillComputeShader.SetTexture(kernelId, textureId, rTexture);
             fillComputeShader.SetBuffer(kernelId, fillBufferId, fillBuffer);
-            fillComputeShader.Dispatch(kernelId, groups, groups, 1);
+            fillComputeShader.Dispatch(kernelId, groupsX, groupsY, 1);
 
             for (int i = 0; i < textureFillData.Length; i++)
             {
