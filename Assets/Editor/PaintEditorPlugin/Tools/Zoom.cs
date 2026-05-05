@@ -38,7 +38,9 @@ namespace UnityEditor.PaintEditor
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(guiContent, GUILayout.Width(20));
-            
+
+            var textDimensions = GUI.skin.label.CalcSize(new GUIContent(prefixLevelLabel));
+            EditorGUIUtility.labelWidth = textDimensions.x + 10;
             zoom = EditorGUILayout.Slider(new GUIContent(prefixLevelLabel), zoom, minZoom, maxZoom);
 
             if(zoom * baseZoom != zoomLevel)

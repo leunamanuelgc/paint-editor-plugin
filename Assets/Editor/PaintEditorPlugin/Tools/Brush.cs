@@ -46,19 +46,23 @@ namespace UnityEditor.PaintEditor
             EditorGUILayout.LabelField(gui, GUILayout.Width(20));
 
             string[] brushTypeOptionsList = { ShapeType.box.ToString(), ShapeType.rect.ToString() };
-            typeIndex = EditorGUILayout.Popup(typeIndex, brushTypeOptionsList);
+            typeIndex = EditorGUILayout.Popup(typeIndex, brushTypeOptionsList, GUILayout.MaxWidth(100));
 
+            var textDimensions = GUI.skin.label.CalcSize(new GUIContent(prefixSizeLabel));
+            EditorGUIUtility.labelWidth = textDimensions.x + 10;
             EditorGUILayout.PrefixLabel(prefixSizeLabel);
             Vector2Int newSize = Vector2Int.one;
             switch (typeIndex)
             {
                 case 0:
-                    int brushSize = EditorGUILayout.IntSlider(new GUIContent(""), size.x, minSize, maxSize, GUILayout.Width(500f));
+                    int brushSize = EditorGUILayout.IntSlider(size.x, minSize, maxSize);
                     newSize = new Vector2Int(brushSize, brushSize);
                     break;
                 case 1:
-                    int brushSizeX = EditorGUILayout.IntSlider(new GUIContent("X"), size.x, minSize, maxSize, GUILayout.Width(350f));
-                    int brushSizeY = EditorGUILayout.IntSlider(new GUIContent("Y"), size.y, minSize, maxSize, GUILayout.Width(350f));
+                    textDimensions = GUI.skin.label.CalcSize(new GUIContent("X"));
+                    EditorGUIUtility.labelWidth = textDimensions.x + 10;
+                    int brushSizeX = EditorGUILayout.IntSlider("X", size.x, minSize, maxSize);
+                    int brushSizeY = EditorGUILayout.IntSlider("Y", size.y, minSize, maxSize);
                     newSize = new Vector2Int(brushSizeX, brushSizeY);
                     break;
             }

@@ -29,6 +29,8 @@ namespace UnityEditor.PaintEditor
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(guiContent, GUILayout.Width(20));
+            var textDimensions = GUI.skin.label.CalcSize(new GUIContent(prefixSpeedLabel));
+            EditorGUIUtility.labelWidth = textDimensions.x + 10;
             speed = EditorGUILayout.Slider(new GUIContent(prefixSpeedLabel), speed, minSpeed, maxSpeed);
             EditorGUILayout.EndHorizontal();
         }
