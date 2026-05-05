@@ -142,7 +142,8 @@ namespace UnityEditor.PaintEditor
             if (start)
             {
                 var windowRect = PaintEditorPlugin.Instance.position;
-                PaintEditorPlugin.Instance.ExecuteCommand(new PanCommand(new Vector2(windowRect.width / 2 - this.rect.width / 2, windowRect.height / 2 - this.rect.height / 2), rect));
+                Vector2 diff = -this.rect.position + (windowRect.size / 2 - this.rect.size / 2);
+                PaintEditorPlugin.Instance.ExecuteCommand(new PanCommand(diff, rect));
                 start = false;
             }
 

@@ -35,9 +35,9 @@ namespace UnityEditor.PaintEditor
             base.OnEnable();
 
             float width, height;
-            width = height = defaultResolution; // defaultResolution is the default realSize
+            width = height = defaultResolution;     // defaultResolution is the default realSize
             Rect rect = new Rect(0, 0, width, height);
-            float baseZoom = baseSizeCanvas / width;   //baseSizeCanvas is the base size to stretch the canvas rect when opening the editor
+            float baseZoom = baseSizeCanvas / width;    //baseSizeCanvas is the base size to stretch the canvas rect when opening the editor
 
             mainMenu = new MainMenu();
             history = new CommandHistory();
