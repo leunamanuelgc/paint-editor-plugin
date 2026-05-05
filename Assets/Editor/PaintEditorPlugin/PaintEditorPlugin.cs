@@ -49,6 +49,7 @@ namespace UnityEditor.PaintEditor
 
             utils = new Utils();
             utils.currentColor = Color.black;
+            layerSelection = new LayerSelection();
         }
 
         public void OnGUI()
@@ -141,38 +142,63 @@ namespace UnityEditor.PaintEditor
 
             if(toolbox.currentTool is Selection)
             {
-                if ((e.type == EventType.MouseDrag || e.type == EventType.MouseDown) &&
-                    layerSelection != null && layerSelection.rect.Contains(e.mousePosition) && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                if ((e.type == EventType.MouseDrag || e.type == EventType.MouseDown) && layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
-                    layerSelection.Move(e.delta);
+                    Vector2 handle0 = layerSelection.GetHandle(LayerSelection.HandleType.upL);
+                    Vector2 handle1 = layerSelection.GetHandle(LayerSelection.HandleType.lowL);
+                    Vector2 handle2 = layerSelection.GetHandle(LayerSelection.HandleType.upR);
+                    Vector2 handle3 = layerSelection.GetHandle(LayerSelection.HandleType.lowR);
+
+                    bool mouseInScaleHandlesStatement = layerSelection.IsPosInScaleHandle(e.mousePosition, handle0) &&
+                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle1) &&
+                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle2) &&
+                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle3);
+
+                    Debug.Log(handle0 + " " + handle1 + " " + handle2 + " " + handle3);
+
+                    if (mouseInScaleHandlesStatement)
+                    {
+                        //Scale handle
+                        Debug.Log("scale");
+                    }
+                    else if (layerSelection.rect.Contains(e.mousePosition))
+                    {
+                        //Move layer handle
+                        layerSelection.Move(e.delta);
+                    } else
+                    {
+                        //Click outside the selection merge closes the selection
+                        ExecuteCommand(new MergeCommand(layerSelection, canvas.rect));
+                        layerSelection.Close();
+                    }
                 }
-                else if(e.type == EventType.MouseDown && layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                else if (e.type == EventType.MouseDown && layerSelection.selectionType == LayerSelection.SelectionType.close)
                 {
-                    ExecuteCommand(new MergeCommand(layerSelection, canvas.rect));
-                    layerSelection.Clear();
-                    layerSelection = null;
+                    //Start selection
+                    layerSelection.Open(e.mousePosition, canvas);
                 }
-                else if (e.type == EventType.MouseDown && layerSelection == null)
+                else if(e.type == EventType.MouseDrag && layerSelection.selectionType == LayerSelection.SelectionType.open)
                 {
-                    layerSelection = new LayerSelection(e.mousePosition, canvas);
-                }
-                else if(e.type == EventType.MouseDrag && layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.open)
-                {
+                    //Expand selection
                     layerSelection.Expand(e.mousePosition, canvas.rect);
                 }
-                else if(e.type == EventType.MouseUp && layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.open)
+                else if(e.type == EventType.MouseUp && layerSelection.selectionType == LayerSelection.SelectionType.open)
                 {
                     if (layerSelection.IsWidthAndHeightGreaterThanZero())
                     {
+                        //Take section of texture to edit
+                        layerSelection.Edit();
                         ExecuteCommand(new SelectCommand(layerSelection, canvas.rect, canvas.realSize));
                     }
                     else
                     {
-                        ResetSelection();
+                        //If click and stop clicking in same place, close selection
+                        layerSelection.Close();
                     }
                 }
             }
-            else if (toolbox.currentTool is Pan)
+
+            if (toolbox.currentTool is Pan)
             {
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Pan);
 
@@ -182,24 +208,26 @@ namespace UnityEditor.PaintEditor
                     Repaint();
                 }
             }
-            else if (e.type == EventType.ScrollWheel || toolbox.currentTool is Zoom)
+            
+            if (e.type == EventType.ScrollWheel || toolbox.currentTool is Zoom)
             {
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
 
-                if (layerSelection != null)
+                if (layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
                     ExecuteCommand(new MergeCommand(layerSelection, canvas.rect));
-                    ResetSelection();
+                    layerSelection.Close();
                 }
 
                 ExecuteCommand(new ZoomCommand(toolbox.zoom, -e.delta.y));
             }
-            else if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
+            
+            if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
             {
                 cursor.Render();
                 Brush brush = (Brush)toolbox.currentTool;
 
-                if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                if (layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
                     DrawCommand command = new DrawCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
                     ExecuteCommand(command);
@@ -215,7 +243,7 @@ namespace UnityEditor.PaintEditor
             {
                 cursor.Render();
                 Eraser eraser = (Eraser)toolbox.currentTool;
-                if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                if (layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
                     EraseCommand command = new EraseCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, eraser.size, e.type);
                     ExecuteCommand(command);
@@ -227,9 +255,10 @@ namespace UnityEditor.PaintEditor
                 }
                 
             }
-            else if (toolbox.currentTool is BucketFill)
+            
+            if (toolbox.currentTool is BucketFill)
             {
-                if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit && layerSelection.textureRect.Contains(e.mousePosition))
+                if (layerSelection.selectionType == LayerSelection.SelectionType.edit && layerSelection.textureRect.Contains(e.mousePosition))
                 {
                     FillCommand command = new FillCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, utils.currentColor, e.type);
                     command.Execute();
@@ -286,6 +315,7 @@ namespace UnityEditor.PaintEditor
 
             canvas.layerList.Clear();
             canvas.layerList = null;
+            layerSelection.Clear();
 
             CommonPaintEditor.Release();
         }
@@ -320,17 +350,10 @@ namespace UnityEditor.PaintEditor
             cancelClick = value;
         }
 
-        public void ResetSelection()
-        {
-            layerSelection.Clear();
-            layerSelection = null;
-        }
-
         public void ResetEditor(float baseZoom)
         {
             SetBaseZoom(baseZoom);
-            if (layerSelection != null)
-                ResetSelection();
+            layerSelection.Close();
             CancelClick(false);
         }
     }

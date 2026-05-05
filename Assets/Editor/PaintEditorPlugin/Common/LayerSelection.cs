@@ -1,7 +1,4 @@
-using System.Runtime.InteropServices;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace UnityEditor.PaintEditor
 {
@@ -14,6 +11,15 @@ namespace UnityEditor.PaintEditor
             close,
         }
 
+        public enum HandleType
+        {
+            upL,
+            lowL,
+            upR,
+            lowR
+        }
+
+        private const int scaleHandleSize = 10;
         private const int threadSize = 8;
 
         public Vector2 initPosition;
@@ -43,17 +49,11 @@ namespace UnityEditor.PaintEditor
 
         #endregion
 
-        public LayerSelection(Vector2 initPosition, CanvasEditor canvas)
+        public LayerSelection()
         {
-            LimitPos(ref initPosition, canvas.rect);
-
-            this.initPosition = initPosition;
-            this.rect = new Rect(initPosition, Vector2.zero);
-            this.layer = canvas.selectedLayer;
-            this.selectionType = SelectionType.open;
+            Close();
 
             PanCommand.OnPanMove += Move;
-
             takeSectionComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computeTakeSectionPath);
         }
 
@@ -197,6 +197,38 @@ namespace UnityEditor.PaintEditor
             {
                 EditorGUI.DrawRect(rect, color);
             }
+
+            if (selectionType == SelectionType.edit)
+            {
+                Handles.color = Color.red;
+                Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMin), Vector2.one * scaleHandleSize);
+                Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMin), Vector2.one * scaleHandleSize);
+                Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMax), Vector2.one * scaleHandleSize);
+                Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMax), Vector2.one * scaleHandleSize);
+            }
+        }
+
+        public void Open(Vector2 initPosition, CanvasEditor canvas)
+        {
+            LimitPos(ref initPosition, canvas.rect);
+
+            this.initPosition = initPosition;
+            this.rect = new Rect(initPosition, Vector2.zero);
+            this.layer = canvas.selectedLayer;
+            this.selectionType = SelectionType.open;
+        }
+
+        public void Edit()
+        {
+            this.selectionType = SelectionType.edit;
+        }
+
+        public void Close()
+        {
+            this.initPosition = Vector2.zero;
+            this.rect = Rect.zero;
+            this.layer = null;
+            this.selectionType = SelectionType.close;
         }
 
         public void Clear()
@@ -208,6 +240,31 @@ namespace UnityEditor.PaintEditor
         public bool IsWidthAndHeightGreaterThanZero()
         {
             return rect.width > 0 && rect.height > 0;
+        }
+
+        public bool IsPosInScaleHandle(Vector2 pos, Vector2 handlePos)
+        {
+            Vector2 handlePosMaxSize = handlePos + Vector2.one * scaleHandleSize;
+            Vector2 handlePosMinSize = handlePos - Vector2.one * scaleHandleSize;
+
+            return pos.x >= handlePosMinSize.x && pos.x <= handlePosMaxSize.x && pos.y >= handlePosMinSize.y && pos.y <= handlePosMaxSize.y;
+        }
+
+        public Vector2 GetHandle(HandleType type)
+        {
+            switch (type)
+            {
+                case HandleType.upL:
+                    return new Vector2(rect.xMin, rect.yMin);
+                case HandleType.lowL:
+                    return new Vector2(rect.xMin, rect.yMax);
+                case HandleType.upR:
+                    return new Vector2(rect.xMax, rect.yMin);
+                case HandleType.lowR:
+                    return new Vector2(rect.xMax, rect.yMax);
+                default:
+                    return Vector2.one * -1;
+            }
         }
     }
 }
