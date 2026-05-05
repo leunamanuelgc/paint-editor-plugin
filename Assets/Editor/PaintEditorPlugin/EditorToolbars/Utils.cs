@@ -46,7 +46,10 @@ namespace UnityEditor.PaintEditor
 
         private void CreateWindow(int id)
         {
-            currentColor = EditorGUILayout.ColorField(new GUIContent("Color"), currentColor, true, true, true);
+            string content = "Color";
+            var textDimensions = GUI.skin.label.CalcSize(new GUIContent(content));
+            EditorGUIUtility.labelWidth = textDimensions.x + 10;
+            currentColor = EditorGUILayout.ColorField(new GUIContent(content), currentColor, true, true, true);
 
             EditorGUILayout.Space(20);
 
