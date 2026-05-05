@@ -24,9 +24,12 @@ namespace UnityEditor.PaintEditor
 
         public Vector2 initPosition;
 
-        public Rect rect;
+        public Vector2 selectionStartPosition;
 
-        public Rect textureRect;
+        public Vector2 selectionStartSize;
+        public Vector2 realSize;
+
+        public Rect rect;
 
         public Layer layer;
 
@@ -41,8 +44,7 @@ namespace UnityEditor.PaintEditor
         private static readonly int destinationTextureId = Shader.PropertyToID("_Destination");
         private static readonly int minLimitsId = Shader.PropertyToID("_MinLimits");
         private static readonly int maxLimitsId = Shader.PropertyToID("_MaxLimits");
-        private static readonly int resolutionId = Shader.PropertyToID("_Resolution");
-        private static readonly int offsetId = Shader.PropertyToID("_Offset");
+        private static readonly int scaleFactorId = Shader.PropertyToID("_ScaleFactor");
         private static string computeTakeSectionPath = PaintEditorPlugin.Instance.ComputePath() + "ComputeLayerSelection.compute";
         private static string computeTakeSectionFunc = "TakeSection";
         private static string computeMergeSectionFunc = "MergeSection";
@@ -101,6 +103,11 @@ namespace UnityEditor.PaintEditor
             }
         }
 
+        private Vector2 GetRealSize()
+        {
+            return this.rect.size / PaintEditorPlugin.Instance.GetZoomLevel();
+        }
+
         public void Move(Vector2 delta)
         {
             Rect newRect = new Rect(rect.position + delta, rect.size);
@@ -108,10 +115,6 @@ namespace UnityEditor.PaintEditor
             rect = newRect;
             initPosition += delta;
 
-            if(textureSection != null)
-            {
-                textureRect = new Rect(textureRect.position + delta, textureRect.size);
-            }
         }
 
         public void Expand(Vector2 position, Rect canvasRect)
@@ -122,6 +125,8 @@ namespace UnityEditor.PaintEditor
             rect.yMax = Mathf.Max(position.y, initPosition.y);
 
             LimitRect(ref rect, canvasRect);
+
+            this.realSize = GetRealSize();
         }
 
         public void Select(Rect canvasRect, Vector2 canvasRealSize)
@@ -141,7 +146,7 @@ namespace UnityEditor.PaintEditor
             int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
             int groupsY = Mathf.CeilToInt(canvasSize.y / threadSize);
 
-            textureSection = new RenderTexture((int)canvasSize.x, (int)canvasSize.y, 0, RenderTextureFormat.ARGB32);
+            textureSection = new RenderTexture((int)realSize.x, (int)realSize.y, 0, RenderTextureFormat.ARGB32);
             textureSection.filterMode = FilterMode.Point;
             textureSection.enableRandomWrite = true;
             textureSection.Create();
@@ -155,7 +160,10 @@ namespace UnityEditor.PaintEditor
             takeSectionComputeShader.SetVector(maxLimitsId, maxLimit);
             takeSectionComputeShader.Dispatch(kernelId, groupsX, groupsY, 1);
 
-            this.textureRect = new Rect(PaintEditorPlugin.Instance.canvas.rect);
+            this.rect = new Rect(rect);
+            this.selectionStartPosition = this.rect.position;
+            this.realSize = GetRealSize();
+            this.selectionStartSize = this.realSize;
         }
 
         public void MergeSection(Rect destinationRect)
@@ -164,20 +172,20 @@ namespace UnityEditor.PaintEditor
             var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
             int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
             int groupsY = Mathf.CeilToInt(canvasSize.y / threadSize);
+            
+            var minLimit = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRect(new Vector2(this.rect.xMin, this.rect.yMin), destinationRect), destinationRect, canvasSize);
+            var maxLimit = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRect(new Vector2(this.rect.xMax, this.rect.yMax), destinationRect), destinationRect, canvasSize);
 
-            var texturePos = CommonPaintEditor.ConvertPos(textureRect.position, destinationRect, canvasSize);
-            var canvasPos = CommonPaintEditor.ConvertPos(destinationRect.position, destinationRect, canvasSize);
-
-            Vector2 offset = texturePos - canvasPos;
-            offset.y = -offset.y;
-
-            offset.x = Mathf.RoundToInt(offset.x);
-            offset.y = Mathf.RoundToInt(offset.y);
+            var temp = minLimit.y;
+            minLimit.y = maxLimit.y;
+            maxLimit.y = temp;
+            
+            Vector2 scaleFactor = this.realSize / this.selectionStartSize;
 
             takeSectionComputeShader.SetTexture(kernelId, sourceTextureId, textureSection);
             takeSectionComputeShader.SetTexture(kernelId, destinationTextureId, layer.rTexture);
-            takeSectionComputeShader.SetVector(resolutionId, canvasSize);
-            takeSectionComputeShader.SetVector(offsetId, offset);
+            takeSectionComputeShader.SetVector(minLimitsId, minLimit);
+            takeSectionComputeShader.SetVector(scaleFactorId, scaleFactor);
             takeSectionComputeShader.Dispatch(kernelId, groupsX, groupsY, 1);
         }
 
@@ -200,7 +208,12 @@ namespace UnityEditor.PaintEditor
 
             if (selectionType == SelectionType.edit)
             {
-                Handles.color = Color.red;
+                Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMin), Vector2.one * (scaleHandleSize + 2));
+                Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMin), Vector2.one * (scaleHandleSize + 2));
+                Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMax), Vector2.one * (scaleHandleSize + 2));
+                Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMax), Vector2.one * (scaleHandleSize + 2));
+
+                Handles.color = new Color(0, 1, 1, .5f);
                 Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMin), Vector2.one * scaleHandleSize);
                 Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMin), Vector2.one * scaleHandleSize);
                 Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMax), Vector2.one * scaleHandleSize);
@@ -213,6 +226,7 @@ namespace UnityEditor.PaintEditor
             LimitPos(ref initPosition, canvas.rect);
 
             this.initPosition = initPosition;
+            this.realSize = Vector2.zero;
             this.rect = new Rect(initPosition, Vector2.zero);
             this.layer = canvas.selectedLayer;
             this.selectionType = SelectionType.open;
@@ -242,14 +256,6 @@ namespace UnityEditor.PaintEditor
             return rect.width > 0 && rect.height > 0;
         }
 
-        public bool IsPosInScaleHandle(Vector2 pos, Vector2 handlePos)
-        {
-            Vector2 handlePosMaxSize = handlePos + Vector2.one * scaleHandleSize;
-            Vector2 handlePosMinSize = handlePos - Vector2.one * scaleHandleSize;
-
-            return pos.x >= handlePosMinSize.x && pos.x <= handlePosMaxSize.x && pos.y >= handlePosMinSize.y && pos.y <= handlePosMaxSize.y;
-        }
-
         public Vector2 GetHandle(HandleType type)
         {
             switch (type)
@@ -265,6 +271,39 @@ namespace UnityEditor.PaintEditor
                 default:
                     return Vector2.one * -1;
             }
+        }
+
+        public bool IsPosInScaleHandle(Vector2 pos, Vector2 handlePos)
+        {
+            Vector2 handlePosMaxSize = handlePos + Vector2.one * (scaleHandleSize + 5);
+            Vector2 handlePosMinSize = handlePos - Vector2.one * (scaleHandleSize + 5);
+
+            return pos.x >= handlePosMinSize.x && pos.x <= handlePosMaxSize.x && pos.y >= handlePosMinSize.y && pos.y <= handlePosMaxSize.y;
+        }
+
+        public void Scale(HandleType handleType, Vector2 delta)
+        {
+            switch (handleType)
+            {
+                case HandleType.upL:
+                    rect.xMin += delta.x;
+                    rect.yMin += delta.y;
+                    break;
+                case HandleType.lowL:
+                    rect.xMin += delta.x;
+                    rect.yMax += delta.y;
+                    break;
+                case HandleType.upR:
+                    rect.xMax += delta.x;
+                    rect.yMin += delta.y;
+                    break;
+                case HandleType.lowR:
+                    rect.xMax += delta.x;
+                    rect.yMax += delta.y;
+                    break;
+            }
+
+            this.realSize = GetRealSize();
         }
     }
 }

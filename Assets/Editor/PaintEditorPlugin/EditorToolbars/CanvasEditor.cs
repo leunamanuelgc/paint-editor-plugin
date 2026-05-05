@@ -158,7 +158,7 @@ namespace UnityEditor.PaintEditor
                     LayerSelection layerSelection = PaintEditorPlugin.Instance.layerSelection;
                     if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit && layerList[i].isSelected)
                     {
-                        GUI.DrawTexture(layerSelection.textureRect, layerSelection.textureSection);
+                        GUI.DrawTexture(layerSelection.rect, layerSelection.textureSection);
                     }
                 }
             }

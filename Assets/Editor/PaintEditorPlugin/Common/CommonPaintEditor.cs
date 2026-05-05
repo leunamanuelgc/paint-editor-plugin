@@ -338,6 +338,14 @@ namespace UnityEditor.PaintEditor
             return new Vector2Int((int)new_x, (int)new_y);
         }
 
+        public static Vector2 PosInRect(Vector2 pos, Rect rect)
+        {
+            float new_x = pos.x - rect.x;
+            float new_y = rect.height - (pos.y - rect.y);
+
+            return new Vector2(new_x, new_y);
+        }
+
         public static Vector2Int DeltaInt()
         {
             Vector2Int delta = new Vector2Int((int)Event.current.delta.x, (int)Event.current.delta.y);

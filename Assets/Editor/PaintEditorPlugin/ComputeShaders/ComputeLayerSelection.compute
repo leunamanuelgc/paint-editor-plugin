@@ -10,12 +10,16 @@ uint2 _MaxLimits;
 uint2 _Resolution;
 uint2 _Offset;
 
+float2 _ScaleFactor;
+
 [numthreads(8, 8, 1)]
 void TakeSection(uint3 dtid : SV_DispatchThreadID)
 {
-    if (dtid.x >= 0 && dtid.x >= _MinLimits.x && dtid.x <= _MaxLimits.x && dtid.y >= 0 && dtid.y >= _MinLimits.y && dtid.y <= _MaxLimits.y)
+    uint2 dstIdx = dtid.xy - _MinLimits.xy;
+    
+    if (dtid.x >= 0 && dtid.x >= _MinLimits.x && dtid.x < _MaxLimits.x && dtid.y >= 0 && dtid.y >= _MinLimits.y && dtid.y < _MaxLimits.y)
     {   
-        _Destination[dtid.xy] = _Source[dtid.xy];
+        _Destination[dstIdx] = _Source[dtid.xy];
         _Source[dtid.xy] = float4(0, 0, 0, 0);
     }
 }
@@ -23,16 +27,12 @@ void TakeSection(uint3 dtid : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void MergeSection(uint3 dtid : SV_DispatchThreadID)
 {
-    uint2 srcIdx = dtid.xy - _Offset.xy;
+    uint2 srcIdx = round((dtid.xy - _MinLimits.xy) / _ScaleFactor.xy);
+    float4 col;
     
-    if ((dtid.x >= 0 && dtid.x < _Resolution.x && dtid.y >= 0 && dtid.y < _Resolution.y) &&
-        (srcIdx.x > 0 && srcIdx.y > 0))
-    {
-        float4 col;
-        col.rgb = _Source[srcIdx.xy].rgb + (_Destination[dtid.xy].rgb * (1 - _Source[srcIdx.xy].a));
-        col.a = _Source[srcIdx.xy].a + _Destination[dtid.xy].a * (1 - _Source[srcIdx.xy].a);
+    col.rgb = _Source[srcIdx.xy].rgb + (_Destination[dtid.xy].rgb * (1 - _Source[srcIdx.xy].a));
+    col.a = _Source[srcIdx.xy].a + _Destination[dtid.xy].a * (1 - _Source[srcIdx.xy].a);
         
-        _Destination[dtid.xy] = col;
-        _Source[srcIdx.xy] = float4(0, 0, 0, 0);
-    }
+    _Destination[dtid.xy] = col;
+    _Source[srcIdx.xy] = float4(0, 0, 0, 0);
 }

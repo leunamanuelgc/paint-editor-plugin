@@ -140,26 +140,75 @@ namespace UnityEditor.PaintEditor
         {
             Event e = Event.current;
 
-            if(toolbox.currentTool is Selection)
+            if (toolbox.currentTool is Selection)
             {
-                if ((e.type == EventType.MouseDrag || e.type == EventType.MouseDown) && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                if(layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
                     Vector2 handle0 = layerSelection.GetHandle(LayerSelection.HandleType.upL);
                     Vector2 handle1 = layerSelection.GetHandle(LayerSelection.HandleType.lowL);
                     Vector2 handle2 = layerSelection.GetHandle(LayerSelection.HandleType.upR);
                     Vector2 handle3 = layerSelection.GetHandle(LayerSelection.HandleType.lowR);
 
-                    bool mouseInScaleHandlesStatement = layerSelection.IsPosInScaleHandle(e.mousePosition, handle0) &&
-                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle1) &&
-                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle2) &&
-                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle3);
+                    if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle0))
+                    {
+                        EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpLeft);
+                    }
 
-                    Debug.Log(handle0 + " " + handle1 + " " + handle2 + " " + handle3);
+                    if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle1))
+                    {
+                        EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpRight);
+                    }
+
+                    if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle2))
+                    {
+                        EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpRight);
+                    }
+
+                    if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle3))
+                    {
+                        EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpLeft);
+                    }
+                }
+
+                if ((e.type == EventType.MouseDrag || e.type == EventType.MouseDown) && layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                {
+
+                    Vector2 handle0 = layerSelection.GetHandle(LayerSelection.HandleType.upL);
+                    Vector2 handle1 = layerSelection.GetHandle(LayerSelection.HandleType.lowL);
+                    Vector2 handle2 = layerSelection.GetHandle(LayerSelection.HandleType.upR);
+                    Vector2 handle3 = layerSelection.GetHandle(LayerSelection.HandleType.lowR);
+
+                    bool mouseInScaleHandlesStatement = layerSelection.IsPosInScaleHandle(e.mousePosition, handle0) ||
+                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle1) ||
+                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle2) ||
+                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle3);
 
                     if (mouseInScaleHandlesStatement)
                     {
                         //Scale handle
-                        Debug.Log("scale");
+                        if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle0))
+                        {
+                            EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpLeft);
+                            layerSelection.Scale(LayerSelection.HandleType.upL, e.delta);
+                        }
+                        
+                        if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle1))
+                        {
+                            EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, -this.position.height), MouseCursor.ResizeUpLeft);
+                            layerSelection.Scale(LayerSelection.HandleType.lowL, e.delta);
+                        }
+                        
+                        if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle2))
+                        {
+                            EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpRight);
+                            layerSelection.Scale(LayerSelection.HandleType.upR, e.delta);
+                        }
+                        
+                        if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle3))
+                        {
+                            EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, -this.position.height), MouseCursor.ResizeUpRight);
+                            layerSelection.Scale(LayerSelection.HandleType.lowR, e.delta);
+                        }
                     }
                     else if (layerSelection.rect.Contains(e.mousePosition))
                     {
@@ -229,7 +278,7 @@ namespace UnityEditor.PaintEditor
 
                 if (layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
-                    DrawCommand command = new DrawCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
+                    DrawCommand command = new DrawCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
                     ExecuteCommand(command);
                 }
                 else
@@ -245,7 +294,7 @@ namespace UnityEditor.PaintEditor
                 Eraser eraser = (Eraser)toolbox.currentTool;
                 if (layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
-                    EraseCommand command = new EraseCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, eraser.size, e.type);
+                    EraseCommand command = new EraseCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, eraser.size, e.type);
                     ExecuteCommand(command);
                 }
                 else
@@ -258,11 +307,14 @@ namespace UnityEditor.PaintEditor
             
             if (toolbox.currentTool is BucketFill)
             {
-                if (layerSelection.selectionType == LayerSelection.SelectionType.edit && layerSelection.textureRect.Contains(e.mousePosition))
+                if (layerSelection.selectionType == LayerSelection.SelectionType.edit )
                 {
-                    FillCommand command = new FillCommand(layerSelection.textureSection, layerSelection.textureRect, layerSelection.rect, canvas.realSize, e.mousePosition, utils.currentColor, e.type);
-                    command.Execute();
-                    Repaint();
+                    if (layerSelection.rect.Contains(e.mousePosition))
+                    {
+                        FillCommand command = new FillCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, utils.currentColor, e.type);
+                        command.Execute();
+                        Repaint();
+                    }
                 }
                 else if (canvas.rect.Contains(e.mousePosition))
                 {
