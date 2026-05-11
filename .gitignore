@@ -99,3 +99,41 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/Sh/BasicTexturing.shader.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/Sh/BasicTexturing.shader
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/Sh/BasicColoring.shader.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/Sh/BasicColoring.shader
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/Sh.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/ScrollTexture 4.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/ScrollTexture 4.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/ScrollTexture 3.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/ScrollTexture 3.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/ScrollTexture 2.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/ScrollTexture 2.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/ScrollTexture 1.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/ScrollTexture 1.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/RotateTexture.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/RotateTexture.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseTexture 4.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseTexture 4.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseTexture 3.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseTexture 3.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseTexture 2.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseTexture 2.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseTexture 1.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseTexture 1.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseColor.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseColor.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseColor 3.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseColor 3.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseColor 2.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseColor 2.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseColor 1.mat.meta
+Assets/Editor/PaintEditorPlugin/Shaders/Mat/BaseColor 1.mat
+Assets/Editor/PaintEditorPlugin/Shaders/Mat.meta
+Assets/Scenes/SampleScene.unity
+Assets/Scenes/SampleScene.unity
+Assets/Scenes/SampleScene.unity
+Assets/Scenes/SampleScene.unity
+ProjectSettings/URPProjectSettings.asset
+Assets/Scenes/SampleScene.unity
