@@ -138,10 +138,11 @@ namespace UnityEditor.PaintEditor
 
         public void DisplayGUI()
         {
+            var windowRect = PaintEditorPlugin.Instance.position;
+
             // Fix for the canvas starting at a point that is not the center
             if (start)
             {
-                var windowRect = PaintEditorPlugin.Instance.position;
                 Vector2 diff = -this.rect.position + (windowRect.size / 2 - this.rect.size / 2);
                 PaintEditorPlugin.Instance.ExecuteCommand(new PanCommand(diff, rect));
                 start = false;
@@ -158,7 +159,18 @@ namespace UnityEditor.PaintEditor
                     LayerSelection layerSelection = PaintEditorPlugin.Instance.layerSelection;
                     if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit && layerList[i].isSelected)
                     {
-                        GUI.DrawTexture(layerSelection.rect, layerSelection.textureSection);
+                        //Matrix4x4 matrixBackup = GUI.matrix;
+                        //GUIUtility.RotateAroundPivot(PaintEditorPlugin.Instance.angle, layerSelection.rect.center);
+                        
+                        if(layerSelection.rotatedTextureSection != null)
+                        {
+                            GUI.DrawTexture(layerSelection.rect, layerSelection.rotatedTextureSection);
+                        }
+                        else
+                        {
+                            GUI.DrawTexture(layerSelection.rect, layerSelection.textureSection);
+                        }
+                        //GUI.matrix = matrixBackup;
                     }
                 }
             }

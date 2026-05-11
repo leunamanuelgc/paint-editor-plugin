@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace UnityEditor.PaintEditor
 {
@@ -16,29 +17,26 @@ namespace UnityEditor.PaintEditor
             upL,
             lowL,
             upR,
-            lowR
+            lowR,
+            rotate
         }
 
         private const int scaleHandleSize = 10;
         private const int threadSize = 8;
 
         public Vector2 initPosition;
-
         public Vector2 selectionStartPosition;
-
         public Vector2 selectionStartSize;
         public Vector2 realSize;
-
         public Rect rect;
 
         public Layer layer;
 
         public SelectionType selectionType;
 
-        public RenderTexture textureSection;
-
         #region TakeSection
 
+        public CustomRenderTexture textureSection;
         private ComputeShader takeSectionComputeShader;
         private static readonly int sourceTextureId = Shader.PropertyToID("_Source");
         private static readonly int destinationTextureId = Shader.PropertyToID("_Destination");
@@ -51,12 +49,23 @@ namespace UnityEditor.PaintEditor
 
         #endregion
 
+        #region RotateTexture
+
+        public CustomRenderTexture rotatedTextureSection;
+        public Material rotateMaterial;
+        private Shader rotateShader;
+        private string shaderName = "Basics/RotateTexture";
+        private float angle = 0;
+
+        #endregion
+
         public LayerSelection()
         {
             Close();
 
             PanCommand.OnPanMove += Move;
             takeSectionComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computeTakeSectionPath);
+            rotateShader = Shader.Find(shaderName);
         }
 
         private void LimitPos(ref Vector2 position, Rect rect)
@@ -146,7 +155,7 @@ namespace UnityEditor.PaintEditor
             int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
             int groupsY = Mathf.CeilToInt(canvasSize.y / threadSize);
 
-            textureSection = new RenderTexture((int)realSize.x, (int)realSize.y, 0, RenderTextureFormat.ARGB32);
+            textureSection = new CustomRenderTexture((int)this.realSize.x, (int)this.realSize.y, RenderTextureFormat.ARGB32);            
             textureSection.filterMode = FilterMode.Point;
             textureSection.enableRandomWrite = true;
             textureSection.Create();
@@ -164,10 +173,19 @@ namespace UnityEditor.PaintEditor
             this.selectionStartPosition = this.rect.position;
             this.realSize = GetRealSize();
             this.selectionStartSize = this.realSize;
+
+            rotateMaterial = new Material(rotateShader);
+            rotateMaterial.SetTexture("_MainTexture", textureSection);
+            Rotate(0);
         }
 
         public void MergeSection(Rect destinationRect)
         {
+            if (rotatedTextureSection != null)
+            {
+                ApplyRotation();
+            }
+
             int kernelId = takeSectionComputeShader.FindKernel(computeMergeSectionFunc);
             var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
             int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
@@ -191,6 +209,9 @@ namespace UnityEditor.PaintEditor
 
         public void DisplayGUI()
         {
+            Matrix4x4 matrixBackup = GUI.matrix;
+            GUIUtility.RotateAroundPivot(PaintEditorPlugin.Instance.angle, this.rect.center);
+
             Color color = new Color(0, 1, 1, 0.1f);
             Handles.color = color;
 
@@ -208,6 +229,7 @@ namespace UnityEditor.PaintEditor
 
             if (selectionType == SelectionType.edit)
             {
+                
                 Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMin), Vector2.one * (scaleHandleSize + 2));
                 Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMin), Vector2.one * (scaleHandleSize + 2));
                 Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMax), Vector2.one * (scaleHandleSize + 2));
@@ -218,7 +240,11 @@ namespace UnityEditor.PaintEditor
                 Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMin), Vector2.one * scaleHandleSize);
                 Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMax), Vector2.one * scaleHandleSize);
                 Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMax), Vector2.one * scaleHandleSize);
+
+                Handles.color = Color.red;
+                Handles.DrawWireDisc(new Vector2(rect.center.x, rect.yMin - 20), Vector3.forward, scaleHandleSize);
             }
+            GUI.matrix = matrixBackup;
         }
 
         public void Open(Vector2 initPosition, CanvasEditor canvas)
@@ -268,15 +294,17 @@ namespace UnityEditor.PaintEditor
                     return new Vector2(rect.xMax, rect.yMin);
                 case HandleType.lowR:
                     return new Vector2(rect.xMax, rect.yMax);
+                case HandleType.rotate:
+                    return new Vector2(rect.center.x, rect.yMin - 20);
                 default:
                     return Vector2.one * -1;
             }
         }
 
-        public bool IsPosInScaleHandle(Vector2 pos, Vector2 handlePos)
+        public bool IsPosInHandle(Vector2 pos, Vector2 handlePos, int offset)
         {
-            Vector2 handlePosMaxSize = handlePos + Vector2.one * (scaleHandleSize + 5);
-            Vector2 handlePosMinSize = handlePos - Vector2.one * (scaleHandleSize + 5);
+            Vector2 handlePosMaxSize = handlePos + Vector2.one * (scaleHandleSize + offset);
+            Vector2 handlePosMinSize = handlePos - Vector2.one * (scaleHandleSize + offset);
 
             return pos.x >= handlePosMinSize.x && pos.x <= handlePosMaxSize.x && pos.y >= handlePosMinSize.y && pos.y <= handlePosMaxSize.y;
         }
@@ -304,6 +332,27 @@ namespace UnityEditor.PaintEditor
             }
 
             this.realSize = GetRealSize();
+        }
+
+        public Vector2 GetCenter()
+        {
+            return this.rect.center;
+        }
+
+        public void Rotate(float angleToAdd)
+        {
+            angle += angleToAdd;
+            rotatedTextureSection = new CustomRenderTexture((int)realSize.x, (int)realSize.y, RenderTextureFormat.ARGB32);
+            rotatedTextureSection.filterMode = FilterMode.Point;
+            rotateMaterial.SetFloat("_Rotation", angle);
+
+            Graphics.Blit(textureSection, rotatedTextureSection, rotateMaterial);
+        }
+
+        private void ApplyRotation()
+        {
+            Graphics.Blit(rotatedTextureSection, textureSection);
+            angle = 0;
         }
     }
 }

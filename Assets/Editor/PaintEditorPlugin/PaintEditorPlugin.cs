@@ -1,4 +1,8 @@
+using System.Data;
+using System.IO;
 using UnityEngine;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.Rendering;
 
 namespace UnityEditor.PaintEditor
 {
@@ -8,6 +12,8 @@ namespace UnityEditor.PaintEditor
 
         private const int defaultResolution = 256;
         private const int baseSizeCanvas = 512;
+
+        public float angle = 0;
 
         public CanvasEditor canvas { get; set; }
 
@@ -22,6 +28,9 @@ namespace UnityEditor.PaintEditor
         public Utils utils { get; set; }
 
         public LayerSelection layerSelection { get; set; }
+
+        CustomRenderTexture rT;
+        Material m;
 
         [MenuItem("Tools/Raster Editor")]
         public static void CreateEditorWindow()
@@ -50,10 +59,56 @@ namespace UnityEditor.PaintEditor
             utils = new Utils();
             utils.currentColor = Color.black;
             layerSelection = new LayerSelection();
+
+
+            //////////////
+
+            //rT = new CustomRenderTexture(256, 256, RenderTextureFormat.ARGB32);
+            //string path = "Assets/Resources/human-placeholder.png";
+            
+            //var rawImageData = File.ReadAllBytes(path);
+
+            //Texture2D loadedTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+            //loadedTexture.alphaIsTransparency = true;
+            //ImageConversion.LoadImage(loadedTexture, rawImageData);
+
+            //rT = new CustomRenderTexture(256, 256, RenderTextureFormat.ARGB32);
+            //rT.filterMode = FilterMode.Point;
+            //rT.updateMode = CustomRenderTextureUpdateMode.Realtime;
+            //rT.enableRandomWrite = true;
+
+            //Shader rotateShader;
+            //string rotateShaderPath = ComputePath() + "Mat/Sh/RotateTextures.shader";
+            //string shaderName = "Basics/RotateTextures";
+
+            ////rotateShader = AssetDatabase.LoadAssetAtPath<Shader>(rotateShaderPath);
+            //rotateShader = Shader.Find(shaderName);
+
+            //m = new Material(rotateShader);
+            //Graphics.Blit(loadedTexture, rT);
+
+            //m.SetTexture("_MainTexture", rT);
+
+            //Graphics.Blit(rT, m);
+
+            //rT.material = m;
+
+            //////////////
         }
 
         public void OnGUI()
         {
+            //if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag)
+            //{
+            //    CustomRenderTexture newRT = new CustomRenderTexture(256, 256, RenderTextureFormat.ARGB32);
+
+            //    Graphics.Blit(rT, newRT, m);
+
+            //    Graphics.Blit(newRT, rT);
+            //}
+
+            //GUI.DrawTexture(new Rect(0, 0, 256, 256), rT);
+
             DisplayGUI();
 
             if (!cancelClick)
@@ -68,7 +123,7 @@ namespace UnityEditor.PaintEditor
                 {
                     cancelClick = false;
                 }
-            }
+            }   
         }
 
         public void DisplayGUI()
@@ -142,72 +197,100 @@ namespace UnityEditor.PaintEditor
 
             if (toolbox.currentTool is Selection)
             {
-                if(layerSelection.selectionType == LayerSelection.SelectionType.edit)
-                {
-                    Vector2 handle0 = layerSelection.GetHandle(LayerSelection.HandleType.upL);
-                    Vector2 handle1 = layerSelection.GetHandle(LayerSelection.HandleType.lowL);
-                    Vector2 handle2 = layerSelection.GetHandle(LayerSelection.HandleType.upR);
-                    Vector2 handle3 = layerSelection.GetHandle(LayerSelection.HandleType.lowR);
+                Vector2 handleUpL = layerSelection.GetHandle(LayerSelection.HandleType.upL);
+                Vector2 handleLowL = layerSelection.GetHandle(LayerSelection.HandleType.lowL);
+                Vector2 handleUpR = layerSelection.GetHandle(LayerSelection.HandleType.upR);
+                Vector2 handleLowR = layerSelection.GetHandle(LayerSelection.HandleType.lowR);
+                Vector2 handleRotate = layerSelection.GetHandle(LayerSelection.HandleType.rotate);
 
-                    if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle0))
+                bool checkUpL = layerSelection.IsPosInHandle(e.mousePosition, handleUpL, 10);
+                bool checkLowL = layerSelection.IsPosInHandle(e.mousePosition, handleLowL, 10);
+                bool checkUpR = layerSelection.IsPosInHandle(e.mousePosition, handleUpR, 10);
+                bool checkLowR = layerSelection.IsPosInHandle(e.mousePosition, handleLowR, 10);
+                bool checkRotate = layerSelection.IsPosInHandle(e.mousePosition, handleRotate, 100);
+
+                if (layerSelection.selectionType == LayerSelection.SelectionType.edit)
+                {   
+                    if (checkUpL)
                     {
                         EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpLeft);
                     }
 
-                    if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle1))
+                    if (checkLowL)
                     {
                         EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpRight);
                     }
 
-                    if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle2))
+                    if (checkUpR)
                     {
                         EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpRight);
                     }
 
-                    if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle3))
+                    if (checkLowR)
                     {
                         EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpLeft);
+                    }
+
+                    if (checkRotate)
+                    {
+                        EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.RotateArrow);
                     }
                 }
 
                 if ((e.type == EventType.MouseDrag || e.type == EventType.MouseDown) && layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
-
-                    Vector2 handle0 = layerSelection.GetHandle(LayerSelection.HandleType.upL);
-                    Vector2 handle1 = layerSelection.GetHandle(LayerSelection.HandleType.lowL);
-                    Vector2 handle2 = layerSelection.GetHandle(LayerSelection.HandleType.upR);
-                    Vector2 handle3 = layerSelection.GetHandle(LayerSelection.HandleType.lowR);
-
-                    bool mouseInScaleHandlesStatement = layerSelection.IsPosInScaleHandle(e.mousePosition, handle0) ||
-                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle1) ||
-                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle2) ||
-                        layerSelection.IsPosInScaleHandle(e.mousePosition, handle3);
+                    bool mouseInScaleHandlesStatement = checkUpL || checkLowL || checkUpR || checkLowR || checkRotate;
 
                     if (mouseInScaleHandlesStatement)
                     {
                         //Scale handle
-                        if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle0))
+                        if (checkUpL)
                         {
                             EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpLeft);
                             layerSelection.Scale(LayerSelection.HandleType.upL, e.delta);
                         }
                         
-                        if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle1))
+                        if (checkLowL)
                         {
                             EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, -this.position.height), MouseCursor.ResizeUpLeft);
                             layerSelection.Scale(LayerSelection.HandleType.lowL, e.delta);
                         }
                         
-                        if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle2))
+                        if (checkUpR)
                         {
                             EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.ResizeUpRight);
                             layerSelection.Scale(LayerSelection.HandleType.upR, e.delta);
                         }
                         
-                        if (layerSelection.IsPosInScaleHandle(e.mousePosition, handle3))
+                        if (checkLowR)
                         {
                             EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, -this.position.height), MouseCursor.ResizeUpRight);
                             layerSelection.Scale(LayerSelection.HandleType.lowR, e.delta);
+                        }
+
+                        if (checkRotate)
+                        {
+                            EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, -this.position.height), MouseCursor.RotateArrow);
+                            layerSelection.Rotate(e.delta.x * 0.01f);
+
+                            //Vector3 direction = e.mousePosition - layerSelection.GetCenter();
+                            //Vector3 rotation = Quaternion.LookRotation(direction).eulerAngles;
+                            //layerSelection.Rotate(rotation.x);
+                            //rotation.x -= 90;
+                        
+                            //if (rotation.y == 90)
+                            //{
+                            //    if (Mathf.Abs(rotation.x) <= 90 && rotation.x < 0){
+                            //        rotation.x = -rotation.x;
+                            //    } else if (Mathf.Abs(rotation.x) <= 270 && rotation.x > 0)
+                            //    {
+                            //        rotation.x = -rotation.x;
+                            //    }
+                                
+                            //}
+                        
+                            //Debug.Log(rotation);
+                            //angle = rotation.x;
                         }
                     }
                     else if (layerSelection.rect.Contains(e.mousePosition))
@@ -219,6 +302,7 @@ namespace UnityEditor.PaintEditor
                         //Click outside the selection merge closes the selection
                         ExecuteCommand(new MergeCommand(layerSelection, canvas.rect));
                         layerSelection.Close();
+                        angle = 0;
                     }
                 }
                 else if (e.type == EventType.MouseDown && layerSelection.selectionType == LayerSelection.SelectionType.close)
@@ -243,6 +327,7 @@ namespace UnityEditor.PaintEditor
                     {
                         //If click and stop clicking in same place, close selection
                         layerSelection.Close();
+                        angle = 0;
                     }
                 }
             }
@@ -355,7 +440,7 @@ namespace UnityEditor.PaintEditor
 
         public string ComputePath()
         {
-            return "Assets/Editor/PaintEditorPlugin/ComputeShaders/";
+            return "Assets/Editor/PaintEditorPlugin/Shaders/";
         }
 
         private void OnDisable()
