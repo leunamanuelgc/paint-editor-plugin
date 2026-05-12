@@ -157,11 +157,10 @@ namespace UnityEditor.PaintEditor
                     GUI.DrawTexture(layerList[i].rect, layerList[i].rTexture);
 
                     LayerSelection layerSelection = PaintEditorPlugin.Instance.layerSelection;
-                    if (layerSelection != null && layerSelection.selectionType == LayerSelection.SelectionType.edit && layerList[i].isSelected)
+                    if ((layerSelection.selectionType == LayerSelection.SelectionType.edit ||
+                        layerSelection.selectionType == LayerSelection.SelectionType.transform ) &&
+                        layerList[i].isSelected)
                     {
-                        //Matrix4x4 matrixBackup = GUI.matrix;
-                        //GUIUtility.RotateAroundPivot(PaintEditorPlugin.Instance.angle, layerSelection.rect.center);
-                        
                         if(layerSelection.rotatedTextureSection != null)
                         {
                             GUI.DrawTexture(layerSelection.rect, layerSelection.rotatedTextureSection);
@@ -170,7 +169,6 @@ namespace UnityEditor.PaintEditor
                         {
                             GUI.DrawTexture(layerSelection.rect, layerSelection.textureSection);
                         }
-                        //GUI.matrix = matrixBackup;
                     }
                 }
             }

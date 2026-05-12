@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace UnityEditor.PaintEditor
 {
@@ -9,6 +8,7 @@ namespace UnityEditor.PaintEditor
         {
             open,
             edit,
+            transform,
             close,
         }
 
@@ -66,6 +66,7 @@ namespace UnityEditor.PaintEditor
             PanCommand.OnPanMove += Move;
             takeSectionComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(computeTakeSectionPath);
             rotateShader = Shader.Find(shaderName);
+            Selection.OnTransformMode += Transform;
         }
 
         private void LimitPos(ref Vector2 position, Rect rect)
@@ -229,6 +230,12 @@ namespace UnityEditor.PaintEditor
 
             if (selectionType == SelectionType.edit)
             {
+                Handles.DrawLine(new Vector2(rect.center.x - 20, rect.center.y), new Vector2(rect.center.x + 20, rect.center.y), .1f);
+                Handles.DrawLine(new Vector2(rect.center.x, rect.center.y - 20), new Vector2(rect.center.x, rect.center.y + 20), .1f);
+            }
+
+            if (selectionType == SelectionType.transform)
+            {
                 
                 Handles.DrawWireCube(new Vector2(rect.xMin, rect.yMin), Vector2.one * (scaleHandleSize + 2));
                 Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMin), Vector2.one * (scaleHandleSize + 2));
@@ -242,7 +249,7 @@ namespace UnityEditor.PaintEditor
                 Handles.DrawWireCube(new Vector2(rect.xMax, rect.yMax), Vector2.one * scaleHandleSize);
 
                 Handles.color = Color.red;
-                Handles.DrawWireDisc(new Vector2(rect.center.x, rect.yMin - 20), Vector3.forward, scaleHandleSize);
+                Handles.DrawWireDisc(new Vector2(rect.center.x, rect.center.y), Vector3.forward, scaleHandleSize);
             }
             GUI.matrix = matrixBackup;
         }
@@ -263,11 +270,18 @@ namespace UnityEditor.PaintEditor
             this.selectionType = SelectionType.edit;
         }
 
+        private void Transform()
+        {
+            this.selectionType = SelectionType.transform;
+        }
+
         public void Close()
         {
             this.initPosition = Vector2.zero;
             this.rect = Rect.zero;
             this.layer = null;
+            this.textureSection = null;
+            this.rotatedTextureSection = null;
             this.selectionType = SelectionType.close;
         }
 
@@ -295,7 +309,7 @@ namespace UnityEditor.PaintEditor
                 case HandleType.lowR:
                     return new Vector2(rect.xMax, rect.yMax);
                 case HandleType.rotate:
-                    return new Vector2(rect.center.x, rect.yMin - 20);
+                    return new Vector2(rect.center.x, rect.center.y);
                 default:
                     return Vector2.one * -1;
             }
