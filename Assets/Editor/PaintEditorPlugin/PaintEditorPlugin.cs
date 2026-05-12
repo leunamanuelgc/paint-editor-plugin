@@ -365,6 +365,9 @@ namespace UnityEditor.PaintEditor
                 {
                     DrawCommand command = new DrawCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
                     ExecuteCommand(command);
+
+                    if(canvas.rect.Contains(e.mousePosition) && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag))
+                        layerSelection.Rotate(0);
                 }
                 else
                 {
@@ -381,6 +384,9 @@ namespace UnityEditor.PaintEditor
                 {
                     EraseCommand command = new EraseCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, eraser.size, e.type);
                     ExecuteCommand(command);
+
+                    if(canvas.rect.Contains(e.mousePosition) && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag))
+                        layerSelection.Rotate(0);
                 }
                 else
                 {
@@ -399,6 +405,9 @@ namespace UnityEditor.PaintEditor
                         FillCommand command = new FillCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, utils.currentColor, e.type);
                         command.Execute();
                         Repaint();
+
+                        if (canvas.rect.Contains(e.mousePosition) && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag))
+                            layerSelection.Rotate(0);
                     }
                 }
                 else if (canvas.rect.Contains(e.mousePosition))

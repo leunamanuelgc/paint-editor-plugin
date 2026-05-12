@@ -2,22 +2,12 @@ Shader "Basics/RotateTexture"
 {
 	Properties
 	{
-		[Enum(UnityEngine.Rendering.BlendMode)]
-		_SrcFactor("Src Factor", Float) = 5
-		[Enum(UnityEngine.Rendering.BlendMode)]
-		_DstFactor("Dst Factor", Float) = 10
-		[Enum(UnityEngine.Rendering.BlendOp)]
-		_Opp("Operation", Float) = 0
-
 		_MainTexture ("Main Texture", 2D) = "white" {}
 		_Rotation ("Rotation", float) = 0
 	}
 	SubShader
 	{
 		Tags { "RenderType" = "Transparent" }
-		LOD 100
-		Blend [_SrcFactor] [_DstFactor]
-		BlendOp [_Opp]
 		Pass
 		{
 			CGPROGRAM

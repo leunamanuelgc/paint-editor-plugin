@@ -184,7 +184,6 @@ namespace UnityEditor.PaintEditor
             if (GetPixel(rTexture, pos.x, pos.y) == fillColor) return;
 
             binTextureData = GetBinaryTexture(rTexture, targetColor);
-            SaveBinaryTexture(rTexture);
             SpanFilling(rTexture, pos);
             ComputeFill(rTexture,fillColor);
         }
