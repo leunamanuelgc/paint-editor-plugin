@@ -356,8 +356,13 @@ namespace UnityEditor.PaintEditor
         public void Rotate(float angleToAdd)
         {
             angle += angleToAdd;
-            rotatedTextureSection = new CustomRenderTexture((int)realSize.x, (int)realSize.y, RenderTextureFormat.ARGB32);
-            rotatedTextureSection.filterMode = FilterMode.Point;
+            if(rotatedTextureSection == null)
+            {
+                rotatedTextureSection = new CustomRenderTexture((int)realSize.x, (int)realSize.y, RenderTextureFormat.ARGB32);
+                rotatedTextureSection.filterMode = FilterMode.Point;
+                rotatedTextureSection.Create();
+            }
+
             rotateMaterial.SetFloat("_Rotation", angle);
 
             Graphics.Blit(textureSection, rotatedTextureSection, rotateMaterial);
