@@ -25,13 +25,18 @@ namespace UnityEditor.PaintEditor
 
         public override bool Execute()
         {
-            if (eType != EventType.MouseDown) return false;
+            if (eType == EventType.MouseDown)
+            {
+                SaveBackup();
+                PaintEditorPlugin.Instance.history.Push(this);
 
-            var pos = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvasRect), canvasRect, canvasSize);
-            var posInt = new Vector2Int((int)pos.x, (int)pos.y);
-            var targetColor = CommonPaintEditor.GetPixel(rTexture, posInt.x, posInt.y);
-            CommonPaintEditor.Fill(rTexture, canvasRect, limits, canvasSize, posInt, targetColor, color);
-            CommonPaintEditor.Release();
+                var pos = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvasRect), canvasRect, canvasSize);
+                var posInt = new Vector2Int((int)pos.x, (int)pos.y);
+                var targetColor = CommonPaintEditor.GetPixel(rTexture, posInt.x, posInt.y);
+                CommonPaintEditor.Fill(rTexture, canvasRect, limits, canvasSize, posInt, targetColor, color);
+                CommonPaintEditor.Release();
+            }
+
             return false;
         }
     }

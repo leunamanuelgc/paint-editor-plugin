@@ -66,5 +66,15 @@ namespace UnityEditor.PaintEditor
 
             Zoom.OnZoomLevelChange -= Resize;
         }
+
+        public void CopyToLayer(Layer layer)
+        {
+            layer.name = this.name;
+            layer.isSelected = this.isSelected;
+            layer.isEnabled = this.isEnabled;
+            layer.realSize = this.realSize;
+            layer.rect = this.rect;
+            Graphics.CopyTexture(this.rTexture, layer.rTexture);
+        }
     }
 }

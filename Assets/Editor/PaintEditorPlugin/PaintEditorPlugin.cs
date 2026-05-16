@@ -1,8 +1,5 @@
-using System.Data;
-using System.IO;
+using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.Rendering;
 
 namespace UnityEditor.PaintEditor
 {
@@ -28,9 +25,6 @@ namespace UnityEditor.PaintEditor
         public Utils utils { get; set; }
 
         public LayerSelection layerSelection { get; set; }
-
-        CustomRenderTexture rT;
-        Material m;
 
         [MenuItem("Tools/Raster Editor")]
         public static void CreateEditorWindow()
@@ -280,7 +274,7 @@ namespace UnityEditor.PaintEditor
                     if (layerSelection.rect.Contains(e.mousePosition))
                     {
                         FillCommand command = new FillCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, utils.currentColor, e.type);
-                        command.Execute();
+                        ExecuteCommand(command);
                         Repaint();
 
                         if (canvas.rect.Contains(e.mousePosition) && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag))
@@ -290,9 +284,7 @@ namespace UnityEditor.PaintEditor
                 else if (canvas.rect.Contains(e.mousePosition))
                 {
                     FillCommand command = new FillCommand(canvas.selectedLayer.rTexture, canvas.rect, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, e.type);
-                    command.SaveBackup();
-                    history.Push(command);
-                    command.Execute();
+                    ExecuteCommand(command);
                     Repaint();
                 }
             }
@@ -316,6 +308,12 @@ namespace UnityEditor.PaintEditor
             if (history.history.Count > 0)
             {
                 ACommand command = history.Pop();
+
+                if(layerSelection.selectionType == LayerSelection.SelectionType.edit ||
+                    layerSelection.selectionType == LayerSelection.SelectionType.transform)
+                {
+                    CloseSelection();
+                }
 
                 if (command != null)
                 {

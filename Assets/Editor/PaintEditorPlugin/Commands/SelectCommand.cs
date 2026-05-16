@@ -16,6 +16,9 @@ namespace UnityEditor.PaintEditor
 
         public override bool Execute()
         {
+            SaveBackup();
+            PaintEditorPlugin.Instance.history.Push(this);
+
             layerSelection.Select(canvasRect, canvasRealSize);
 
             return false;

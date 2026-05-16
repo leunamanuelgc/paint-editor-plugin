@@ -1,28 +1,50 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UnityEditor.PaintEditor
 {
     public abstract class ACommand
     {
-        //protected RenderTexture backup;
+        protected List<Layer> backup;
 
         public ACommand()
         {
-            //var app = PaintEditorPlugin.Instance;
             //De momento lo dejo así, pero el backup tendrá q ser de todas las capas
-            //backup = new RenderTexture(app.canvas.selectedLayer.rTexture.width, app.canvas.selectedLayer.rTexture.height, 0,
-                //app.canvas.selectedLayer.rTexture.format, RenderTextureReadWrite.sRGB);
+            backup = new List<Layer>();
         }
 
         public void SaveBackup()
         {
-            //Graphics.CopyTexture(PaintEditorPlugin.Instance.canvas.selectedLayer.rTexture, backup);
+            var app = PaintEditorPlugin.Instance;
+            foreach(var layer in app.canvas.layerList)
+            {
+                Rect r = new Rect(app.canvas.rect.position, app.canvas.realSize);
+                Layer newLayer = new Layer(0, r);
+                layer.CopyToLayer(newLayer);
+                backup.Add(newLayer);
+            }
         }
 
         public void Undo()
         {
-            //Graphics.CopyTexture(backup, PaintEditorPlugin.Instance.canvas.selectedLayer.rTexture);
+            var app = PaintEditorPlugin.Instance;
+
+            if(backup.Count < app.canvas.layerList.Count)
+            {
+                app.canvas.layerList.RemoveAt(app.canvas.layerList.Count - 1);
+            }
+            else if (backup.Count > app.canvas.layerList.Count)
+            {
+                Rect r = new Rect(app.canvas.rect.position, app.canvas.realSize);
+                app.canvas.layerList.Add(new Layer(0, r));
+            }
+
+            for (int i = 0; i < backup.Count; i++)
+            {
+                var layer = backup[i];
+                layer.CopyToLayer(app.canvas.layerList[i]);
+            }
         }
 
         public abstract bool Execute();

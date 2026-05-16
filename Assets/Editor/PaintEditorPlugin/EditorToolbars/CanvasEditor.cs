@@ -195,15 +195,31 @@ namespace UnityEditor.PaintEditor
         public void AddLayer(ReorderableList list)
         {
             Rect r = new Rect(rect.position, realSize);
-            layerList.Add(new Layer(list.count, r));
+            PaintEditorPlugin.Instance.ExecuteCommand(new AddLayerCommand(list.count, r, layerList));
         }
 
         public void RemoveLayer(ReorderableList list)
         {
-            var newIndex = (list.selectedIndices[0] - 1) >= 0 ? list.selectedIndices[0] - 1 : 0;
-            layerList[list.selectedIndices[0]].Release();
-            layerList.RemoveAt(list.selectedIndices[0]);
+            int newIndex;
+            int selectedIndex = list.selectedIndices[0] - 1;
+
+            if (selectedIndex >= 0 && selectedIndex < layerList.Count - 1)
+            {
+                newIndex = selectedIndex;
+            }
+            else if(selectedIndex == layerList.Count - 1)
+            {
+                newIndex = selectedIndex - 1;
+            }
+            else
+            {
+                newIndex = 0;
+            }
+
+            PaintEditorPlugin.Instance.ExecuteCommand(new RemoveLayerCommand(list.selectedIndices[0], layerList));
+            selectedLayer.isSelected = false;
             selectedLayer = layerList[newIndex];
+            selectedLayer.isSelected = true;
         }
 
         public void SelectLayer(ReorderableList list)

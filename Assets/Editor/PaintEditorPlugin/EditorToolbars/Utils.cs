@@ -31,6 +31,12 @@ namespace UnityEditor.PaintEditor
             layers.onCanRemoveCallback = app.canvas.CanRemove;
             layers.onSelectCallback = app.canvas.SelectLayer;
             layers.elementHeightCallback = (int index) => EditorGUIUtility.singleLineHeight + 10;
+            layers.onReorderCallback = ReorderCallback;
+        }
+
+        private void ReorderCallback(ReorderableList list)
+        {
+            PaintEditorPlugin.Instance.ExecuteCommand(new ReorderLayerCommand());
         }
 
         public void DisplayGUI()
