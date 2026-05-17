@@ -20,27 +20,34 @@ void ComputeBinaryTexture(uint3 dtid : SV_DispatchThreadID)
 {   
     // Due to float's precision difference in cpu and gpu, some colors didn't get fill because they were "different".
     // i.e: 0.09411765 from texture vs 0.09411766 from targetColor. To fix this, I clamp one decimal value from both color values.
-    float4 textureColor = _Texture[dtid.xy];
-    float4 targetColor = _TargetColor;
-        
-    textureColor = round(textureColor * 1000000) / 1000000;
-    targetColor = round(targetColor * 1000000) / 1000000;
-        
-    if (textureColor.r == targetColor.r && textureColor.g == targetColor.g && textureColor.b == targetColor.b && textureColor.a == targetColor.a)
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
     {
-        _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 1;
-        return;
+        float4 textureColor = _Texture[dtid.xy];
+        float4 targetColor = _TargetColor;
+        
+        textureColor = round(textureColor * 1000000) / 1000000;
+        targetColor = round(targetColor * 1000000) / 1000000;
+        
+        if (textureColor.r == targetColor.r && textureColor.g == targetColor.g && textureColor.b == targetColor.b && textureColor.a == targetColor.a)
+        {
+            _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 1;
+            return;
+        }
+        else
+        {
+            _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 0;
+        }
     }
-    
-    
-    _BinTextureBuffer[dtid.y * _Resolution.x + dtid.x].data = 0;
 }
 
 [numthreads(8, 8, 1)]
 void Fill(uint3 dtid : SV_DispatchThreadID)
 {
-    if (_FillBuffer[dtid.y * _Resolution.x + dtid.x].data == 1)
+    if (dtid.x < _Resolution.x && dtid.y < _Resolution.y)
     {
-        _Texture[dtid.xy] = _FillColor.rgba;
+        if (_FillBuffer[dtid.y * _Resolution.x + dtid.x].data == 1)
+        {
+            _Texture[dtid.xy] = _FillColor.rgba;
+        }
     }
 }

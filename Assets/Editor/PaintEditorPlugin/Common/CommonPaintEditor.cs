@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using UnityEngine;
 
 namespace UnityEditor.PaintEditor
@@ -107,7 +106,10 @@ namespace UnityEditor.PaintEditor
             paintBuffer.SetData(paintData);
 
             int kernelId = paintComputeShader.FindKernel(computePaintFunc);
-            int groups = Mathf.CeilToInt(realSize.x / threadSize);
+            int groupsX = Mathf.CeilToInt((float)rTexture.width / (float)threadSize);
+            int groupsY = Mathf.CeilToInt((float)rTexture.height / (float)threadSize);
+            if (groupsX <= 0) groupsX = 1;
+            if (groupsY <= 0) groupsY = 1;
             Vector4 resolution = new Vector4(realSize.x, realSize.y);
 
             paintComputeShader.SetVector(resolutionId, resolution);
@@ -115,7 +117,7 @@ namespace UnityEditor.PaintEditor
             paintComputeShader.SetVector(maxLimitId, maxLimit);
             paintComputeShader.SetTexture(kernelId, textureId, rTexture);
             paintComputeShader.SetBuffer(kernelId, paintBufferId, paintBuffer);
-            paintComputeShader.Dispatch(kernelId, groups, groups, 1);
+            paintComputeShader.Dispatch(kernelId, groupsX, groupsY, 1);
         }
 
         #endregion
@@ -191,8 +193,10 @@ namespace UnityEditor.PaintEditor
         private static BinData[] GetBinaryTexture(RenderTexture rTexture, Color targetColor)
         {
             int kernelId = fillComputeShader.FindKernel(computeBinTextureFunc);
-            int groupsX = Mathf.CeilToInt(rTexture.width / threadSize);
-            int groupsY = Mathf.CeilToInt(rTexture.height / threadSize);
+            int groupsX = Mathf.CeilToInt((float)rTexture.width / (float)threadSize);
+            int groupsY = Mathf.CeilToInt((float)rTexture.height / (float)threadSize);
+            if (groupsX <= 0) groupsX = 1;
+            if (groupsY <= 0) groupsY = 1;
 
             Vector2 resolution = new Vector2(Mathf.CeilToInt(rTexture.width), Mathf.CeilToInt(rTexture.height));
 
@@ -308,8 +312,10 @@ namespace UnityEditor.PaintEditor
         private static void ComputeFill(RenderTexture rTexture, Color color)
         {
             int kernelId = fillComputeShader.FindKernel(computeFillFunc);
-            int groupsX = Mathf.CeilToInt(rTexture.width / threadSize);
-            int groupsY = Mathf.CeilToInt(rTexture.height / threadSize);
+            int groupsX = Mathf.CeilToInt((float)rTexture.width / (float)threadSize);
+            int groupsY = Mathf.CeilToInt((float)rTexture.height / (float)threadSize);
+            if (groupsX <= 0) groupsX = 1;
+            if (groupsY <= 0) groupsY = 1;
             Vector4 resolution = new Vector4(Mathf.CeilToInt(rTexture.width), Mathf.CeilToInt(rTexture.height));
 
             fillBuffer.SetData(textureFillData);
