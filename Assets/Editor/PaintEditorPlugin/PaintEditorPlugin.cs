@@ -120,9 +120,13 @@ namespace UnityEditor.PaintEditor
                 ExecuteCommand(new LoadCommand());
             }
 
-            if (e.control && e.keyCode == KeyCode.Z && e.type == EventType.KeyDown)
+            if (e.control && e.shift && e.keyCode == KeyCode.Z && e.type == EventType.KeyDown)
             {
-                ExecuteCommand(new UndoCommand());
+                Redo();
+            }
+            else if (e.control && e.keyCode == KeyCode.Z && e.type == EventType.KeyDown)
+            {
+                Undo();
             }
 
             if (e.alt && e.type == EventType.MouseDown)
@@ -223,7 +227,7 @@ namespace UnityEditor.PaintEditor
 
                 if (layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
-                    DrawCommand command = new DrawCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
+                    DrawCommand command = new DrawCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, utils.currentColor, brush.size, e);
                     ExecuteCommand(command);
 
                     if(canvas.rect.Contains(e.mousePosition) && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag))
@@ -231,7 +235,7 @@ namespace UnityEditor.PaintEditor
                 }
                 else
                 {
-                    DrawCommand command = new DrawCommand(canvas.selectedLayer.rTexture, canvas.rect, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e.type);
+                    DrawCommand command = new DrawCommand(canvas.selectedLayer.rTexture, canvas.rect, canvas.rect, canvas.realSize, e.mousePosition, utils.currentColor, brush.size, e);
                     ExecuteCommand(command);
                 }
                 
@@ -248,7 +252,7 @@ namespace UnityEditor.PaintEditor
 
                 if (layerSelection.selectionType == LayerSelection.SelectionType.edit)
                 {
-                    EraseCommand command = new EraseCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, eraser.size, e.type);
+                    EraseCommand command = new EraseCommand(layerSelection.textureSection, layerSelection.rect, layerSelection.rect, layerSelection.realSize, e.mousePosition, eraser.size, e);
                     ExecuteCommand(command);
 
                     if(canvas.rect.Contains(e.mousePosition) && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag))
@@ -256,7 +260,7 @@ namespace UnityEditor.PaintEditor
                 }
                 else
                 {
-                    EraseCommand command = new EraseCommand(canvas.selectedLayer.rTexture, canvas.rect, canvas.rect, canvas.realSize, e.mousePosition, eraser.size, e.type);
+                    EraseCommand command = new EraseCommand(canvas.selectedLayer.rTexture, canvas.rect, canvas.rect, canvas.realSize, e.mousePosition, eraser.size, e);
                     ExecuteCommand(command);
                 }
                 
@@ -307,7 +311,7 @@ namespace UnityEditor.PaintEditor
         {
             if (history.history.Count > 0)
             {
-                ACommand command = history.Pop();
+                ACommand command = history.RetrievePrevious();
 
                 if(layerSelection.selectionType == LayerSelection.SelectionType.edit ||
                     layerSelection.selectionType == LayerSelection.SelectionType.transform)
@@ -318,6 +322,25 @@ namespace UnityEditor.PaintEditor
                 if (command != null)
                 {
                     command.Undo();
+                }
+            }
+        }
+
+        public void Redo()
+        {
+            if (history.history.Count > 0)
+            {
+                ACommand command = history.RetrieveNext();
+
+                if (command != null)
+                {
+                    if (layerSelection.selectionType == LayerSelection.SelectionType.edit ||
+                    layerSelection.selectionType == LayerSelection.SelectionType.transform)
+                    {
+                        CloseSelection();
+                    }
+
+                    command.Redo();
                 }
             }
         }

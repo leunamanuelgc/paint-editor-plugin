@@ -11,9 +11,9 @@ namespace UnityEditor.PaintEditor
         protected Vector2 position;
         protected Color color;
         protected Vector2Int size;
-        protected EventType eType;
+        protected Event e;
 
-        public DrawCommand(RenderTexture rTexture, Rect canvas, Rect limits, Vector2 canvasSize, Vector2 position, Color color, Vector2Int size, EventType eType)
+        public DrawCommand(RenderTexture rTexture, Rect canvas, Rect limits, Vector2 canvasSize, Vector2 position, Color color, Vector2Int size, Event e)
         {
             this.rTexture = rTexture;
             this.canvas = canvas;
@@ -22,14 +22,14 @@ namespace UnityEditor.PaintEditor
             this.position = position;
             this.color = color;
             this.size = size;
-            this.eType = eType;
+            this.e = e;
         }
 
         public override bool Execute()
         {
-            if (eType == EventType.MouseDown || eType == EventType.MouseDrag)
+            if (e.type == EventType.MouseDown || e.type == EventType.MouseDrag)
             {
-                if (eType == EventType.MouseDown)
+                if (e.type == EventType.MouseDown)
                 {
                     SaveBackup();
                     PaintEditorPlugin.Instance.history.Push(this);
@@ -37,7 +37,7 @@ namespace UnityEditor.PaintEditor
 
                 var posf = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvas), canvas, canvasSize);
                 var pos1 = new Vector2Int((int)posf.x, (int)posf.y);
-                var deltaf = CommonPaintEditor.ConvertPos(CommonPaintEditor.DeltaInt(), canvas, canvasSize);
+                var deltaf = CommonPaintEditor.ConvertPos(new Vector2(e.delta.x, e.delta.y), canvas, canvasSize);
                 var delta = new Vector2Int((int)deltaf.x, (int)deltaf.y);
                 var pos0 = new Vector2Int(pos1.x - delta.x, pos1.y + delta.y);
 
@@ -46,5 +46,19 @@ namespace UnityEditor.PaintEditor
             }
             return false;
         }
+
+        //public override string ToString()
+        //{
+        //    string s = "DrawCommand\n";
+        //    s += $"{rTexture}\n";
+        //    s += $"{canvas}\n";
+        //    s += $"{limits}\n";
+        //    s += $"{canvasSize}\n";
+        //    s += $"{position}\n";
+        //    s += $"{color}\n";
+        //    s += $"{size}\n";
+        //    s += $"{e}\n";
+        //    return s;
+        //}
     }
 }

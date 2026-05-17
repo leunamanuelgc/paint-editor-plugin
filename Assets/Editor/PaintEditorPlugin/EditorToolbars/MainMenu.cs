@@ -34,6 +34,8 @@ namespace UnityEditor.PaintEditor
 
                 menu.AddItem(new GUIContent("Undo"), false, PaintEditorPlugin.Instance.Undo);
 
+                menu.AddItem(new GUIContent("Redo"), false, PaintEditorPlugin.Instance.Redo);
+
                 menu.ShowAsContext();
             }
 

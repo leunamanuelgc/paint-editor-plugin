@@ -3,10 +3,7 @@ namespace UnityEditor.PaintEditor
 {
     public class ReorderLayerCommand : ACommand
     {
-        public ReorderLayerCommand()
-        {
-
-        }
+        public ReorderLayerCommand() { }
 
         public override bool Execute()
         {
