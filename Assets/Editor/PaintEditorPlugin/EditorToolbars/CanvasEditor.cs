@@ -60,6 +60,7 @@ namespace UnityEditor.PaintEditor
         public void Reinitialize(Vector2 size)
         {
             var app = PaintEditorPlugin.Instance;
+            app.history.Clear();
             rect = new Rect(rect.position, size);
             this.realSize = size;
 
@@ -178,10 +179,9 @@ namespace UnityEditor.PaintEditor
 
         public void Load(Texture2D newTexture)
         {
-            realSize = new Vector2(newTexture.width, newTexture.height);
+            Reinitialize(new Vector2(newTexture.width, newTexture.height));
             aspectRatio = (float)newTexture.width / (float)newTexture.height;
-
-            ResetLayers();
+            
             selectedLayer.InitializeTexture(newTexture.width, newTexture.height);
             Graphics.Blit(newTexture, selectedLayer.rTexture);
 

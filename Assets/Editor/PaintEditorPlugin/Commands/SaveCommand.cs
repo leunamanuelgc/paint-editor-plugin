@@ -21,22 +21,23 @@ namespace UnityEditor.PaintEditor
         {
             var path = EditorUtility.SaveFilePanelInProject("SaveImage", "new_image", "png", "Save Image");
 
-            try
-            {
-                var app = PaintEditorPlugin.Instance;
-                RenderTexture result = InitializeTexture((int)app.canvas.realSize.x, (int)app.canvas.realSize.y);
-                if(app.layerSelection != null)
-                {
-                    app.ExecuteCommand(new MergeCommand(app.layerSelection, app.canvas.rect));
-                }
-                byte[] bytes = ComputeSaveLayers(app.canvas.layerList, result);
-                File.WriteAllBytes(path, bytes);
-            }
-            catch
+            if (path.Equals(""))
             {
                 Debug.Log("Save cancelled: Empty path name");
                 return false;
             }
+
+            var app = PaintEditorPlugin.Instance;
+            RenderTexture result = InitializeTexture((int)app.canvas.realSize.x, (int)app.canvas.realSize.y);
+            if(app.layerSelection.selectionType == LayerSelection.SelectionType.edit ||
+                app.layerSelection.selectionType == LayerSelection.SelectionType.transform)
+            {
+                app.ExecuteCommand(new MergeCommand(app.layerSelection, app.canvas.rect));
+            }
+
+            byte[] bytes = ComputeSaveLayers(app.canvas.layerList, result);
+            File.WriteAllBytes(path, bytes);
+
             return false;
         }
 

@@ -76,6 +76,11 @@ namespace UnityEditor.PaintEditor
             history.RemoveLast();
             return item;
         }
+
+        public void Clear()
+        {
+            history.Clear();
+        }
     }
 }
 
