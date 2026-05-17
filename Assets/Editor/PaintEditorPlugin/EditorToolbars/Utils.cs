@@ -55,7 +55,12 @@ namespace UnityEditor.PaintEditor
             string content = "Color";
             var textDimensions = GUI.skin.label.CalcSize(new GUIContent(content));
             EditorGUIUtility.labelWidth = textDimensions.x + 10;
-            currentColor = EditorGUILayout.ColorField(new GUIContent(content), currentColor, true, true, true);
+            currentColor = EditorGUILayout.ColorField(new GUIContent(content), currentColor, false, true, true);
+
+            if(GUIUtility.hotControl >= 10000)
+            {
+                PaintEditorPlugin.Instance.CancelClick(true);
+            }
 
             EditorGUILayout.Space(20);
 
