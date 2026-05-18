@@ -1,8 +1,5 @@
 using UnityEditorInternal;
 using UnityEngine;
-using System.Collections.Generic;
-using PlasticGui.WorkspaceWindow.BranchExplorer;
-using Unity.VisualScripting;
 using static UnityEditor.PaintEditor.Layer;
 using System;
 
@@ -10,12 +7,13 @@ namespace UnityEditor.PaintEditor
 {
     public class Utils : IToolbar
     {
-        private float width, height;
+        private float layersWidth, layersHeight;
 
-        private const string text = "Utils";
-        private const string tooltip = "Change color";
+        private const string layersText = "Color & Layers";
+        private const string layersTooltip = "Change color and edit layers";
 
-        public Rect rect { get; set; }
+        public Rect layersRect { get; set; }
+        public Rect infoRect { get; set; }
         public Color currentColor { get; set; }
 
         public ReorderableList layers;
@@ -25,13 +23,12 @@ namespace UnityEditor.PaintEditor
         public Utils()
         {
             var app = PaintEditorPlugin.Instance;
-            width = 200;
-            height = 300;
-            rect = new Rect(app.position.width - (width + 20), 100, width, height);
+            layersWidth = 200;
+            layersHeight = 300;
 
             layers = new ReorderableList(app.canvas.layerList, typeof(Layer), true, true, true, true);
             layers.drawElementCallback = DrawLayers;
-            layers.drawHeaderCallback = DrawHeader;
+            layers.drawHeaderCallback = DrawLayersHeader;
             layers.onAddCallback = app.canvas.AddLayer;
             layers.onRemoveCallback = app.canvas.RemoveLayer;
             layers.onCanRemoveCallback = app.canvas.CanRemove;
@@ -49,14 +46,16 @@ namespace UnityEditor.PaintEditor
         {
             var app = PaintEditorPlugin.Instance;
 
-            rect = new Rect(app.position.width - (width + 20), 100, width, height);
-            GUIContent content = new GUIContent(text, tooltip);
-            GUIStyle style = new GUIStyle(GUI.skin.window);
+            layersRect = new Rect(app.position.width - (layersWidth + 20), 60, layersWidth, layersHeight);
+            GUIContent layersContent = new GUIContent(layersText, layersTooltip);
+            GUIStyle layersStyle = new GUIStyle(GUI.skin.window);
+            GUILayout.Window(1, layersRect, CreateLayersWindow, layersContent, layersStyle);
 
-            GUILayout.Window(1, rect, CreateWindow, content, style);
+            infoRect = new Rect(0, app.position.height - 40, 250, 25);
+            GUILayout.Window(2, infoRect, CreateInfoWindow, "");
         }
 
-        private void CreateWindow(int id)
+        private void CreateLayersWindow(int id)
         {
             string content = "Color";
             var textDimensions = GUI.skin.label.CalcSize(new GUIContent(content));
@@ -95,10 +94,31 @@ namespace UnityEditor.PaintEditor
             app.canvas.layerList[index].name = EditorGUI.TextField(new Rect(rect.x + 30, rect.y + 25, 100, EditorGUIUtility.singleLineHeight), app.canvas.layerList[index].name);
         }
 
-        private void DrawHeader(Rect rect)
+        private void DrawLayersHeader(Rect rect)
         {
             string name = "Layers";
             EditorGUI.LabelField(rect, name);
+        }
+
+        private void CreateInfoWindow(int id)
+        {
+            GUIStyle style = new GUIStyle(EditorStyles.miniLabel);
+            style.fontSize = 10;
+
+            EditorGUILayout.BeginHorizontal();
+            var app = PaintEditorPlugin.Instance;
+            string canvasInfo = $"Canvas: ({app.canvas.realSize.x},{app.canvas.realSize.y})";
+            GUILayout.Label(canvasInfo, style, GUILayout.Width(100));
+
+            var mousePos = app.GetCanvasMousePosition();
+            string mouseInfo = $"Mouse Position: ({Mathf.RoundToInt(mousePos.x)},{Mathf.RoundToInt(mousePos.y)})";
+            GUILayout.Label(mouseInfo, style, GUILayout.Width(140));
+            
+            var zoomLevel = app.GetZoomLevel() / app.GetBaseZoom();
+            string zoomLevelInfo = $"Zoom Level: ({zoomLevel})";
+            GUILayout.Label(zoomLevelInfo, style, GUILayout.Width(100));
+
+            EditorGUILayout.EndHorizontal();
         }
     }
 }

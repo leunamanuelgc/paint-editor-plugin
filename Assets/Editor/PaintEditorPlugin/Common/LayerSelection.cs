@@ -54,7 +54,7 @@ namespace UnityEditor.PaintEditor
         public CustomRenderTexture rotatedTextureSection;
         public Material rotateMaterial;
         private Shader rotateShader;
-        private string shaderName = "Basics/RotateTexture";
+        private string shaderName = "PaintEditorPlugin/RotateTexture";
         private float angle = 0;
 
         #endregion

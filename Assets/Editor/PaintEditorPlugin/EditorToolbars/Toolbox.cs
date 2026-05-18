@@ -26,7 +26,7 @@ namespace UnityEditor.PaintEditor
 
         public Toolbox(float panSpeed, float baseZoom)
         {
-            this.rect = new Rect(10, 100, 50, 300);
+            this.rect = new Rect(10, 60, 60, EditorGUIUtility.singleLineHeight * 6 + 20);
 
             this.selection = new Selection();
             this.brush = new Brush(1, 100, Vector2Int.one, 0);

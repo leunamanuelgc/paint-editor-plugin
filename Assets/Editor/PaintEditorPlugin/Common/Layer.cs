@@ -40,7 +40,7 @@ namespace UnityEditor.PaintEditor
         public Material blendMaterial;
         public CustomRenderTexture blendedTexture;
         private Shader blendShader;
-        private string shaderName = "Basics/BlendTexture";
+        private string shaderName = "PaintEditorPlugin/BlendTexture";
         public int blendModeIdx;
 
         #endregion

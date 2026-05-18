@@ -9,6 +9,7 @@ namespace UnityEditor.PaintEditor
 
         private const int defaultResolution = 256;
         private const int baseSizeCanvas = 512;
+        private Vector2 currentMousePos = Vector2.zero;
 
         public float angle = 0;
 
@@ -57,6 +58,8 @@ namespace UnityEditor.PaintEditor
 
         public void OnGUI()
         {
+            currentMousePos = Event.current.mousePosition;
+
             DisplayGUI();
 
             if (!cancelClick)
@@ -382,6 +385,11 @@ namespace UnityEditor.PaintEditor
         public void SetBaseZoom(float zoom)
         {
             toolbox.zoom.SetBaseZoom(zoom);
+        }
+
+        public Vector2 GetCanvasMousePosition()
+        {
+            return CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRect(currentMousePos, canvas.rect), canvas.rect, canvas.realSize);
         }
 
         public bool IsMouseInCanvas()
