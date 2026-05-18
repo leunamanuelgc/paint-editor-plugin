@@ -1,6 +1,10 @@
 using UnityEditorInternal;
 using UnityEngine;
 using System.Collections.Generic;
+using PlasticGui.WorkspaceWindow.BranchExplorer;
+using Unity.VisualScripting;
+using static UnityEditor.PaintEditor.Layer;
+using System;
 
 namespace UnityEditor.PaintEditor
 {
@@ -16,6 +20,8 @@ namespace UnityEditor.PaintEditor
 
         public ReorderableList layers;
 
+        public static event Action onBlendModeChange;
+
         public Utils()
         {
             var app = PaintEditorPlugin.Instance;
@@ -30,7 +36,7 @@ namespace UnityEditor.PaintEditor
             layers.onRemoveCallback = app.canvas.RemoveLayer;
             layers.onCanRemoveCallback = app.canvas.CanRemove;
             layers.onSelectCallback = app.canvas.SelectLayer;
-            layers.elementHeightCallback = (int index) => EditorGUIUtility.singleLineHeight + 10;
+            layers.elementHeightCallback = (int index) => EditorGUIUtility.singleLineHeight * 2 + 10;
             layers.onReorderCallback = ReorderCallback;
         }
 
@@ -55,7 +61,7 @@ namespace UnityEditor.PaintEditor
             string content = "Color";
             var textDimensions = GUI.skin.label.CalcSize(new GUIContent(content));
             EditorGUIUtility.labelWidth = textDimensions.x + 10;
-            currentColor = EditorGUILayout.ColorField(new GUIContent(content), currentColor, false, true, true);
+            currentColor = EditorGUILayout.ColorField(new GUIContent(content), currentColor, false, true, false);
 
             if(GUIUtility.hotControl >= 200)
             {
@@ -72,13 +78,21 @@ namespace UnityEditor.PaintEditor
             var app = PaintEditorPlugin.Instance;
             var icon = app.canvas.layerList[index].isEnabled? Layer.iconTextureOn : Layer.iconTextureOff;
 
-            if (GUI.Button(new Rect(rect.x, rect.y, 25, 25), new GUIContent((Texture)EditorGUIUtility.Load(icon))))
+            if (GUI.Button(new Rect(rect.x, rect.y + 20, 25, 25), new GUIContent((Texture)EditorGUIUtility.Load(icon))))
             {
                 var newValue = !app.canvas.layerList[index].isEnabled;
                 app.canvas.layerList[index].isEnabled = newValue;
             }
 
-            app.canvas.layerList[index].name = EditorGUI.TextField(new Rect(rect.x + 30, rect.y + 4, 100, EditorGUIUtility.singleLineHeight), app.canvas.layerList[index].name);
+            string[] blendModeOptions = Enum.GetNames(typeof(LayerBlendMode));
+            var newBlendModeIdx = EditorGUI.Popup(new Rect(rect.x, rect.y, 130, EditorGUIUtility.singleLineHeight), app.canvas.layerList[index].blendModeIdx, blendModeOptions);
+            if(newBlendModeIdx != app.canvas.layerList[index].blendModeIdx)
+            {
+                app.canvas.layerList[index].blendModeIdx = newBlendModeIdx;
+                onBlendModeChange?.Invoke();
+            }
+
+            app.canvas.layerList[index].name = EditorGUI.TextField(new Rect(rect.x + 30, rect.y + 25, 100, EditorGUIUtility.singleLineHeight), app.canvas.layerList[index].name);
         }
 
         private void DrawHeader(Rect rect)

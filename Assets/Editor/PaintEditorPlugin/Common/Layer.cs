@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
+using System;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace UnityEditor.PaintEditor
@@ -15,13 +14,36 @@ namespace UnityEditor.PaintEditor
 
         public Vector2 realSize { get; set; }
 
-        public RenderTexture rTexture { get; set; }
-
         public bool isEnabled { get; set; }
 
         public bool isSelected { get; set; }
 
         public string name { get; set; }
+
+        public CustomRenderTexture rTexture;
+
+        #region BlendModes
+
+        public enum LayerBlendMode
+        {
+            normal,
+            additive,
+            soft_additive,
+            multiplicative,
+            multiplicative_2x,
+            subtract,
+            reverse_subtract,
+            min,
+            max,
+        }
+
+        public Material blendMaterial;
+        public CustomRenderTexture blendedTexture;
+        private Shader blendShader;
+        private string shaderName = "Basics/BlendTexture";
+        public int blendModeIdx;
+
+        #endregion
 
         public Layer(int num, Rect rect)
         {
@@ -30,10 +52,21 @@ namespace UnityEditor.PaintEditor
             this.isEnabled = true;
             this.name = "Layer " + num;
 
-            InitializeTexture((int)rect.width, (int)rect.height);
+            InitializeTexture(out rTexture, (int)rect.width, (int)rect.height);
+            InitializeTexture(out blendedTexture, (int)rect.width, (int)rect.height);
 
             PanCommand.OnPanMove += Move;
             Zoom.OnZoomLevelChange += Resize;
+            blendShader = Shader.Find(shaderName);
+
+            blendMaterial = new Material(blendShader);
+            blendMaterial.SetTexture("_MainTexture", rTexture);
+            blendMaterial.SetFloat("_SrcFactorA", 5);
+            blendMaterial.SetFloat("_DstFactorA", 10);
+            blendMaterial.SetFloat("_OpAlpha", 0);
+            blendModeIdx = 0;
+            Utils.onBlendModeChange += ChangeBlendMode;
+            ChangeBlendMode();
         }
 
         ~Layer()
@@ -41,12 +74,12 @@ namespace UnityEditor.PaintEditor
             Release();
         }
 
-        public void InitializeTexture(int width, int height)
+        public void InitializeTexture(out CustomRenderTexture texture, int width, int height)
         {
-            rTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
-            rTexture.filterMode = FilterMode.Point;
-            rTexture.enableRandomWrite = true;
-            rTexture.Create();
+            texture = new CustomRenderTexture(width, height, RenderTextureFormat.ARGB32);
+            texture.filterMode = FilterMode.Point;
+            texture.enableRandomWrite = true;
+            texture.Create();
         }
 
         public void Move(Vector2 delta)
@@ -65,6 +98,8 @@ namespace UnityEditor.PaintEditor
             rTexture = null;
 
             Zoom.OnZoomLevelChange -= Resize;
+            PanCommand.OnPanMove -= Move;
+            Utils.onBlendModeChange -= ChangeBlendMode;
         }
 
         public void CopyToLayer(Layer layer)
@@ -75,6 +110,78 @@ namespace UnityEditor.PaintEditor
             layer.realSize = this.realSize;
             layer.rect = this.rect;
             Graphics.CopyTexture(this.rTexture, layer.rTexture);
+        }
+
+        public void ChangeBlendMode()
+        {
+            switch (blendModeIdx)
+            {   
+                case 0:
+                    //Normal
+                    blendMaterial.SetFloat("_SrcFactor", 5);
+                    blendMaterial.SetFloat("_DstFactor", 10);
+                    blendMaterial.SetFloat("_OpColor", 0);
+                    
+                    break;
+                case 1:
+                    //Additive
+                    blendMaterial.SetFloat("_SrcFactor", 1);
+                    blendMaterial.SetFloat("_DstFactor", 1);
+                    blendMaterial.SetFloat("_OpColor", 0);
+                    
+                    break;
+                case 2:
+                    //Soft Additive
+                    blendMaterial.SetFloat("_SrcFactor", 4);
+                    blendMaterial.SetFloat("_DstFactor", 1);
+                    blendMaterial.SetFloat("_OpColor", 0) ;
+                    
+                    break;
+                case 3:
+                    //Multiplicative
+                    blendMaterial.SetFloat("_SrcFactor", 2);
+                    blendMaterial.SetFloat("_DstFactor", 0);
+                    blendMaterial.SetFloat("_OpColor", 0);
+
+                    break;
+                case 4:
+                    //Multiplicative x2
+                    blendMaterial.SetFloat("_SrcFactor", 2);
+                    blendMaterial.SetFloat("_DstFactor", 3);
+                    blendMaterial.SetFloat("_OpColor", 0);
+                    
+                    break;
+                case 5:
+                    //Subtract
+                    blendMaterial.SetFloat("_SrcFactor", 3);
+                    blendMaterial.SetFloat("_DstFactor", 2);
+                    blendMaterial.SetFloat("_OpColor", 1);
+
+                    break;
+                case 6:
+                    //Reverse Subtract
+                    blendMaterial.SetFloat("_SrcFactor", 3);
+                    blendMaterial.SetFloat("_DstFactor", 2);
+                    blendMaterial.SetFloat("_OpColor", 2);
+
+                    break;
+                case 7:
+                    //Min
+                    blendMaterial.SetFloat("_SrcFactor", 3);
+                    blendMaterial.SetFloat("_DstFactor", 2);
+                    blendMaterial.SetFloat("_OpColor", 3);
+
+                    break;
+                case 8:
+                    //Max
+                    blendMaterial.SetFloat("_SrcFactor", 3);
+                    blendMaterial.SetFloat("_DstFactor", 2);
+                    blendMaterial.SetFloat("_OpColor", 4);
+
+                    break;
+            }
+
+            Graphics.Blit(rTexture, blendedTexture, blendMaterial);
         }
     }
 }

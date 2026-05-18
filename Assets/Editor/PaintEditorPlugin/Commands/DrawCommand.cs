@@ -46,19 +46,5 @@ namespace UnityEditor.PaintEditor
             }
             return false;
         }
-
-        //public override string ToString()
-        //{
-        //    string s = "DrawCommand\n";
-        //    s += $"{rTexture}\n";
-        //    s += $"{canvas}\n";
-        //    s += $"{limits}\n";
-        //    s += $"{canvasSize}\n";
-        //    s += $"{position}\n";
-        //    s += $"{color}\n";
-        //    s += $"{size}\n";
-        //    s += $"{e}\n";
-        //    return s;
-        //}
     }
 }

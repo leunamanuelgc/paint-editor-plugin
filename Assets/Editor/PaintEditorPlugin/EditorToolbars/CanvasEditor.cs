@@ -155,7 +155,7 @@ namespace UnityEditor.PaintEditor
             {
                 if (layerList[i].isEnabled)
                 {
-                    GUI.DrawTexture(layerList[i].rect, layerList[i].rTexture);
+                    EditorGUI.DrawPreviewTexture(layerList[i].rect, layerList[i].rTexture, layerList[i].blendMaterial);
 
                     LayerSelection layerSelection = PaintEditorPlugin.Instance.layerSelection;
                     if ((layerSelection.selectionType == LayerSelection.SelectionType.edit ||
@@ -181,8 +181,7 @@ namespace UnityEditor.PaintEditor
         {
             Reinitialize(new Vector2(newTexture.width, newTexture.height));
             aspectRatio = (float)newTexture.width / (float)newTexture.height;
-            
-            selectedLayer.InitializeTexture(newTexture.width, newTexture.height);
+
             Graphics.Blit(newTexture, selectedLayer.rTexture);
 
             float newHeight = rect.width / aspectRatio;

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static UnityEditor.PaintEditor.Layer;
 
 namespace UnityEditor.PaintEditor
 {
@@ -45,7 +46,7 @@ namespace UnityEditor.PaintEditor
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(gui, GUILayout.Width(20));
 
-            string[] brushTypeOptionsList = { ShapeType.box.ToString(), ShapeType.rect.ToString() };
+            string[] brushTypeOptionsList = Enum.GetNames(typeof(ShapeType));
             typeIndex = EditorGUILayout.Popup(typeIndex, brushTypeOptionsList, GUILayout.MaxWidth(100));
 
             var textDimensions = GUI.skin.label.CalcSize(new GUIContent(prefixSizeLabel));
