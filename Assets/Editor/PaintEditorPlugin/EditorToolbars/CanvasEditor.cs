@@ -155,8 +155,15 @@ namespace UnityEditor.PaintEditor
             {
                 if (layerList[i].isEnabled)
                 {
-                    EditorGUI.DrawPreviewTexture(layerList[i].rect, layerList[i].rTexture, layerList[i].blendMaterial);
-
+                    if (layerList[i].blendMode == Layer.LayerBlendMode.normal)
+                    {
+                        GUI.DrawTexture(layerList[i].rect, layerList[i].rTexture);
+                    }
+                    else
+                    {
+                        EditorGUI.DrawPreviewTexture(layerList[i].rect, layerList[i].rTexture, layerList[i].blendMaterial);
+                    }
+                    
                     LayerSelection layerSelection = PaintEditorPlugin.Instance.layerSelection;
                     if ((layerSelection.selectionType == LayerSelection.SelectionType.edit ||
                         layerSelection.selectionType == LayerSelection.SelectionType.transform ) &&

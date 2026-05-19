@@ -1,6 +1,7 @@
 using System;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UnityEditor.PaintEditor
 {
@@ -40,6 +41,7 @@ namespace UnityEditor.PaintEditor
         public Material blendMaterial;
         public CustomRenderTexture blendedTexture;
         private Shader blendShader;
+        public LayerBlendMode blendMode;
         private string shaderName = "PaintEditorPlugin/BlendTexture";
         public int blendModeIdx;
 
@@ -118,6 +120,7 @@ namespace UnityEditor.PaintEditor
             {   
                 case 0:
                     //Normal
+                    blendMode = LayerBlendMode.normal;
                     blendMaterial.SetFloat("_SrcFactor", 5);
                     blendMaterial.SetFloat("_DstFactor", 10);
                     blendMaterial.SetFloat("_OpColor", 0);
@@ -125,6 +128,7 @@ namespace UnityEditor.PaintEditor
                     break;
                 case 1:
                     //Additive
+                    blendMode = LayerBlendMode.additive;
                     blendMaterial.SetFloat("_SrcFactor", 1);
                     blendMaterial.SetFloat("_DstFactor", 1);
                     blendMaterial.SetFloat("_OpColor", 0);
@@ -132,6 +136,7 @@ namespace UnityEditor.PaintEditor
                     break;
                 case 2:
                     //Soft Additive
+                    blendMode = LayerBlendMode.soft_additive;
                     blendMaterial.SetFloat("_SrcFactor", 4);
                     blendMaterial.SetFloat("_DstFactor", 1);
                     blendMaterial.SetFloat("_OpColor", 0) ;
@@ -139,6 +144,7 @@ namespace UnityEditor.PaintEditor
                     break;
                 case 3:
                     //Multiplicative
+                    blendMode = LayerBlendMode.multiplicative;
                     blendMaterial.SetFloat("_SrcFactor", 2);
                     blendMaterial.SetFloat("_DstFactor", 0);
                     blendMaterial.SetFloat("_OpColor", 0);
@@ -146,6 +152,7 @@ namespace UnityEditor.PaintEditor
                     break;
                 case 4:
                     //Multiplicative x2
+                    blendMode = LayerBlendMode.multiplicative_2x;
                     blendMaterial.SetFloat("_SrcFactor", 2);
                     blendMaterial.SetFloat("_DstFactor", 3);
                     blendMaterial.SetFloat("_OpColor", 0);
@@ -153,6 +160,7 @@ namespace UnityEditor.PaintEditor
                     break;
                 case 5:
                     //Subtract
+                    blendMode = LayerBlendMode.subtract;
                     blendMaterial.SetFloat("_SrcFactor", 3);
                     blendMaterial.SetFloat("_DstFactor", 2);
                     blendMaterial.SetFloat("_OpColor", 1);
@@ -160,6 +168,7 @@ namespace UnityEditor.PaintEditor
                     break;
                 case 6:
                     //Reverse Subtract
+                    blendMode = LayerBlendMode.reverse_subtract;
                     blendMaterial.SetFloat("_SrcFactor", 3);
                     blendMaterial.SetFloat("_DstFactor", 2);
                     blendMaterial.SetFloat("_OpColor", 2);
@@ -167,6 +176,7 @@ namespace UnityEditor.PaintEditor
                     break;
                 case 7:
                     //Min
+                    blendMode = LayerBlendMode.min;
                     blendMaterial.SetFloat("_SrcFactor", 3);
                     blendMaterial.SetFloat("_DstFactor", 2);
                     blendMaterial.SetFloat("_OpColor", 3);
@@ -174,6 +184,7 @@ namespace UnityEditor.PaintEditor
                     break;
                 case 8:
                     //Max
+                    blendMode = LayerBlendMode.max;
                     blendMaterial.SetFloat("_SrcFactor", 3);
                     blendMaterial.SetFloat("_DstFactor", 2);
                     blendMaterial.SetFloat("_OpColor", 4);
