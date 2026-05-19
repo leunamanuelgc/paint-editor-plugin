@@ -10,6 +10,8 @@ namespace UnityEditor.PaintEditor
         private const float speed = 0.01f;
         private const string prefixLevelLabel = "Zoom level";
         private float zoom = 1f;
+        private float initZoom = 1f;
+        private float offset = 0f;
 
         public static string name = "Zoom";
         public static string iconTextureName = "d_ViewToolZoom";
@@ -41,24 +43,40 @@ namespace UnityEditor.PaintEditor
 
             var textDimensions = GUI.skin.label.CalcSize(new GUIContent(prefixLevelLabel));
             EditorGUIUtility.labelWidth = textDimensions.x + 10;
-            zoom = EditorGUILayout.Slider(new GUIContent(prefixLevelLabel), zoom, minZoom, maxZoom);
+            zoom = EditorGUILayout.Slider(new GUIContent(prefixLevelLabel), Mathf.Clamp(Mathf.FloorToInt(zoom), 0.5f, maxZoom), minZoom, maxZoom);
 
-            if(zoom * baseZoom != zoomLevel)
-            {
-                zoomLevel = zoom * baseZoom;
-                OnZoomLevelChange?.Invoke(zoomLevel);
-            }
+            ChangeZoomLevel(zoom * baseZoom);
 
             EditorGUILayout.EndHorizontal();
         }
 
-        public void ChangeZoomLevel(float zoomChange)
-        {
-            zoom = Mathf.Clamp(zoom + zoomChange * speed, minZoom, maxZoom);
 
-            if(zoom * baseZoom != this.zoomLevel)
+        public void SetInitZoom()
+        {
+            this.initZoom = zoom;
+            this.offset = 0f;
+        }
+
+        public void AddZoom(float zoomToAdd)
+        {
+            this.offset += zoomToAdd;
+
+            if (Mathf.Abs(this.offset) >= 1f)
             {
-                this.zoomLevel = zoom * baseZoom;
+                var sign = Mathf.Sign(this.offset);
+                zoom = Mathf.Clamp(zoom + sign, 0.5f, maxZoom);
+
+                ChangeZoomLevel(zoom * baseZoom);
+
+                this.offset = 0f;
+            }
+        }
+
+        public void ChangeZoomLevel(float newZoom)
+        {
+            if (newZoom != this.zoomLevel)
+            {
+                this.zoomLevel = newZoom;
                 OnZoomLevelChange?.Invoke(zoomLevel);
             }
         }

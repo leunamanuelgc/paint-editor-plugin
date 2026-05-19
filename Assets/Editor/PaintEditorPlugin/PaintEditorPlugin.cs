@@ -41,7 +41,7 @@ namespace UnityEditor.PaintEditor
             float width, height;
             width = height = defaultResolution;     // defaultResolution is the default realSize
             Rect rect = new Rect(0, 0, width, height);
-            float baseZoom = baseSizeCanvas / width;    //baseSizeCanvas is the base size to stretch the canvas rect when opening the editor
+            float baseZoom = Mathf.FloorToInt(baseSizeCanvas / width);    //baseSizeCanvas is the base size to stretch the canvas rect when opening the editor
 
             mainMenu = new MainMenu();
             history = new CommandHistory();
@@ -205,7 +205,7 @@ namespace UnityEditor.PaintEditor
                 }
             }
             
-            if (e.type == EventType.ScrollWheel || toolbox.currentTool is Zoom)
+            if (e.type == EventType.ScrollWheel || (toolbox.currentTool is Zoom))
             {
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, this.position.width, this.position.height), MouseCursor.Zoom);
 
@@ -215,7 +215,7 @@ namespace UnityEditor.PaintEditor
                     CloseSelection();
                 }
 
-                ExecuteCommand(new ZoomCommand(toolbox.zoom, -e.delta.y));
+                ExecuteCommand(new ZoomCommand(toolbox.zoom, -e.delta.y, e.type));
             }
             
             if (toolbox.currentTool is Brush && toolbox.currentTool is not Eraser)
@@ -404,7 +404,7 @@ namespace UnityEditor.PaintEditor
 
         public void ResetEditor(float baseZoom)
         {
-            SetBaseZoom(baseZoom);
+            SetBaseZoom(Mathf.FloorToInt(baseZoom));
             layerSelection.Close();
         }
 
