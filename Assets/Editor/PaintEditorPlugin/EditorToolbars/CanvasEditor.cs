@@ -181,7 +181,26 @@ namespace UnityEditor.PaintEditor
                 }
             }
 
-            EditorGUI.DrawRect(new Rect(0, 0, 0, 0), Color.black);
+            if(CommonPaintEditor.GetPixelSize().x > 16 && CommonPaintEditor.GetPixelSize().y > 16)
+            {
+                DisplayPixelGuidelines();
+            }
+        }
+
+        private void DisplayPixelGuidelines()
+        {
+            var pixelSize = CommonPaintEditor.GetPixelSize();
+            Handles.color = new Color(1, 1, 1, .5f);
+
+            for(int i = 0; i <= realSize.x; i++)
+            {
+                Handles.DrawLine(new Vector2(rect.xMin + i * pixelSize.x, rect.yMin), new Vector2(rect.xMin + i * pixelSize.x, rect.yMax), .001f);
+            }
+
+            for (int i = 0; i <= realSize.y; i++)
+            {
+                Handles.DrawLine(new Vector2(rect.xMin, rect.yMin + i * pixelSize.y), new Vector2(rect.xMax, rect.yMin + i * pixelSize.y), .001f);
+            }
         }
 
         public void Load(Texture2D newTexture)

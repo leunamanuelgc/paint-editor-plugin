@@ -6,11 +6,9 @@ namespace UnityEditor.PaintEditor
     public class Zoom : ITool
     {
         private const float minZoom = 0.1f;
-        private const float maxZoom = 5f;
-        private const float speed = 0.01f;
+        private const float maxZoom = 8f;
         private const string prefixLevelLabel = "Zoom level";
         private float zoom = 1f;
-        private float initZoom = 1f;
         private float offset = 0f;
 
         public static string name = "Zoom";
@@ -53,7 +51,6 @@ namespace UnityEditor.PaintEditor
 
         public void SetInitZoom()
         {
-            this.initZoom = zoom;
             this.offset = 0f;
         }
 
