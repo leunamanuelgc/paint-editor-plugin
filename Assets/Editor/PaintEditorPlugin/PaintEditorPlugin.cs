@@ -406,7 +406,6 @@ namespace UnityEditor.PaintEditor
         {
             SetBaseZoom(baseZoom);
             layerSelection.Close();
-            CancelClick(false);
         }
 
         public void CloseSelection()

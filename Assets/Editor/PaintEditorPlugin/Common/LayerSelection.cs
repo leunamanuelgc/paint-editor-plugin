@@ -156,7 +156,10 @@ namespace UnityEditor.PaintEditor
             int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
             int groupsY = Mathf.CeilToInt(canvasSize.y / threadSize);
 
-            textureSection = new CustomRenderTexture((int)this.realSize.x, (int)this.realSize.y, RenderTextureFormat.ARGB32);            
+            int w = Mathf.Max(1,Mathf.RoundToInt(this.realSize.x));
+            int h = Mathf.Max(1, Mathf.RoundToInt(this.realSize.y));
+
+            textureSection = new CustomRenderTexture(w, h, RenderTextureFormat.ARGB32);            
             textureSection.filterMode = FilterMode.Point;
             textureSection.enableRandomWrite = true;
             textureSection.Create();

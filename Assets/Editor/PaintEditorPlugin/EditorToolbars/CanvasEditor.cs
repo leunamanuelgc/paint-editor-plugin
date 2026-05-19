@@ -186,6 +186,8 @@ namespace UnityEditor.PaintEditor
 
         public void Load(Texture2D newTexture)
         {
+            var app = PaintEditorPlugin.Instance;
+            app.CancelClick(true);
             Reinitialize(new Vector2(newTexture.width, newTexture.height));
             aspectRatio = (float)newTexture.width / (float)newTexture.height;
 
@@ -193,7 +195,6 @@ namespace UnityEditor.PaintEditor
 
             float newHeight = rect.width / aspectRatio;
 
-            var app = PaintEditorPlugin.Instance;
             rect = new Rect(app.position.width / 2 - app.canvas.rect.width / 2, app.position.height / 2 - newHeight / 2, app.canvas.rect.width, newHeight);
             selectedLayer.rect = rect;
         }
