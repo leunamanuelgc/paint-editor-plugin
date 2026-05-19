@@ -7,10 +7,12 @@ namespace UnityEditor.PaintEditor
 {
     public class Utils : IToolbar
     {
-        private float layersWidth, layersHeight;
+        private float layersWidth, layersHeight, maxHeight;
 
         private const string layersText = "Color & Layers";
         private const string layersTooltip = "Change color and edit layers";
+
+        private Vector2 scrollPos;
 
         public Rect layersRect { get; set; }
         public Rect infoRect { get; set; }
@@ -23,8 +25,7 @@ namespace UnityEditor.PaintEditor
         public Utils()
         {
             var app = PaintEditorPlugin.Instance;
-            layersWidth = 200;
-            layersHeight = 300;
+            layersWidth = 180;
 
             layers = new ReorderableList(app.canvas.layerList, typeof(Layer), true, true, true, true);
             layers.drawElementCallback = DrawLayers;
@@ -46,7 +47,9 @@ namespace UnityEditor.PaintEditor
         {
             var app = PaintEditorPlugin.Instance;
 
+            layersHeight = Mathf.Min(maxHeight, layers.count * EditorGUIUtility.singleLineHeight * 2.7f + 130);
             layersRect = new Rect(app.position.width - (layersWidth + 20), 60, layersWidth, layersHeight);
+            maxHeight = app.position.height - 120;
             GUIContent layersContent = new GUIContent(layersText, layersTooltip);
             GUIStyle layersStyle = new GUIStyle(GUI.skin.window);
             GUILayout.Window(1, layersRect, CreateLayersWindow, layersContent, layersStyle);
@@ -69,7 +72,10 @@ namespace UnityEditor.PaintEditor
 
             EditorGUILayout.Space(20);
 
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(layersRect.width));
             layers.DoLayoutList();
+            EditorGUILayout.EndScrollView();
+
         }
 
         private void DrawLayers(Rect rect, int index, bool isActive, bool isFocused)

@@ -226,26 +226,29 @@ namespace UnityEditor.PaintEditor
 
         public void RemoveLayer(ReorderableList list)
         {
-            int newIndex;
-            int selectedIndex = list.selectedIndices[0] - 1;
+            if (list.selectedIndices.Count > 0)
+            {
+                int newIndex;
+                int selectedIndex = list.selectedIndices[0] - 1;
 
-            if (selectedIndex >= 0 && selectedIndex < layerList.Count - 1)
-            {
-                newIndex = selectedIndex;
-            }
-            else if(selectedIndex == layerList.Count - 1)
-            {
-                newIndex = selectedIndex - 1;
-            }
-            else
-            {
-                newIndex = 0;
-            }
+                if (selectedIndex >= 0 && selectedIndex < layerList.Count - 1)
+                {
+                    newIndex = selectedIndex;
+                }
+                else if (selectedIndex == layerList.Count - 1)
+                {
+                    newIndex = selectedIndex - 1;
+                }
+                else
+                {
+                    newIndex = 0;
+                }
 
-            PaintEditorPlugin.Instance.ExecuteCommand(new RemoveLayerCommand(list.selectedIndices[0], layerList));
-            selectedLayer.isSelected = false;
-            selectedLayer = layerList[newIndex];
-            selectedLayer.isSelected = true;
+                PaintEditorPlugin.Instance.ExecuteCommand(new RemoveLayerCommand(list.selectedIndices[0], layerList));
+                selectedLayer.isSelected = false;
+                selectedLayer = layerList[newIndex];
+                selectedLayer.isSelected = true;
+            }
         }
 
         public void SelectLayer(ReorderableList list)
