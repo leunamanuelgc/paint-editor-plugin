@@ -1,7 +1,18 @@
+[intro]: https://github.com/user-attachments/assets/e5e2e812-dad9-4e94-b2f8-84a7178db50e
+[canvas]: https://github.com/user-attachments/assets/5a4db4e6-1258-423a-87e5-615951a6979f
+[toolbox]: https://github.com/user-attachments/assets/789c3166-1524-44cc-9cfe-148e50e59392
+[mainmenu-file]: https://github.com/user-attachments/assets/4b731b98-6b0f-4509-b04d-c8c60c41917d
+[mainmenu-edit]: https://github.com/user-attachments/assets/10f50c03-b90d-48b7-b7d5-7c0522e5972c
+[layers]: https://github.com/user-attachments/assets/612a50f0-05c3-4184-9509-5a8daada5756
+[layers-select]: https://github.com/user-attachments/assets/b0d84b20-62ba-49b3-a3bb-979e0caff11d
+[layers-blending-mode]: https://github.com/user-attachments/assets/7e351a31-e41f-417f-aa10-1ac6b0fece40
+
 # Paint Editor Plugin
 Paint Editor is a plugin for Unity 2D that lets you paint and edit textures directly inside the engine. You can use the different tools the editor provides to paint or select sections in the canvas. You can add, remove and reorder multiple layers, and edit each layer individually, and more.
 
-<img width="500" height="360" alt="intro-demo-ezgif com-speed" src="https://github.com/user-attachments/assets/e5e2e812-dad9-4e94-b2f8-84a7178db50e" />
+<p align="center">
+  <img width="500" height="360" alt="intro-demo-ezgif com-speed" src="https://github.com/user-attachments/assets/e5e2e812-dad9-4e94-b2f8-84a7178db50e" />
+</p>
 
 # Workspace
 
