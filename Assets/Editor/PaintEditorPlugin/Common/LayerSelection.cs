@@ -25,10 +25,16 @@ namespace UnityEditor.PaintEditor
         private const int threadSize = 8;
 
         public Vector2 initPosition;
+        public Vector2 sectionInitPos;
         public Vector2 selectionStartPosition;
         public Vector2 selectionStartSize;
         public Vector2 realSize;
+        public Vector2 pixelOffset;
         public Rect rect;
+
+        public Rect initRectScale;
+        public Vector2 pixelMaxOffset;
+        public Vector2 pixelMinOffset;
 
         public Layer layer;
 
@@ -120,15 +126,30 @@ namespace UnityEditor.PaintEditor
 
         public void Move(Vector2 delta)
         {
-            Rect newRect = new Rect(rect.position + delta, rect.size);
+            Vector2 newPos = rect.position + delta;
+            Rect newRect = new Rect(newPos, rect.size);
 
             rect = newRect;
-            initPosition += delta;
+            initPosition = newPos;
+        }
 
+        public void PixelMove(Vector2 delta)
+        {
+            pixelOffset += delta;
+
+            Vector2 pixels = pixelOffset / CommonPaintEditor.GetPixelSize();
+            pixels.x = Mathf.FloorToInt(pixels.x);
+            pixels.y = Mathf.FloorToInt(pixels.y);
+            Vector2 newPos = sectionInitPos + pixels * CommonPaintEditor.GetPixelSize();
+            Rect newRect = new Rect(newPos, rect.size);
+
+            rect = newRect;
         }
 
         public void Expand(Vector2 position, Rect canvasRect)
         {
+            position = SnapPosInCanvas(position);
+
             rect.xMin = Mathf.Min(position.x, initPosition.x);
             rect.yMin = Mathf.Min(position.y, initPosition.y);
             rect.xMax = Mathf.Max(position.x, initPosition.x);
@@ -261,21 +282,29 @@ namespace UnityEditor.PaintEditor
         {
             LimitPos(ref initPosition, canvas.rect);
 
-            this.initPosition = initPosition;
+            this.initPosition = SnapPosInCanvas(initPosition);
+
             this.realSize = Vector2.zero;
             this.rect = new Rect(initPosition, Vector2.zero);
             this.layer = canvas.selectedLayer;
             this.selectionType = SelectionType.open;
+            this.pixelOffset = Vector2.zero;
+            this.pixelMaxOffset = Vector2.zero;
+            this.pixelMinOffset = Vector2.zero;
         }
 
         public void Edit()
         {
             this.selectionType = SelectionType.edit;
+
+            this.sectionInitPos = this.rect.min;
         }
 
         private void Transform()
         {
             this.selectionType = SelectionType.transform;
+
+            this.initRectScale = this.rect;
         }
 
         public void Close()
@@ -331,30 +360,38 @@ namespace UnityEditor.PaintEditor
             switch (handleType)
             {
                 case HandleType.upL:
-                    rect.xMin += delta.x;
-                    rect.yMin += delta.y;
+                    pixelMinOffset += delta;
                     break;
                 case HandleType.lowL:
-                    rect.xMin += delta.x;
-                    rect.yMax += delta.y;
+                    pixelMinOffset.x += delta.x;
+                    pixelMaxOffset.y += delta.y;
                     break;
                 case HandleType.upR:
-                    rect.xMax += delta.x;
-                    rect.yMin += delta.y;
+                    pixelMaxOffset.x += delta.x;
+                    pixelMinOffset.y += delta.y;
                     break;
                 case HandleType.lowR:
-                    rect.xMax += delta.x;
-                    rect.yMax += delta.y;
+                    pixelMaxOffset += delta;
                     break;
             }
+
+
+            Vector2 minPixels = pixelMinOffset / CommonPaintEditor.GetPixelSize();
+            minPixels.x = Mathf.FloorToInt(minPixels.x);
+            minPixels.y = Mathf.FloorToInt(minPixels.y);
+            Vector2 maxPixels = pixelMaxOffset / CommonPaintEditor.GetPixelSize();
+            maxPixels.x = Mathf.FloorToInt(maxPixels.x);
+            maxPixels.y = Mathf.FloorToInt(maxPixels.y);
+
+            Vector2 newMin = initRectScale.min + minPixels * CommonPaintEditor.GetPixelSize();
+            Vector2 newMax = initRectScale.max + maxPixels * CommonPaintEditor.GetPixelSize();
+            this.rect.min = newMin;
+            this.rect.max = newMax;
 
             this.realSize = GetRealSize();
         }
 
-        public Vector2 GetCenter()
-        {
-            return this.rect.center;
-        }
+
 
         public void Rotate(float angleToAdd)
         {
@@ -375,6 +412,27 @@ namespace UnityEditor.PaintEditor
         {
             Graphics.Blit(rotatedTextureSection, textureSection);
             angle = 0;
+        }
+
+        private Vector2 SnapPosInCanvas(Vector2 pos)
+        {
+            var app = PaintEditorPlugin.Instance;
+
+            var canvasPos = CommonPaintEditor.ConvertPos(app.canvas.rect.position, app.canvas.rect, app.canvas.realSize);
+            var canvasPosInt = new Vector2(Mathf.FloorToInt(canvasPos.x), Mathf.FloorToInt(canvasPos.y));
+            var offset = canvasPos - canvasPosInt;
+            offset *= app.GetZoomLevel();
+            
+            pos = CommonPaintEditor.ConvertPos(pos, app.canvas.rect, app.canvas.realSize);
+
+            pos.x = Mathf.FloorToInt(pos.x);
+            pos.y = Mathf.FloorToInt(pos.y);
+
+            pos *= app.GetZoomLevel();
+
+            pos += offset;
+
+            return pos;
         }
     }
 }

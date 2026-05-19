@@ -377,5 +377,12 @@ namespace UnityEditor.PaintEditor
             textureFillData = null;
             binTextureData = null;
         }
+
+        public static Vector2 GetPixelSize()
+        {
+            var app = PaintEditorPlugin.Instance;
+
+            return app.canvas.rect.size / app.canvas.realSize;
+        }
     }
 }

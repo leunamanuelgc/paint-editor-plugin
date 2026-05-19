@@ -161,7 +161,7 @@ namespace UnityEditor.PaintEditor
                     if (layerSelection.rect.Contains(e.mousePosition))
                     {
                         //Move layer handle
-                        layerSelection.Move(e.delta);
+                        layerSelection.PixelMove(e.delta);
                     } else
                     {
                         //Click outside the selection merge closes the selection
