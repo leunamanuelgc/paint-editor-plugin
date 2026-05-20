@@ -1,125 +1,82 @@
-[intro]: https://github.com/user-attachments/assets/e5e2e812-dad9-4e94-b2f8-84a7178db50e
-[canvas]: https://github.com/user-attachments/assets/5a4db4e6-1258-423a-87e5-615951a6979f
-[toolbox]: https://github.com/user-attachments/assets/789c3166-1524-44cc-9cfe-148e50e59392
-[mainmenu-file]: https://github.com/user-attachments/assets/4b731b98-6b0f-4509-b04d-c8c60c41917d
-[mainmenu-edit]: https://github.com/user-attachments/assets/10f50c03-b90d-48b7-b7d5-7c0522e5972c
-[layers]: https://github.com/user-attachments/assets/612a50f0-05c3-4184-9509-5a8daada5756
-[layers-select]: https://github.com/user-attachments/assets/b0d84b20-62ba-49b3-a3bb-979e0caff11d
-[layers-blending-mode]: https://github.com/user-attachments/assets/7e351a31-e41f-417f-aa10-1ac6b0fece40
+[brush]: https://github.com/user-attachments/assets/01db87d0-8223-4729-a627-6e2e8ce51ecd
+[bucket-fill]: https://github.com/user-attachments/assets/34f1c19c-f906-404b-abaa-b699de5a761a
+[eraser]: https://github.com/user-attachments/assets/abf35f19-0e6d-4e77-aceb-1c408dd41861
+[eyedropper]: https://github.com/user-attachments/assets/5d0d405f-a87d-494d-81d7-4916c01f38ba
+[intro-paint]: https://github.com/user-attachments/assets/0d27d17b-ac7c-4a4f-979e-b8e4c8d6adf3
+[layer-add]: https://github.com/user-attachments/assets/fb6107c6-e312-4240-95c4-bac71cfe6823
+[layer-blend]: https://github.com/user-attachments/assets/73bc3c96-ad94-4d78-ba9d-db637e97da65
+[layer-hide]: https://github.com/user-attachments/assets/9158bfdf-d893-4cd3-a4e1-eae3222669b2
+[layer-remove]: https://github.com/user-attachments/assets/d9de6327-e9bd-439e-a2d4-37b2ccf50a70
+[layer-rename]: https://github.com/user-attachments/assets/7e5e41cd-b17f-4d29-84d1-93e2f58bdcf4
+[layer-reorder]: https://github.com/user-attachments/assets/90d094fc-0616-489f-b48a-70c4d65c63aa
+[layer-select]: https://github.com/user-attachments/assets/5f03cc1f-d975-4377-a74e-e64b127e73ff
+[load]: https://github.com/user-attachments/assets/be6f45fd-7c45-4064-8878-3eb5793d653a
+[new]: https://github.com/user-attachments/assets/85de2397-faa9-4bd5-bb15-4e5b3e9bf32a
+[pan]: https://github.com/user-attachments/assets/cf3e7275-6a29-41eb-b5f2-117fefb418e2
+[save]: https://github.com/user-attachments/assets/265a78ed-4db9-49da-8aee-eb24b8ed971e
+[select-move]: https://github.com/user-attachments/assets/a51ba870-8171-46ca-8dc6-3e7f17f9f81e
+[select-paint]: https://github.com/user-attachments/assets/d9b30c18-7fdc-431b-b732-697205d4eacc
+[select-rotate]: https://github.com/user-attachments/assets/3163e692-beb2-4ba3-a245-ccc987b5417f
+[select-scale]: https://github.com/user-attachments/assets/c3fe22bc-c113-414f-b779-3d2b61c6c7e8
+[undo-redo]: https://github.com/user-attachments/assets/7b43db75-2663-4fa3-af8e-2c925db5a845
+[zoom]: https://github.com/user-attachments/assets/629f9972-eeb9-4fe7-92b2-764541508da5
+[paint-editor-img]: https://github.com/user-attachments/assets/b062cc43-1af3-4d0b-97f7-53e63d82df9c
+[color-wheel-img]: https://github.com/user-attachments/assets/f966cd27-7985-4ef0-8b9d-1069e28baf5f
+[info-img]: https://github.com/user-attachments/assets/12804e74-093e-4bf2-b15a-e8cf7a059713
+[layers-img]: https://github.com/user-attachments/assets/c7d0c948-9369-4f65-abbc-92f58e33b33f
+[mainmenu-edit-img]: https://github.com/user-attachments/assets/9520b772-b6f7-439e-aabc-82a5726a8531
+[mainmenu-file-img]: https://github.com/user-attachments/assets/32d20f7c-3750-4ab7-8b43-a370660a78e2
+[toolbox-img]: https://github.com/user-attachments/assets/8d1ff3f7-19df-4b4c-bd13-885d6143234b
+[workspace-img]: https://github.com/user-attachments/assets/2613118d-461d-4800-8dc8-80e1945155f6
 
 # Paint Editor Plugin
-Paint Editor is a plugin for Unity 2D that lets you paint and edit textures directly inside the engine. You can use the different tools the editor provides to paint or select sections in the canvas. You can add, remove and reorder multiple layers, and edit each layer individually, and more.
 
-<p align="center">
-  <img width="500" height="360" alt="intro-demo-ezgif com-speed" src="https://github.com/user-attachments/assets/e5e2e812-dad9-4e94-b2f8-84a7178db50e" />
-</p>
+Paint Editor is a plugin for painting and editing textures inside Unity. It provide different tools to paint, select, use layers, and more.
+
+![Paint Editor Plugin][paint-editor-img]
 
 # Workspace
 
-## Canvas
+| Editor element | Description | Screenshot |
+| :------: | ----------- | :----------: |
+| Canvas | The area where you paint and edit textures. | ![Canvas][workspace-img] |
+| Toolbox | The window where you select the different tools. | ![Toolbox][toolbox-img] |
+| Main Menu | The top bar where some functionalities are displayed. The two available tabs are: File and Edit | ![Main Menu Edit][mainmenu-file-img] ![Main Menu Edit][mainmenu-edit-img] |
+| Layers | The window where you can add, remove, hide, rename and reorder layers. You can also select blending modes for layers. | ![Layers][layers-img] |
+| Color | When clicking on the color field in the Layers' window, the Unity's color wheel pops up. | ![Color][color-wheel-img] |
+| Info | Some information related to the canvas is displayed at the bottom of the window. | ![Info][info-img] |
 
-<img width="981" height="674" alt="workspace" src="https://github.com/user-attachments/assets/5a4db4e6-1258-423a-87e5-615951a6979f" />
+# Main Menu
 
-## Toolbox
-
-<img width="73" height="167" alt="toolbox" src="https://github.com/user-attachments/assets/789c3166-1524-44cc-9cfe-148e50e59392" />
-
-## MainMenu
-
-### File
-
-<img width="488" height="85" alt="mainmenu_file" src="https://github.com/user-attachments/assets/4b731b98-6b0f-4509-b04d-c8c60c41917d" />
-
-### Edit
-
-<img width="496" height="66" alt="mainmenu_edit" src="https://github.com/user-attachments/assets/10f50c03-b90d-48b7-b7d5-7c0522e5972c" />
-
-## Layers
-
-<img width="209" height="310" alt="layers" src="https://github.com/user-attachments/assets/612a50f0-05c3-4184-9509-5a8daada5756" />
-
-### Select Layer
-
-<img width="208" height="309" alt="layerSelected" src="https://github.com/user-attachments/assets/b0d84b20-62ba-49b3-a3bb-979e0caff11d" />
-
-### Layers' Blending Modes
-
-<img width="211" height="316" alt="layer_blendmode" src="https://github.com/user-attachments/assets/7e351a31-e41f-417f-aa10-1ac6b0fece40" />
-
-## Color Wheel
-
-<img width="233" height="473" alt="color_wheel" src="https://github.com/user-attachments/assets/9c76b585-f2c6-444b-bd1e-791bc11bc875" />
-
-## Info
-
-<img width="358" height="44" alt="info" src="https://github.com/user-attachments/assets/abc9c7e6-7a14-4417-9861-a1169efacb62" />
+| Menu function | Description | Video demo |
+| :------: | ----------- | :----------: |
+| New image | Create a new canvas with any width and height. | ![New image][new] |
+| Save image | Save and encode current canvas image into '.png' file at selected path. | ![Save image][save] |
+| Load image | Load any image file at selected path. | ![Load image][load] |
+| Command History (Undo/Redo) | Use the Edit Menu to restore and redo actions. **Shortcut**: 'ctrl'+'z'/'ctrl'+'shift'+'z' | ![Undo Redo][undo-redo] |
 
 # Tools
-## Brush
-You can paint in the canvas with the brush. You can set the size in a range between 1 to 100. You can change the brush type between Box and Rect to do different kind of strokes.
 
-<img width="500" height="360" alt="brush-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/15642a23-8ce1-441f-9034-ed3b4b1f1791" />
+| Tool | Description | Video demo |
+| :------: | ----------- | :----------: |
+| Brush | Paint and adjust its size. There are two brush types: Box and Rect. | ![Brush][brush] |
+| Eraser | Erase pixels from the canvas, similar to the brush tool. | ![Eraser][eraser] |
+| Bucket | Click in a closed area to paint it. | ![Bucket][bucket-fill] |
+| Eyedropper | Use Unity's eyedropper to select any color in the canvas (any color at screen really). | ![Eyedropper][eyedropper] |
+| Navigation  | You can use the navigation tool to move the canvas in the window space. **Shortcut**: Hold 'alt' + click. | ![Navigation][pan] |
+| Zoom | You can zoom the canvas in or out. **Shortcut**: Hold 'ctrl' + click or use the scroll wheel. | ![Zoom][zoom] |
+| Selection | Use the selection tool to take a section from a layer in the canvas and edit it. You can move, rotate and scale up and down the selected area. Also, the selection can be painted, erased and filled inside. | ![Select Move][select-move] ![Select Paint][select-paint] ![Select Rotate][select-rotate] ![Select Scale][select-scale] |
 
-## Eraser
+# Layers
 
-<img width="500" height="360" alt="eraser-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/e5592737-6e59-49f5-b013-e1c177ed0fcd" />
+| Layer function | Description | Video demo |
+| :------: | ----------- | :----------: |
+| Add layers | Add new layer. | ![Layer add][layer-add] |
+| Select layers | Select layer to paint in. | ![Select layer][layer-select] |
+| Reorder layers | Change layers order. | ![Reorder layer][layer-reorder] |
+| Rename layers | Change the layer's name in the text field. | ![Rename layers][layer-rename] |
+| Hide layers | Click hide button to hide/show the layer. | ![Hide layers][layer-hide] |
+| Remove layers | Remove selected layer. | ![Remove layer][layer-remove] |
+| Select blending mode | Select one blending mode for the layer. | ![Layer blending modes][layer-blend] |
 
-## Bucket Fill
 
-<img width="500" height="360" alt="bucketfill-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/c92eae21-a614-4cda-9122-78a48c902d89" />
-
-## Panning
-
-<img width="500" height="360" alt="panning-demo-ezgif com-optimize (1)" src="https://github.com/user-attachments/assets/c9fb92a3-5fbc-4134-be79-def88083fb0a" />
-
-## Zoom
-
-<img width="500" height="360" alt="zoom-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/ad08aa53-6927-4630-a71b-32236b665d1b" />
-
-## Selection
-
-### Move
-
-<img width="500" height="360" alt="select01move-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/d5c13534-3903-4a7e-b330-c3909bfb5673" />
-
-### Paint In Selection
-
-<img width="500" height="360" alt="select02paint-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/9c85b604-2623-440e-9a7e-ee5426f2d21c" />
-
-### Rotation
-
-<img width="500" height="360" alt="select03rotate-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/93c7c3da-8f8e-4716-b47a-ed5061c53c8c" />
-
-### Scale
-
-<img width="500" height="360" alt="select04scale-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/96337227-774b-475a-a93a-1832bc83a914" />
-
-## CommandHistory (Undo/Redo)
-
-<img width="500" height="360" alt="undo-redo-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/d7ead0fa-e7a2-4076-b3c6-fc4086532071" />
-
-## Layers
-
-### Add Layers
-
-<img width="500" height="360" alt="layers01add-demo-ezgif com-optimize (1)" src="https://github.com/user-attachments/assets/29f909b5-c45e-4b3a-bae7-be0fdf323768" />
-
-### Edit Layers
-
-<img width="500" height="360" alt="layers02edit-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/10c3ea16-c3a8-4fbe-aba7-521917d4fc14" />
-
-### Layers' Blending Mode
-
-<img width="500" height="360" alt="layers03blendmode-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/b2fbd887-ef76-46a3-931b-358f2541c0e9" />
-
-## Save image
-
-<img width="500" height="360" alt="save-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/d6c858a0-2c7c-414a-8405-9615ba405ca6" />
-
-## New Image
-
-<img width="500" height="360" alt="new-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/2a9383c8-9b73-4224-9512-2f8336733637" />
-
-## Load Image
-
-<img width="500" height="360" alt="load-demo-ezgif com-optimize" src="https://github.com/user-attachments/assets/1cd50379-7202-4044-a217-e10dc6258180" />
