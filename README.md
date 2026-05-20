@@ -20,16 +20,24 @@
 [select-scale]: https://github.com/user-attachments/assets/c3fe22bc-c113-414f-b779-3d2b61c6c7e8
 [undo-redo]: https://github.com/user-attachments/assets/7b43db75-2663-4fa3-af8e-2c925db5a845
 [zoom]: https://github.com/user-attachments/assets/629f9972-eeb9-4fe7-92b2-764541508da5
-[paint-editor-img]: https://github.com/user-attachments/assets/b062cc43-1af3-4d0b-97f7-53e63d82df9c
+
 [color-wheel-img]: https://github.com/user-attachments/assets/f966cd27-7985-4ef0-8b9d-1069e28baf5f
 [info-img]: https://github.com/user-attachments/assets/12804e74-093e-4bf2-b15a-e8cf7a059713
 [layers-img]: https://github.com/user-attachments/assets/c7d0c948-9369-4f65-abbc-92f58e33b33f
 [mainmenu-edit-img]: https://github.com/user-attachments/assets/9520b772-b6f7-439e-aabc-82a5726a8531
 [mainmenu-file-img]: https://github.com/user-attachments/assets/32d20f7c-3750-4ab7-8b43-a370660a78e2
+[paint-editor-img]: https://github.com/user-attachments/assets/b062cc43-1af3-4d0b-97f7-53e63d82df9c
+[paint-editor-logo-img]: https://github.com/user-attachments/assets/56fda3fa-93a0-4d70-b70a-c2c2ac146329
 [toolbox-img]: https://github.com/user-attachments/assets/8d1ff3f7-19df-4b4c-bd13-885d6143234b
 [workspace-img]: https://github.com/user-attachments/assets/2613118d-461d-4800-8dc8-80e1945155f6
 
-# Paint Editor Plugin
+<h1 align="center">
+  <img width="256" height="256" alt="Paint Editor Logo" src="https://github.com/user-attachments/assets/56fda3fa-93a0-4d70-b70a-c2c2ac146329"/>
+  <br>
+  Paint Editor Plugin for Unity
+</h1>
+
+<br>
 
 Paint Editor is a plugin for painting and editing textures inside Unity. It provide different tools to paint, select, use layers, and more.
 
