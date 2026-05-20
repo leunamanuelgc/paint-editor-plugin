@@ -404,7 +404,7 @@ namespace UnityEditor.PaintEditor
 
         public void ResetEditor(float baseZoom)
         {
-            SetBaseZoom(Mathf.FloorToInt(baseZoom));
+            SetBaseZoom(Mathf.Max(0.5f, Mathf.FloorToInt(baseZoom)));
             layerSelection.Close();
         }
 
