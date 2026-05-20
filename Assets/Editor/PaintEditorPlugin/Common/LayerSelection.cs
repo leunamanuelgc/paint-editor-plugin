@@ -216,8 +216,8 @@ namespace UnityEditor.PaintEditor
             int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
             int groupsY = Mathf.CeilToInt(canvasSize.y / threadSize);
             
-            var minLimit = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRect(new Vector2(this.rect.xMin, this.rect.yMin), destinationRect), destinationRect, canvasSize);
-            var maxLimit = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRect(new Vector2(this.rect.xMax, this.rect.yMax), destinationRect), destinationRect, canvasSize);
+            var minLimit = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRect(this.rect.min, destinationRect), destinationRect, canvasSize);
+            var maxLimit = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRect(this.rect.max, destinationRect), destinationRect, canvasSize);
 
             var temp = minLimit.y;
             minLimit.y = maxLimit.y;
@@ -312,6 +312,8 @@ namespace UnityEditor.PaintEditor
             this.initPosition = Vector2.zero;
             this.rect = Rect.zero;
             this.layer = null;
+            RenderTexture.active = null;
+            if (this.textureSection != null) this.textureSection.Release();
             this.textureSection = null;
             this.rotatedTextureSection = null;
             this.selectionType = SelectionType.close;

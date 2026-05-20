@@ -181,7 +181,7 @@ namespace UnityEditor.PaintEditor
                 }
             }
 
-            if(CommonPaintEditor.GetPixelSize().x > 16 && CommonPaintEditor.GetPixelSize().y > 16)
+            if(CommonPaintEditor.GetPixelSize().x >= 16 && CommonPaintEditor.GetPixelSize().y >= 16)
             {
                 DisplayPixelGuidelines();
             }
@@ -190,7 +190,7 @@ namespace UnityEditor.PaintEditor
         private void DisplayPixelGuidelines()
         {
             var pixelSize = CommonPaintEditor.GetPixelSize();
-            Handles.color = new Color(1, 1, 1, .5f);
+            Handles.color = new Color(0.7f, 0.7f, 0.7f, 0.5f);
 
             for(int i = 0; i <= realSize.x; i++)
             {
