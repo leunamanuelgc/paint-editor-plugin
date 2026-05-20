@@ -34,14 +34,14 @@
 <h1 align="center">
   <img width="256" height="256" alt="Paint Editor Logo" src="https://github.com/user-attachments/assets/56fda3fa-93a0-4d70-b70a-c2c2ac146329"/>
   <br>
-  Paint Editor Plugin for Unity
+  Paint Editor Extension for Unity
 </h1>
 
 <br>
 
-Paint Editor is a plugin for painting and editing textures inside Unity. It provide different tools to paint, select, use layers, and more.
+Paint Editor is an extension for painting and editing textures inside Unity. It provide different tools to paint, select, use layers, and more.
 
-![Paint Editor Plugin][paint-editor-img]
+![Paint Editor Extension][paint-editor-img]
 
 # Workspace
 
