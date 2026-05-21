@@ -349,7 +349,7 @@ namespace UnityEditor.PaintEditor
 
         public string ComputePath()
         {
-            return "Assets/Editor/PaintEditorPlugin/Shaders/";
+            return "Assets/Editor/PaintEditorExtension/Shaders/";
         }
 
         private void OnDisable()
