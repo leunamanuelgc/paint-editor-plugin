@@ -1,4 +1,3 @@
-using UnityEngine;
 namespace UnityEditor.PaintEditor
 {
     public class ReorderLayerCommand : ACommand

@@ -1,8 +1,4 @@
-using JetBrains.Annotations;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 namespace UnityEditor.PaintEditor
