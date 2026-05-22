@@ -39,7 +39,7 @@
 
 <br>
 
-Paint Editor is an extension for painting and editing textures inside Unity. It provide different tools to paint, select, use layers, and more.
+Paint Editor is an extension for painting and editing textures inside Unity. It provides different tools to paint, select, use layers, and more.
 
 ![Paint Editor Extension][paint-editor-img]
 
