@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class CustomCursor
     {
@@ -16,7 +17,7 @@ namespace UnityEditor.PaintEditor
         public CustomCursor(Vector2Int realSize)
         {
             this.realSize = realSize;
-            this.zoomLevel = PaintEditorPlugin.Instance.GetZoomLevel();
+            this.zoomLevel = PaintEditorExtension.Instance.GetZoomLevel();
             texture = new Texture2D(1, 1);
 
             ReinitTexture();
@@ -65,7 +66,7 @@ namespace UnityEditor.PaintEditor
             }
 
             texture.Apply();
-            PaintEditorPlugin.Instance.Repaint();
+            PaintEditorExtension.Instance.Repaint();
         }
 
         public void Resize(Vector2Int size)
@@ -82,14 +83,14 @@ namespace UnityEditor.PaintEditor
 
         public void Render()
         {
-            PaintEditorPlugin.Instance.Repaint();
-            if (!PaintEditorPlugin.Instance.IsMouseInCanvas()) return;
+            PaintEditorExtension.Instance.Repaint();
+            if (!PaintEditorExtension.Instance.IsMouseInCanvas()) return;
 
             Texture2D transparentCursor = new Texture2D(1, 1, TextureFormat.RGBA32, false);
             transparentCursor.alphaIsTransparency = true;
 
             Cursor.SetCursor(transparentCursor, Vector2.zero, CursorMode.ForceSoftware);
-            EditorGUIUtility.AddCursorRect(PaintEditorPlugin.Instance.canvas.rect, MouseCursor.CustomCursor);
+            EditorGUIUtility.AddCursorRect(PaintEditorExtension.Instance.canvas.rect, MouseCursor.CustomCursor);
 
             Rect position = new Rect(Event.current.mousePosition - this.size / 2, this.size);
             GUI.DrawTexture(position, texture, ScaleMode.ScaleToFit, true);

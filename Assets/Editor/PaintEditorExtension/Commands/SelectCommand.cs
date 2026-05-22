@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class SelectCommand : ACommand
     {
@@ -17,7 +18,7 @@ namespace UnityEditor.PaintEditor
         public override bool Execute()
         {
             SaveBackup();
-            PaintEditorPlugin.Instance.history.Push(this);
+            PaintEditorExtension.Instance.history.Push(this);
 
             layerSelection.Select(canvasRect, canvasRealSize);
 

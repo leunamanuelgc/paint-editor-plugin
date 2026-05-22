@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEditorInternal;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class CanvasEditor : IToolbar
     {
@@ -22,7 +23,7 @@ namespace UnityEditor.PaintEditor
 
         public CanvasEditor(Rect rect)
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
 
             this.rect = new Rect(rect);
             aspectRatio = rect.width / rect.height;
@@ -59,7 +60,7 @@ namespace UnityEditor.PaintEditor
 
         public void Reinitialize(Vector2 size)
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             app.history.Clear();
             rect = new Rect(rect.position, size);
             this.realSize = size;
@@ -98,7 +99,7 @@ namespace UnityEditor.PaintEditor
 
         public void Resize(float zoomLevel)
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             Vector2 newSize = realSize * zoomLevel;
             Vector2 diff = this.rect.size - newSize;
 
@@ -139,13 +140,13 @@ namespace UnityEditor.PaintEditor
 
         public void DisplayGUI()
         {
-            var windowRect = PaintEditorPlugin.Instance.position;
+            var windowRect = PaintEditorExtension.Instance.position;
 
             // Fix for the canvas starting at a point that is not the center
             if (start)
             {
                 Vector2 diff = -this.rect.position + (windowRect.size / 2 - this.rect.size / 2);
-                PaintEditorPlugin.Instance.ExecuteCommand(new PanCommand(diff, rect));
+                PaintEditorExtension.Instance.ExecuteCommand(new PanCommand(diff, rect));
                 start = false;
             }
 
@@ -164,7 +165,7 @@ namespace UnityEditor.PaintEditor
                         EditorGUI.DrawPreviewTexture(layerList[i].rect, layerList[i].rTexture, layerList[i].blendMaterial);
                     }
                     
-                    LayerSelection layerSelection = PaintEditorPlugin.Instance.layerSelection;
+                    LayerSelection layerSelection = PaintEditorExtension.Instance.layerSelection;
                     if ((layerSelection.selectionType == LayerSelection.SelectionType.edit ||
                         layerSelection.selectionType == LayerSelection.SelectionType.transform ) &&
                         layerList[i].isSelected)
@@ -205,7 +206,7 @@ namespace UnityEditor.PaintEditor
 
         public void Load(Texture2D newTexture)
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             app.CancelClick(true);
             Reinitialize(new Vector2(newTexture.width, newTexture.height));
             aspectRatio = (float)newTexture.width / (float)newTexture.height;
@@ -221,7 +222,7 @@ namespace UnityEditor.PaintEditor
         public void AddLayer(ReorderableList list)
         {
             Rect r = new Rect(rect.position, realSize);
-            PaintEditorPlugin.Instance.ExecuteCommand(new AddLayerCommand(list.count, r, layerList));
+            PaintEditorExtension.Instance.ExecuteCommand(new AddLayerCommand(list.count, r, layerList));
         }
 
         public void RemoveLayer(ReorderableList list)
@@ -244,7 +245,7 @@ namespace UnityEditor.PaintEditor
                     newIndex = 0;
                 }
 
-                PaintEditorPlugin.Instance.ExecuteCommand(new RemoveLayerCommand(list.selectedIndices[0], layerList));
+                PaintEditorExtension.Instance.ExecuteCommand(new RemoveLayerCommand(list.selectedIndices[0], layerList));
                 selectedLayer.isSelected = false;
                 selectedLayer = layerList[newIndex];
                 selectedLayer.isSelected = true;

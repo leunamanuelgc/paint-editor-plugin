@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class EditorSingleton<T> : EditorWindow where T : EditorWindow
     {

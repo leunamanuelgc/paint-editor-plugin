@@ -1,7 +1,7 @@
 using UnityEngine;
-using System.IO;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class MainMenu : IToolbar
     {
@@ -13,7 +13,7 @@ namespace UnityEditor.PaintEditor
 
             if (EditorGUILayout.DropdownButton(new GUIContent("File"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
-                PaintEditorPlugin.Instance.CancelClick(true);
+                PaintEditorExtension.Instance.CancelClick(true);
 
                 GenericMenu menu = new GenericMenu();
 
@@ -28,13 +28,13 @@ namespace UnityEditor.PaintEditor
 
             if (EditorGUILayout.DropdownButton(new GUIContent("Edit"), FocusType.Keyboard, EditorStyles.toolbarButton))
             {
-                PaintEditorPlugin.Instance.CancelClick(true);
+                PaintEditorExtension.Instance.CancelClick(true);
 
                 GenericMenu menu = new GenericMenu();
 
-                menu.AddItem(new GUIContent("Undo"), false, PaintEditorPlugin.Instance.Undo);
+                menu.AddItem(new GUIContent("Undo"), false, PaintEditorExtension.Instance.Undo);
 
-                menu.AddItem(new GUIContent("Redo"), false, PaintEditorPlugin.Instance.Redo);
+                menu.AddItem(new GUIContent("Redo"), false, PaintEditorExtension.Instance.Redo);
 
                 menu.ShowAsContext();
             }
@@ -44,12 +44,12 @@ namespace UnityEditor.PaintEditor
 
         public void SaveImage()
         {
-            PaintEditorPlugin.Instance.ExecuteCommand(new SaveCommand());
+            PaintEditorExtension.Instance.ExecuteCommand(new SaveCommand());
         }
 
         public void LoadImage()
         {
-            PaintEditorPlugin.Instance.ExecuteCommand(new LoadCommand());
+            PaintEditorExtension.Instance.ExecuteCommand(new LoadCommand());
         }
 
         public void CreateNewImageWindow()

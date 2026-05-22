@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public interface ITool
     {

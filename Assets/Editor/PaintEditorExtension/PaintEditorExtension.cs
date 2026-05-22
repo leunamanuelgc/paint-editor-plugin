@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
-    public class PaintEditorPlugin : EditorSingleton<PaintEditorPlugin>
+    public class PaintEditorExtension : EditorSingleton<PaintEditorExtension>
     {
         private bool cancelClick = false;
 
@@ -30,7 +31,7 @@ namespace UnityEditor.PaintEditor
         public static void CreateEditorWindow()
         {
             GetWindow<EditorWindow>();
-            GetWindow(typeof(PaintEditorPlugin));
+            GetWindow(typeof(PaintEditorExtension));
         }
 
         protected override void OnEnable()
@@ -354,14 +355,21 @@ namespace UnityEditor.PaintEditor
 
         private void OnDisable()
         {
-            foreach (var layer in canvas.layerList)
+            if (canvas.layerList != null)
             {
-                layer.Release();
+                foreach (var layer in canvas.layerList)
+                {
+                    layer.Release();
+                }
+
+                canvas.layerList.Clear();
+                canvas.layerList = null;
             }
 
-            canvas.layerList.Clear();
-            canvas.layerList = null;
-            layerSelection.Clear();
+            if(layerSelection != null)
+            {
+                layerSelection.Clear();
+            }
 
             CommonPaintEditor.Release();
         }

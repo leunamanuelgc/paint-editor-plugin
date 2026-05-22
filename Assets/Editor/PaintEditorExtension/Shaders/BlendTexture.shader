@@ -1,4 +1,4 @@
-Shader "PaintEditorPlugin/BlendTexture"
+Shader "PaintEditorExtension/BlendTexture"
 {
     Properties
     {

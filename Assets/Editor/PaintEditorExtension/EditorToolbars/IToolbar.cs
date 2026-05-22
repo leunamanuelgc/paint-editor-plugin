@@ -1,4 +1,4 @@
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public interface IToolbar
     {

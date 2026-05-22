@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class Selection : ITool
     {
@@ -23,20 +24,20 @@ namespace UnityEditor.PaintEditor
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(guiContent, GUILayout.Width(20));
 
-            if (PaintEditorPlugin.Instance.layerSelection.selectionType == LayerSelection.SelectionType.edit)
+            if (PaintEditorExtension.Instance.layerSelection.selectionType == LayerSelection.SelectionType.edit)
             {
                 if (GUILayout.Button("Transform", GUILayout.Width(100)))
                 {
                     OnTransformMode?.Invoke();
                 }
             }
-            else if (PaintEditorPlugin.Instance.layerSelection.selectionType == LayerSelection.SelectionType.transform)
+            else if (PaintEditorExtension.Instance.layerSelection.selectionType == LayerSelection.SelectionType.transform)
             {
                 GUILayout.Box("Transform", GUILayout.Width(100));
 
                 if (GUILayout.Button("Apply", GUILayout.Width(100)))
                 {
-                    PaintEditorPlugin.Instance.CloseSelection();
+                    PaintEditorExtension.Instance.CloseSelection();
                 }
             }
             else

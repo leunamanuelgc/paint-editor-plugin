@@ -1,7 +1,8 @@
 using System.IO;
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class LoadCommand : ACommand
     {
@@ -25,7 +26,7 @@ namespace UnityEditor.PaintEditor
             loadedTexture.alphaIsTransparency = true;
             ImageConversion.LoadImage(loadedTexture, rawImageData);
 
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             app.canvas.Load(loadedTexture);
 
             return false;

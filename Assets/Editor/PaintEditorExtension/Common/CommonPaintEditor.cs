@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class CommonPaintEditor
     {
@@ -48,7 +49,7 @@ namespace UnityEditor.PaintEditor
         private static ComputeBuffer paintBuffer;
         private static PaintData[] paintData;
         private static readonly int paintBufferId = Shader.PropertyToID("_Buffer");
-        private static string computePaintPath = PaintEditorPlugin.Instance.ComputePath() + "ComputePaint.compute";
+        private static string computePaintPath = PaintEditorExtension.Instance.ComputePath() + "ComputePaint.compute";
         private static string computePaintFunc = "PlotSize";
 
         private static void InitializePaintData(Vector2 rSize)
@@ -156,7 +157,7 @@ namespace UnityEditor.PaintEditor
         private static readonly int fillColorId = Shader.PropertyToID("_FillColor");
         private static readonly int binaryBufferId = Shader.PropertyToID("_BinTextureBuffer");
         private static readonly int fillBufferId = Shader.PropertyToID("_FillBuffer");
-        private static string computeFillPath = PaintEditorPlugin.Instance.ComputePath() + "ComputeFill.compute";
+        private static string computeFillPath = PaintEditorExtension.Instance.ComputePath() + "ComputeFill.compute";
         private static string computeFillFunc = "Fill";
         private static string computeBinTextureFunc = "ComputeBinaryTexture";
 
@@ -380,7 +381,7 @@ namespace UnityEditor.PaintEditor
 
         public static Vector2 GetPixelSize()
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
 
             return app.canvas.rect.size / app.canvas.realSize;
         }

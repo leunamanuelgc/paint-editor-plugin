@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class SaveCommand : ACommand
     {
@@ -18,7 +19,7 @@ namespace UnityEditor.PaintEditor
                 return false;
             }
 
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             RenderTexture temporaryResult = InitializeTexture((int)app.canvas.realSize.x, (int)app.canvas.realSize.y);
             if(app.layerSelection.selectionType == LayerSelection.SelectionType.edit ||
                 app.layerSelection.selectionType == LayerSelection.SelectionType.transform)

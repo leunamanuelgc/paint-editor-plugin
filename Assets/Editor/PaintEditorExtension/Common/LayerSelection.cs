@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class LayerSelection
     {
@@ -49,7 +50,7 @@ namespace UnityEditor.PaintEditor
         private static readonly int minLimitsId = Shader.PropertyToID("_MinLimits");
         private static readonly int maxLimitsId = Shader.PropertyToID("_MaxLimits");
         private static readonly int scaleFactorId = Shader.PropertyToID("_ScaleFactor");
-        private static string computeTakeSectionPath = PaintEditorPlugin.Instance.ComputePath() + "ComputeLayerSelection.compute";
+        private static string computeTakeSectionPath = PaintEditorExtension.Instance.ComputePath() + "ComputeLayerSelection.compute";
         private static string computeTakeSectionFunc = "TakeSection";
         private static string computeMergeSectionFunc = "MergeSection";
 
@@ -60,7 +61,7 @@ namespace UnityEditor.PaintEditor
         public CustomRenderTexture rotatedTextureSection;
         public Material rotateMaterial;
         private Shader rotateShader;
-        private string shaderName = "PaintEditorPlugin/RotateTexture";
+        private string shaderName = "PaintEditorExtension/RotateTexture";
         private float angle = 0;
 
         #endregion
@@ -121,7 +122,7 @@ namespace UnityEditor.PaintEditor
 
         private Vector2 GetRealSize()
         {
-            return this.rect.size / PaintEditorPlugin.Instance.GetZoomLevel();
+            return this.rect.size / PaintEditorExtension.Instance.GetZoomLevel();
         }
 
         public void Move(Vector2 delta)
@@ -212,7 +213,7 @@ namespace UnityEditor.PaintEditor
             }
 
             int kernelId = takeSectionComputeShader.FindKernel(computeMergeSectionFunc);
-            var canvasSize = PaintEditorPlugin.Instance.canvas.realSize;
+            var canvasSize = PaintEditorExtension.Instance.canvas.realSize;
             int groupsX = Mathf.CeilToInt(canvasSize.x / threadSize);
             int groupsY = Mathf.CeilToInt(canvasSize.y / threadSize);
             
@@ -235,7 +236,7 @@ namespace UnityEditor.PaintEditor
         public void DisplayGUI()
         {
             Matrix4x4 matrixBackup = GUI.matrix;
-            GUIUtility.RotateAroundPivot(PaintEditorPlugin.Instance.angle, this.rect.center);
+            GUIUtility.RotateAroundPivot(PaintEditorExtension.Instance.angle, this.rect.center);
 
             Color color = new Color(0, 1, 1, 0.1f);
             Handles.color = color;
@@ -418,7 +419,7 @@ namespace UnityEditor.PaintEditor
 
         private Vector2 SnapPosInCanvas(Vector2 pos)
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
 
             var canvasPos = CommonPaintEditor.ConvertPos(app.canvas.rect.position, app.canvas.rect, app.canvas.realSize);
             var canvasPosInt = new Vector2(Mathf.FloorToInt(canvasPos.x), Mathf.FloorToInt(canvasPos.y));

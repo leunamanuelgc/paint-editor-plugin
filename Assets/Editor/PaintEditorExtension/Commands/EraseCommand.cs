@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class EraseCommand : DrawCommand
     {

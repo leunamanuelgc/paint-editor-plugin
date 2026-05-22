@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class PanCommand : ACommand
     {

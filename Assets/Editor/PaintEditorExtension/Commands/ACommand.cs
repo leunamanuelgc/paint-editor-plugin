@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public abstract class ACommand
     {
@@ -18,7 +18,7 @@ namespace UnityEditor.PaintEditor
 
         public void SaveBackup()
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             backup = new List<Layer>();
             foreach (var layer in app.canvas.layerList)
             {
@@ -31,7 +31,7 @@ namespace UnityEditor.PaintEditor
 
         public void SaveRedoBackup()
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             redoBackup = new List<Layer>();
             foreach (var layer in app.canvas.layerList)
             {
@@ -46,7 +46,7 @@ namespace UnityEditor.PaintEditor
         {
             SaveRedoBackup();
 
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
 
             if(backup.Count < app.canvas.layerList.Count)
             {
@@ -67,7 +67,7 @@ namespace UnityEditor.PaintEditor
 
         public void Redo()
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
 
             if (redoBackup.Count < app.canvas.layerList.Count)
             {

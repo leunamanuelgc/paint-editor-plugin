@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class RemoveLayerCommand : ACommand
     {
@@ -16,7 +16,7 @@ namespace UnityEditor.PaintEditor
         public override bool Execute()
         {
             SaveBackup();
-            PaintEditorPlugin.Instance.history.Push(this);
+            PaintEditorExtension.Instance.history.Push(this);
 
             layerList[index].Release();
             layerList.RemoveAt(index);

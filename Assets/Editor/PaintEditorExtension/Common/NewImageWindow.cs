@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class NewImageWindow : EditorWindow
     {
@@ -28,7 +29,7 @@ namespace UnityEditor.PaintEditor
 
             if (GUILayout.Button(new GUIContent("Create")))
             {
-                PaintEditorPlugin.Instance.canvas.Reinitialize(new Vector2(width, height));
+                PaintEditorExtension.Instance.canvas.Reinitialize(new Vector2(width, height));
 
                 Close();
             }

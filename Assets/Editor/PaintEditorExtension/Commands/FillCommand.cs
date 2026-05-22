@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class FillCommand : ACommand
     {
@@ -28,7 +28,7 @@ namespace UnityEditor.PaintEditor
             if (eType == EventType.MouseDown)
             {
                 SaveBackup();
-                PaintEditorPlugin.Instance.history.Push(this);
+                PaintEditorExtension.Instance.history.Push(this);
 
                 var pos = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvasRect), canvasRect, canvasSize);
                 var posInt = new Vector2Int((int)pos.x, (int)pos.y);

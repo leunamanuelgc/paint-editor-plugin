@@ -1,9 +1,6 @@
-using System;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class Layer
     {
@@ -42,14 +39,14 @@ namespace UnityEditor.PaintEditor
         public CustomRenderTexture blendedTexture;
         private Shader blendShader;
         public LayerBlendMode blendMode;
-        private string shaderName = "PaintEditorPlugin/BlendTexture";
+        private string shaderName = "PaintEditorExtension/BlendTexture";
         public int blendModeIdx;
 
         #endregion
 
         public Layer(int num, Rect rect)
         {
-            this.rect = new Rect(rect.position, rect.size * PaintEditorPlugin.Instance.GetZoomLevel());
+            this.rect = new Rect(rect.position, rect.size * PaintEditorExtension.Instance.GetZoomLevel());
             this.realSize = rect.size;
             this.isEnabled = true;
             this.name = "Layer " + num;

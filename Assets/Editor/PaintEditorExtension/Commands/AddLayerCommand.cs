@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class AddLayerCommand : ACommand
     {
@@ -19,7 +19,7 @@ namespace UnityEditor.PaintEditor
         public override bool Execute()
         {
             SaveBackup();
-            PaintEditorPlugin.Instance.history.Push(this);
+            PaintEditorExtension.Instance.history.Push(this);
 
             layerList.Add(new Layer(index, rect));
 

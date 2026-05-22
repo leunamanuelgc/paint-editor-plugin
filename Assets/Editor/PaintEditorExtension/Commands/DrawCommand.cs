@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class DrawCommand : ACommand
     {
@@ -32,7 +32,7 @@ namespace UnityEditor.PaintEditor
                 if (e.type == EventType.MouseDown)
                 {
                     SaveBackup();
-                    PaintEditorPlugin.Instance.history.Push(this);
+                    PaintEditorExtension.Instance.history.Push(this);
                 }
 
                 var posf = CommonPaintEditor.ConvertPos(CommonPaintEditor.PosInRectInt(position, canvas), canvas, canvasSize);
@@ -41,7 +41,7 @@ namespace UnityEditor.PaintEditor
                 var delta = new Vector2Int((int)deltaf.x, (int)deltaf.y);
                 var pos0 = new Vector2Int(pos1.x - delta.x, pos1.y + delta.y);
 
-                CommonPaintEditor.PaintTexture(rTexture, canvas, limits, PaintEditorPlugin.Instance.canvas.realSize, pos0, pos1, size, color);
+                CommonPaintEditor.PaintTexture(rTexture, canvas, limits, PaintEditorExtension.Instance.canvas.realSize, pos0, pos1, size, color);
                 CommonPaintEditor.Release();
             }
             return false;

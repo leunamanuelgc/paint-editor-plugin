@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class Zoom : ITool
     {

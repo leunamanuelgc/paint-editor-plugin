@@ -1,4 +1,4 @@
-Shader "PaintEditorPlugin/RotateTexture"
+Shader "PaintEditorExtension/RotateTexture"
 {
 	Properties
 	{

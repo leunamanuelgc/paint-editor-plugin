@@ -1,9 +1,10 @@
 using UnityEditorInternal;
 using UnityEngine;
-using static UnityEditor.PaintEditor.Layer;
+using static PaintEditorExtension.Layer;
 using System;
+using UnityEditor;
 
-namespace UnityEditor.PaintEditor
+namespace PaintEditorExtension
 {
     public class Utils : IToolbar
     {
@@ -24,7 +25,7 @@ namespace UnityEditor.PaintEditor
 
         public Utils()
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             layersWidth = 180;
 
             layers = new ReorderableList(app.canvas.layerList, typeof(Layer), true, true, true, true);
@@ -40,12 +41,12 @@ namespace UnityEditor.PaintEditor
 
         private void ReorderCallback(ReorderableList list)
         {
-            PaintEditorPlugin.Instance.ExecuteCommand(new ReorderLayerCommand());
+            PaintEditorExtension.Instance.ExecuteCommand(new ReorderLayerCommand());
         }
 
         public void DisplayGUI()
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
 
             layersHeight = Mathf.Min(maxHeight, layers.count * EditorGUIUtility.singleLineHeight * 2.7f + 130);
             layersRect = new Rect(app.position.width - (layersWidth + 20), 60, layersWidth, layersHeight);
@@ -67,7 +68,7 @@ namespace UnityEditor.PaintEditor
 
             if(GUIUtility.hotControl >= 200)
             {
-                PaintEditorPlugin.Instance.CancelClick(true);
+                PaintEditorExtension.Instance.CancelClick(true);
             }
 
             EditorGUILayout.Space(20);
@@ -80,7 +81,7 @@ namespace UnityEditor.PaintEditor
 
         private void DrawLayers(Rect rect, int index, bool isActive, bool isFocused)
         {
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             var icon = app.canvas.layerList[index].isEnabled? Layer.iconTextureOn : Layer.iconTextureOff;
 
             if (GUI.Button(new Rect(rect.x, rect.y + 20, 25, 25), new GUIContent((Texture)EditorGUIUtility.Load(icon))))
@@ -112,7 +113,7 @@ namespace UnityEditor.PaintEditor
             style.fontSize = 10;
 
             EditorGUILayout.BeginHorizontal();
-            var app = PaintEditorPlugin.Instance;
+            var app = PaintEditorExtension.Instance;
             string canvasInfo = $"Canvas: ({app.canvas.realSize.x},{app.canvas.realSize.y})";
             GUILayout.Label(canvasInfo, style, GUILayout.Width(100));
 
