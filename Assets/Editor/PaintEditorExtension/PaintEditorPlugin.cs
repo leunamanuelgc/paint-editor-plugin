@@ -26,7 +26,7 @@ namespace UnityEditor.PaintEditor
 
         public LayerSelection layerSelection { get; set; }
 
-        [MenuItem("Tools/Raster Editor")]
+        [MenuItem("Tools/Paint Editor")]
         public static void CreateEditorWindow()
         {
             GetWindow<EditorWindow>();
