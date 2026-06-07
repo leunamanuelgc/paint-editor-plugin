@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace PaintEditorExtension
 {
-    public class CommonPaintEditor
+    public static class CommonPaintEditor
     {
         #region Compute
 
@@ -237,6 +237,7 @@ namespace PaintEditorExtension
             byte[] data = t.EncodeToPNG();
             var path = Application.dataPath + "/Resources/binaryTexture.png";
             File.WriteAllBytes(path, data);
+            AssetDatabase.Refresh();
         }
 
         private static bool Inside(RenderTexture rTexture, int x, int y)
